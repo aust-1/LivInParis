@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A574A685-21C0-4C43-9F4F-873DD300ED76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karate", "src\Karate\Karate.csproj", "{295D9EDF-BDB6-40A6-86D2-D78E507B885C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{92BD2251-8766-459D-8C98-C399381945BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karate.Tests", "tests\Karate.Tests\Karate.Tests.csproj", "{B9EA0724-EB50-4EC4-8652-72974A88B488}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{295D9EDF-BDB6-40A6-86D2-D78E507B885C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{295D9EDF-BDB6-40A6-86D2-D78E507B885C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{295D9EDF-BDB6-40A6-86D2-D78E507B885C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{295D9EDF-BDB6-40A6-86D2-D78E507B885C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9EA0724-EB50-4EC4-8652-72974A88B488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9EA0724-EB50-4EC4-8652-72974A88B488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9EA0724-EB50-4EC4-8652-72974A88B488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9EA0724-EB50-4EC4-8652-72974A88B488}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{295D9EDF-BDB6-40A6-86D2-D78E507B885C} = {A574A685-21C0-4C43-9F4F-873DD300ED76}
+		{B9EA0724-EB50-4EC4-8652-72974A88B488} = {92BD2251-8766-459D-8C98-C399381945BF}
+	EndGlobalSection
+EndGlobal

@@ -1,1 +1,1 @@
-global using Karate.models;
+global using Karate.Models;

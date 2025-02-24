@@ -1,75 +1,89 @@
-﻿namespace Karate.models;
-
-/// <summary>
-/// Représente un lien (arête ou arc) entre deux noeuds dans le graphe.
-/// </summary>
-public class Lien
+﻿namespace Karate.Models
 {
-    #region Fields
-
     /// <summary>
-    /// Noeud source.
+    /// Represents an edge (or arc) between two nodes in a graph.
     /// </summary>
-    private readonly Noeud source;
+    /// <remarks>
+    /// - In an undirected graph, the target node is simply the other endpoint.
+    /// - In a weighted graph, the <see cref="Weight"/> can be used to store the cost or capacity of the edge.
+    /// </remarks>
+    public class Edge
+    {
+        #region Fields
 
-    /// <summary>
-    /// Noeud cible (dans un graphe non orienté, c'est simplement l'autre extrémité).
-    /// </summary>
-    private readonly Noeud cible;
+        /// <summary>
+        /// The source node.
+        /// </summary>
+        private readonly Node _sourceNode;
 
-    /// <summary>
-    /// Poids éventuel (si le graphe est pondéré).
-    /// </summary>
-    private readonly double poids;
-    
-    #endregion Fields
+        /// <summary>
+        /// The target node.
+        /// </summary>
+        private readonly Node _targetNode;
 
-    #region Constructors
-    
-    /// <summary>
-    /// Constructeur par défaut.
-    /// </summary>
-    /// <param name="source">Le noeud source.</param>
-    /// <param name="cible">Le noeud cible.</param>
-    /// <param name="poids">Le poids du lien.</param>
-    public Lien(Noeud source, Noeud cible, double poids = 1.0)
-    {
-        this.source = source;
-        this.cible = cible;
-        this.poids = poids;
-    }
-    
-    #endregion Constructors
-    
-    #region Properties
-    
-    public Noeud Source
-    {
-        get { return source; }
-    }
-    
-    public Noeud Cible
-    {
-        get { return cible; }
-    }
-    
-    public double Poids
-    {
-        get { return poids; }
-    }
-    
-    #endregion Properties
+        /// <summary>
+        /// The weight of the edge (default is 1.0).
+        /// </summary>
+        private readonly double _weight;
 
-    #region Methods
-    
-    /// <summary>
-    /// Retourne une représentation textuelle du lien.
-    /// </summary>
-    /// <returns>Une chaîne de caractères représentant le lien.</returns>
-    public override string ToString()
-    {
-        return $"Lien: {source.Id} --({poids})--> {cible.Id}";
+        #endregion Fields
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Edge"/> class.
+        /// </summary>
+        /// <param name="sourceNode">The source node.</param>
+        /// <param name="targetNode">The target node.</param>
+        /// <param name="weight">The weight of this edge (default is 1.0).</param>
+        public Edge(Node sourceNode, Node targetNode, double weight = 1.0)
+        {
+            _sourceNode = sourceNode;
+            _targetNode = targetNode;
+            _weight = weight;
+        }
+
+        #endregion Constructors
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the source node of this edge.
+        /// </summary>
+        public Node SourceNode
+        {
+            get { return _sourceNode; }
+        }
+
+        /// <summary>
+        /// Gets the target node of this edge.
+        /// </summary>
+        public Node TargetNode
+        {
+            get { return _targetNode; }
+        }
+
+        /// <summary>
+        /// Gets the weight of this edge.
+        /// </summary>
+        public double Weight
+        {
+            get { return _weight; }
+        }
+
+        #endregion Properties
+
+        #region Methods
+
+        /// <summary>
+        /// Returns a string that represents the current edge.
+        /// </summary>
+        /// <returns>A string representation of this edge.</returns>
+        public override string ToString()
+        {
+            return $"Edge: {_sourceNode.Id} --({_weight})--> {_targetNode.Id}";
+        }
+
+        #endregion Methods
     }
-    
-    #endregion Methods
 }

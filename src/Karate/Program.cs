@@ -5,7 +5,7 @@ public static class Program
 {
     static void Main(string[] args)
     {
-        string path = "karate.mtx";
+        string path = "data/soc-karate.mtx";
         
         Graphe graphe = Graphe.LireFichierMtx(path, estOriente: false);
 
