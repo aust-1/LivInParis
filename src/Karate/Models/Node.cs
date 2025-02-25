@@ -14,7 +14,7 @@
         /// <summary>
         /// Static dictionary mapping node names to their unique IDs.
         /// </summary>
-        private static readonly SortedDictionary<string, int> ExistingNodes = new();
+        private static readonly SortedDictionary<int, Node> ExistingNodes = new();
 
         /// <summary>
         /// The unique identifier for this node.
@@ -40,13 +40,15 @@
         public Node(string name = "")
         {
             int nextId = ExistingNodes.Count;
-            if (!ExistingNodes.TryAdd(name, nextId))
+
+            if (ExistingNodes.Any(kvp => kvp.Value.Name == name))
             {
                 throw new ArgumentException($"A node with the name '{name}' already exists.");
             }
 
             _name = name;
             _id = nextId;
+            ExistingNodes.Add(_id, this);
         }
 
         #endregion Constructors
@@ -83,27 +85,41 @@
         }
 
         /// <summary>
-        /// Retrieves the ID associated with the specified node name.
+        /// Retrieves the node associated with the specified node name or creates a new node if not found.
         /// </summary>
-        /// <param name="nameToFind">The name of the node whose ID you want to retrieve.</param>
+        /// <param name="nameToFind">The name of the node you want to retrieve.</param>
         /// <returns>
-        /// The node's ID if found; otherwise, -1 if no node with the given name exists.
+        /// The node if found; otherwise, creates a new node with the given name and returns it.
         /// </returns>
-        public static int GetIdFromName(string nameToFind)
+        public static Node GetOrCreateNode(string nameToFind)
         {
-            return ExistingNodes.TryGetValue(nameToFind, out int id) ? id : -1;
+            foreach (var node in ExistingNodes.Select(kvp => kvp.Value))
+            {
+                if (node.Name == nameToFind)
+                {
+                    return node;
+                }
+            }
+
+            Node newNode = new Node(nameToFind);
+            return newNode;
         }
 
         /// <summary>
-        /// Retrieves the node name associated with the specified ID.
+        /// Retrieves the node associated with the specified ID or creates a new node if not found.
         /// </summary>
-        /// <param name="idToFind">The ID of the node whose name you want to retrieve.</param>
+        /// <param name="idToFind">The ID of the node you want to retrieve.</param>
         /// <returns>
-        /// The node's name if found; otherwise, <c>null</c> if no node with the given ID exists.
+        /// The node if found; otherwise, creates a new node with the given name and returns it.
         /// </returns>
-        public static string? GetNameFromId(int idToFind)
+        public static Node GetOrCreateNode(int idToFind)
         {
-            return ExistingNodes.FirstOrDefault(x => x.Value == idToFind).Key;
+            if (ExistingNodes.ContainsKey(idToFind))
+            {
+                return ExistingNodes[idToFind];
+            }
+
+            return new Node($"Node {idToFind}");
         }
 
         #endregion Methods

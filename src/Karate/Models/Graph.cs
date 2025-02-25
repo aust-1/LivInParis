@@ -1,5 +1,5 @@
 using System.Drawing;
-using System.Linq;
+using System.Drawing.Imaging;
 
 namespace Karate.Models
 {
@@ -54,7 +54,7 @@ namespace Karate.Models
             _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
             _adjacencyMatrix = null;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Graph"/> class.
         /// </summary>
@@ -73,6 +73,7 @@ namespace Karate.Models
                 {
                     _edges.Add(new Edge(kvp.Key, neighbor));
                     _adjacencyMatrix[kvp.Key.Id, neighbor.Id] = 1.0;
+                    _adjacencyMatrix[neighbor.Id, kvp.Key.Id] = 1.0;
                 }
             }
         }
@@ -89,7 +90,7 @@ namespace Karate.Models
             {
                 throw new ArgumentException("Adjacency matrix must be square.");
             }
-            
+
             _isDirected = isDirected;
             _nodes = new SortedSet<Node>();
             _edges = new List<Edge>();
@@ -97,9 +98,9 @@ namespace Karate.Models
             _adjacencyMatrix = adjacencyMatrix;
 
             int n = adjacencyMatrix.GetLength(0);
-            for (int i = 0; i < n; i++)
+            for (int i = 1; i <= n; i++)
             {
-                Node node = new Node($"Node{i}");
+                Node node = Node.GetOrCreateNode($"Node {i}");
                 _nodes.Add(node);
             }
 
@@ -130,6 +131,22 @@ namespace Karate.Models
                 BuildAdjacencyMatrix();
                 return _adjacencyMatrix;
             }
+        }
+
+        /// <summary>
+        /// Gets the adjacency list representing the graph.
+        /// </summary>
+        public SortedDictionary<Node, SortedSet<Node>> AdjacencyList
+        {
+            get { return _adjacencyList; }
+        }
+
+        /// <summary>
+        /// Gets the list of nodes in the graph.
+        /// </summary>
+        public SortedSet<Node> Nodes
+        {
+            get { return _nodes; }
         }
 
         /// <summary>
@@ -238,22 +255,6 @@ namespace Karate.Models
             }
         }
 
-        /// <summary>
-        /// Helper method that retrieves a Node based on son identifiant.
-        /// </summary>
-        /// <param name="id">L'id du noeud à récupérer.</param>
-        /// <returns>Le Node correspondant.</returns>
-        /// <exception cref="ArgumentException">Si aucun noeud avec cet id n'est trouvé.</exception>
-        private Node GetNodeById(int id)
-        {
-            Node? node = _nodes.FirstOrDefault(n => n.Id == id);
-            if (node == null)
-            {
-                throw new ArgumentException($"Noeud avec l'ID {id} non trouvé.");
-            }
-            return node;
-        }
-
         #endregion Methods
 
         #region Traversal
@@ -265,9 +266,10 @@ namespace Karate.Models
         /// <param name="startNode">The node from which to start the BFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
         /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> BFS(Node startNode)
+        public List<string> BFS(Node? startNode)
         {
-            if (!_adjacencyList.ContainsKey(startNode))
+
+            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
             }
@@ -306,7 +308,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> BFS(int startId)
         {
-            return BFS(GetNodeById(startId));
+            return BFS(Node.GetOrCreateNode(startId));
         }
 
         /// <summary>
@@ -318,7 +320,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
         public List<string> BFS(string startName)
         {
-            return BFS(Node.GetIdFromName(startName));
+            return BFS(Node.GetOrCreateNode(startName));
         }
 
         /// <summary>
@@ -328,9 +330,9 @@ namespace Karate.Models
         /// <param name="startNode">The node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
         /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> DFSRecursive(Node startNode)
+        public List<string> DFSRecursive(Node? startNode)
         {
-            if (!_adjacencyList.ContainsKey(startNode))
+            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
             }
@@ -351,7 +353,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> DFSRecursive(int startId)
         {
-            return DFSRecursive(GetNodeById(startId));
+            return DFSRecursive(Node.GetOrCreateNode(startId));
         }
 
         /// <summary>
@@ -363,7 +365,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
         public List<string> DFSRecursive(string startName)
         {
-            return DFSRecursive(Node.GetIdFromName(startName));
+            return DFSRecursive(Node.GetOrCreateNode(startName));
         }
 
         /// <summary>
@@ -390,9 +392,9 @@ namespace Karate.Models
         /// <param name="startNode">The node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
         /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> DFSIterative(Node startNode)
+        public List<string> DFSIterative(Node? startNode)
         {
-            if (!_adjacencyList.ContainsKey(startNode))
+            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
             }
@@ -433,7 +435,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> DFSIterative(int startId)
         {
-            return DFSIterative(GetNodeById(startId));
+            return DFSIterative(Node.GetOrCreateNode(startId));
         }
 
         /// <summary>
@@ -445,7 +447,7 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
         public List<string> DFSIterative(string startName)
         {
-            return DFSIterative(Node.GetIdFromName(startName));
+            return DFSIterative(Node.GetOrCreateNode(startName));
         }
 
         #endregion Traversal
@@ -543,35 +545,35 @@ namespace Karate.Models
             const int height = 600;
             const int nodeSize = 20;
 
-             using var bitmap = new Bitmap(width, height);
+            using var bitmap = new Bitmap(width, height);
             using var g = Graphics.FromImage(bitmap);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.Clear(Color.White);
+            g.Clear(Color.White);
 
-                // TODO : Placer les noeuds dans un cercle ou un layout spécifique
-                // Ex: calculer la position (x, y) de chaque noeud
-            
+            // TODO : Placer les noeuds dans un cercle ou un layout spécifique
+            // Ex: calculer la position (x, y) de chaque noeud
+
             // Calculate node positions
             var positions = new Dictionary<Node, Point>();
-                int n = _nodes.Count;
-                double angleStep = 2 * Math.PI / n;
-                int radius = 200;
-                Point center = new Point(width / 2, height / 2);
+            int n = _nodes.Count;
+            double angleStep = 2 * Math.PI / n;
+            int radius = 200;
+            Point center = new Point(width / 2, height / 2);
 
-                int i = 0;
-                foreach (Node node in _nodes)
-                {
-                    double angle = i * angleStep;
-                    int x = center.X + (int)(radius * Math.Cos(angle));
-                    int y = center.Y + (int)(radius * Math.Sin(angle));
-                
+            int i = 0;
+            foreach (Node node in _nodes)
+            {
+                double angle = i * angleStep;
+                int x = center.X + (int)(radius * Math.Cos(angle));
+                int y = center.Y + (int)(radius * Math.Sin(angle));
+
                 // Ensure the node stays within bounds
                 x = Math.Max(nodeSize, Math.Min(x, width - nodeSize));
                 y = Math.Max(nodeSize, Math.Min(y, height - nodeSize));
-                
-                    positions[node] = new Point(x, y);
-                    i++;
-                }
+
+                positions[node] = new Point(x, y);
+                i++;
+            }
 
             // Draw edges (keep your existing edge drawing code)
             using (var edgePen = new Pen(Color.Gray, 2))
@@ -608,8 +610,8 @@ namespace Karate.Models
                             g.DrawLine(edgePen, positions[target], arrowPoint2);
                         }
                     }
-                    }
                 }
+            }
 
             // Draw nodes with validated coordinates
             using (var nodeBrush = new SolidBrush(Color.LightBlue))
@@ -618,7 +620,7 @@ namespace Karate.Models
                 foreach (Node node in _nodes)
                 {
                     Point p = positions[node];
-                    
+
                     // Create rectangle for the node
                     Rectangle nodeRect = new Rectangle(
                         p.X - nodeSize / 2,
@@ -628,7 +630,7 @@ namespace Karate.Models
                     );
 
                     // Validate rectangle is within bitmap bounds
-                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 && 
+                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 &&
                         nodeRect.Right <= width && nodeRect.Bottom <= height)
                     {
                         g.FillEllipse(nodeBrush, nodeRect);
@@ -645,7 +647,7 @@ namespace Karate.Models
                         }
                     }
                 }
-                }
+            }
 
             // Save using MemoryStream to avoid file locks
             using (var memory = new MemoryStream())
