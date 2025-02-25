@@ -541,31 +541,41 @@ namespace Karate.Models
         {
             const int width = 800;
             const int height = 600;
-            using (Bitmap bitmap = new Bitmap(width, height))
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
+            const int nodeSize = 20;
+
+             using var bitmap = new Bitmap(width, height);
+            using var g = Graphics.FromImage(bitmap);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 g.Clear(Color.White);
 
                 // TODO : Placer les noeuds dans un cercle ou un layout spécifique
                 // Ex: calculer la position (x, y) de chaque noeud
+            
+            // Calculate node positions
+            var positions = new Dictionary<Node, Point>();
                 int n = _nodes.Count;
                 double angleStep = 2 * Math.PI / n;
                 int radius = 200;
                 Point center = new Point(width / 2, height / 2);
 
-                var positions = new Dictionary<Node, Point>();
                 int i = 0;
                 foreach (Node node in _nodes)
                 {
                     double angle = i * angleStep;
                     int x = center.X + (int)(radius * Math.Cos(angle));
                     int y = center.Y + (int)(radius * Math.Sin(angle));
+                
+                // Ensure the node stays within bounds
+                x = Math.Max(nodeSize, Math.Min(x, width - nodeSize));
+                y = Math.Max(nodeSize, Math.Min(y, height - nodeSize));
+                
                     positions[node] = new Point(x, y);
                     i++;
                 }
 
-                // Draw edges
-                using Pen edgePen = new Pen(Color.Gray, 2);
+            // Draw edges (keep your existing edge drawing code)
+            using (var edgePen = new Pen(Color.Gray, 2))
+            {
                 foreach (var kvp in _adjacencyList)
                 {
                     Node source = kvp.Key;
@@ -598,26 +608,51 @@ namespace Karate.Models
                             g.DrawLine(edgePen, positions[target], arrowPoint2);
                         }
                     }
+                    }
                 }
 
-                // Draw nodes
-                using Brush nodeBrush = Brushes.LightBlue;
+            // Draw nodes with validated coordinates
+            using (var nodeBrush = new SolidBrush(Color.LightBlue))
+            using (var nodePen = new Pen(Color.Black, 1))
+            {
                 foreach (Node node in _nodes)
                 {
                     Point p = positions[node];
-                    int size = 20;
-                    g.FillEllipse(nodeBrush, p.X - size / 2, p.Y - size / 2, size, size);
-                    g.DrawEllipse(Pens.Black, p.X - size / 2, p.Y - size / 2, size, size);
+                    
+                    // Create rectangle for the node
+                    Rectangle nodeRect = new Rectangle(
+                        p.X - nodeSize / 2,
+                        p.Y - nodeSize / 2,
+                        nodeSize,
+                        nodeSize
+                    );
 
-                    // Draw the node's ID
-                    string text = node.Id.ToString();
-                    SizeF textSize = g.MeasureString(text, SystemFonts.DefaultFont);
-                    g.DrawString(text, SystemFonts.DefaultFont, Brushes.Black,
-                                 p.X - textSize.Width / 2, p.Y - textSize.Height / 2);
+                    // Validate rectangle is within bitmap bounds
+                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 && 
+                        nodeRect.Right <= width && nodeRect.Bottom <= height)
+                    {
+                        g.FillEllipse(nodeBrush, nodeRect);
+                        g.DrawEllipse(nodePen, nodeRect);
+
+                        // Draw label
+                        string text = node.Name;
+                        using (var font = new Font(SystemFonts.DefaultFont.FontFamily, 8))
+                        {
+                            SizeF textSize = g.MeasureString(text, font);
+                            g.DrawString(text, font, Brushes.Black,
+                                p.X - textSize.Width / 2,
+                                p.Y - textSize.Height / 2);
+                        }
+                    }
+                }
                 }
 
-                // Save the image
-                bitmap.Save(fileName);
+            // Save using MemoryStream to avoid file locks
+            using (var memory = new MemoryStream())
+            {
+                bitmap.Save(memory, ImageFormat.Png);
+                byte[] bytes = memory.ToArray();
+                File.WriteAllBytes(fileName, bytes);
             }
         }
 
