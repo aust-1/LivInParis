@@ -4,7 +4,7 @@
     /// Represents a node in the graph.
     /// </summary>
     /// <remarks>
-    /// A static dictionary (<see cref="_existingNodes"/>) is maintained to ensure that each node name is unique.
+    /// A static dictionary (<see cref="ExistingNodes"/>) is maintained to ensure that each node name is unique.
     /// If a node with the given name already exists, the constructor will throw an <see cref="ArgumentException"/>.
     /// </remarks>
     public class Node : IComparable<Node>
@@ -14,7 +14,7 @@
         /// <summary>
         /// Static dictionary mapping node names to their unique IDs.
         /// </summary>
-        private static readonly SortedDictionary<string, int> _existingNodes = new();
+        private static readonly SortedDictionary<string, int> ExistingNodes = new();
 
         /// <summary>
         /// The unique identifier for this node.
@@ -39,8 +39,8 @@
         /// </param>
         public Node(string name = "")
         {
-            int nextId = _existingNodes.Count;
-            if (!_existingNodes.TryAdd(name, nextId))
+            int nextId = ExistingNodes.Count;
+            if (!ExistingNodes.TryAdd(name, nextId))
             {
                 throw new ArgumentException($"A node with the name '{name}' already exists.");
             }
@@ -91,7 +91,7 @@
         /// </returns>
         public static int GetIdFromName(string nameToFind)
         {
-            return _existingNodes.TryGetValue(nameToFind, out int id) ? id : -1;
+            return ExistingNodes.TryGetValue(nameToFind, out int id) ? id : -1;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@
         /// </returns>
         public static string? GetNameFromId(int idToFind)
         {
-            return _existingNodes.FirstOrDefault(x => x.Value == idToFind).Key;
+            return ExistingNodes.FirstOrDefault(x => x.Value == idToFind).Key;
         }
 
         #endregion Methods

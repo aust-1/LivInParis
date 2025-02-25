@@ -203,8 +203,14 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startNode">The node from which to start the BFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
         public List<string> BFS(Node startNode)
         {
+            if (!_adjacencyList.ContainsKey(startNode))
+            {
+                throw new ArgumentException("Invalid startNode.");
+            }
+
             var result = new List<string>();
             var queue = new Queue<Node>();
             var visited = new HashSet<Node>();
@@ -236,6 +242,7 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startId">The ID of the node from which to start the BFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> BFS(int startId)
         {
             return BFS(GetNodeById(startId));
@@ -245,11 +252,12 @@ namespace Karate.Models
         /// Performs a Breadth-First Search (BFS) starting from the specified node name.
         /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startname">The name of the node from which to start the BFS.</param>
+        /// <param name="startName">The name of the node from which to start the BFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
-        public List<string> BFS(string startname)
+        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
+        public List<string> BFS(string startName)
         {
-            return BFS(Node.GetIdFromName(startname));
+            return BFS(Node.GetIdFromName(startName));
         }
 
         /// <summary>
@@ -258,8 +266,14 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startNode">The node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
         public List<string> DFSRecursive(Node startNode)
         {
+            if (!_adjacencyList.ContainsKey(startNode))
+            {
+                throw new ArgumentException("Invalid startNode.");
+            }
+
             var visited = new HashSet<Node>();
             var result = new List<string>();
 
@@ -273,6 +287,7 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startId">The ID of the node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> DFSRecursive(int startId)
         {
             return DFSRecursive(GetNodeById(startId));
@@ -284,6 +299,7 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startName">The name of the node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
         public List<string> DFSRecursive(string startName)
         {
             return DFSRecursive(Node.GetIdFromName(startName));
@@ -312,8 +328,14 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startNode">The node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
         public List<string> DFSIterative(Node startNode)
         {
+            if (!_adjacencyList.ContainsKey(startNode))
+            {
+                throw new ArgumentException("Invalid startNode.");
+            }
+
             var result = new List<string>();
             var stack = new Stack<Node>();
             var visited = new HashSet<Node>();
@@ -347,6 +369,7 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startId">The ID of the node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
         public List<string> DFSIterative(int startId)
         {
             return DFSIterative(GetNodeById(startId));
@@ -358,6 +381,7 @@ namespace Karate.Models
         /// </summary>
         /// <param name="startName">The name of the node from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
+        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
         public List<string> DFSIterative(string startName)
         {
             return DFSIterative(Node.GetIdFromName(startName));
