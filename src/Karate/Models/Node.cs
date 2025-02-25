@@ -61,6 +61,14 @@
             get { return _id; }
         }
 
+        /// <summary>
+        /// Gets the name of this node.
+        /// </summary>
+        public string Name
+        {
+            get { return _name; }
+        }
+
         #endregion Properties
 
         #region Methods

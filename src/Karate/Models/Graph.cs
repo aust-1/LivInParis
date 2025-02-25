@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Linq;
 
 namespace Karate.Models
 {
@@ -27,11 +28,9 @@ namespace Karate.Models
         private readonly bool _isDirected;
 
         /// <summary>
-        /// Adjacency list mapping each node's ID to the set of adjacent node IDs.
-        /// Key: Node ID
-        /// Value: A set of IDs of adjacent nodes
+        /// Adjacency list mapping each node to the set of its adjacent nodes.
         /// </summary>
-        private readonly SortedDictionary<int, SortedSet<int>> _adjacencyList;
+        private readonly SortedDictionary<Node, SortedSet<Node>> _adjacencyList;
 
         /// <summary>
         /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
@@ -52,7 +51,7 @@ namespace Karate.Models
             _nodes = new SortedSet<Node>();
             _edges = new List<Edge>();
             _isDirected = isDirected;
-            _adjacencyList = new SortedDictionary<int, SortedSet<int>>();
+            _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
             _adjacencyMatrix = null;
         }
 
@@ -115,9 +114,9 @@ namespace Karate.Models
         public void AddNode(Node node)
         {
             _nodes.Add(node);
-            if (!_adjacencyList.ContainsKey(node.Id))
+            if (!_adjacencyList.ContainsKey(node))
             {
-                _adjacencyList[node.Id] = new SortedSet<int>();
+                _adjacencyList[node] = new SortedSet<Node>();
             }
         }
 
@@ -129,23 +128,20 @@ namespace Karate.Models
         {
             _edges.Add(edge);
 
-            int sourceId = edge.SourceNode.Id;
-            int targetId = edge.TargetNode.Id;
-
-            if (!_adjacencyList.ContainsKey(sourceId))
+            if (!_adjacencyList.ContainsKey(edge.SourceNode))
             {
-                _adjacencyList[sourceId] = new SortedSet<int>();
+                _adjacencyList[edge.SourceNode] = new SortedSet<Node>();
             }
-            if (!_adjacencyList.ContainsKey(targetId))
+            if (!_adjacencyList.ContainsKey(edge.TargetNode))
             {
-                _adjacencyList[targetId] = new SortedSet<int>();
+                _adjacencyList[edge.TargetNode] = new SortedSet<Node>();
             }
 
-            _adjacencyList[sourceId].Add(targetId);
+            _adjacencyList[edge.SourceNode].Add(edge.TargetNode);
 
             if (!_isDirected)
             {
-                _adjacencyList[targetId].Add(sourceId);
+                _adjacencyList[edge.TargetNode].Add(edge.SourceNode);
             }
         }
 
@@ -181,31 +177,47 @@ namespace Karate.Models
             }
         }
 
+        /// <summary>
+        /// Helper method that retrieves a Node based on son identifiant.
+        /// </summary>
+        /// <param name="id">L'id du noeud à récupérer.</param>
+        /// <returns>Le Node correspondant.</returns>
+        /// <exception cref="ArgumentException">Si aucun noeud avec cet id n'est trouvé.</exception>
+        private Node GetNodeById(int id)
+        {
+            Node? node = _nodes.FirstOrDefault(n => n.Id == id);
+            if (node == null)
+            {
+                throw new ArgumentException($"Noeud avec l'ID {id} non trouvé.");
+            }
+            return node;
+        }
+
         #endregion Methods
 
         #region Traversal
 
         /// <summary>
-        /// Performs a Breadth-First Search (BFS) starting from the specified node ID.
-        /// Returns the IDs of the visited nodes in the order they were discovered.
+        /// Performs a Breadth-First Search (BFS) starting from the specified node.
+        /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startId">The ID of the node from which to start the BFS.</param>
-        /// <returns>A list of node IDs in the order they were visited.</returns>
-        public List<int> BFS(int startId)
+        /// <param name="startNode">The node from which to start the BFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> BFS(Node startNode)
         {
-            var result = new List<int>();
-            var queue = new Queue<int>();
-            var visited = new HashSet<int>();
+            var result = new List<string>();
+            var queue = new Queue<Node>();
+            var visited = new HashSet<Node>();
 
-            queue.Enqueue(startId);
-            visited.Add(startId);
+            queue.Enqueue(startNode);
+            visited.Add(startNode);
 
             while (queue.Count > 0)
             {
-                int current = queue.Dequeue();
-                result.Add(current);
+                Node current = queue.Dequeue();
+                result.Add(current.Name);
 
-                foreach (int neighbor in _adjacencyList[current])
+                foreach (Node neighbor in _adjacencyList[current])
                 {
                     if (!visited.Contains(neighbor))
                     {
@@ -219,45 +231,73 @@ namespace Karate.Models
         }
 
         /// <summary>
-        /// Performs a recursive Depth-First Search (DFS) starting from the specified node ID.
-        /// Returns the IDs of the visited nodes in the order they were discovered.
+        /// Performs a Breadth-First Search (BFS) starting from the specified node ID.
+        /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startId">The ID of the node from which to start DFS.</param>
-        /// <returns>A list of node IDs in the order they were visited.</returns>
-        public List<int> DFSRecursive(int startId)
+        /// <param name="startId">The ID of the node from which to start the BFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> BFS(int startId)
         {
-            var visited = new HashSet<int>();
-            var result = new List<int>();
+            return BFS(GetNodeById(startId));
+        }
 
-            DFSUtil(startId, visited, result);
+        /// <summary>
+        /// Performs a Breadth-First Search (BFS) starting from the specified node name.
+        /// Returns the names of the visited nodes in the order they were discovered.
+        /// </summary>
+        /// <param name="startname">The name of the node from which to start the BFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> BFS(string startname)
+        {
+            return BFS(Node.GetIdFromName(startname));
+        }
+
+        /// <summary>
+        /// Performs a recursive Depth-First Search (DFS) starting from the specified node.
+        /// Returns the names of the visited nodes in the order they were discovered.
+        /// </summary>
+        /// <param name="startNode">The node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSRecursive(Node startNode)
+        {
+            var visited = new HashSet<Node>();
+            var result = new List<string>();
+
+            DFSUtil(startNode, visited, result);
             return result;
         }
 
         /// <summary>
-        /// Performs a recursive DFS starting from a node specified by its name.
+        /// Performs a recursive Depth-First Search (DFS) starting from the specified node ID.
+        /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startName">The name of the start node.</param>
-        /// <returns>A list of visited node IDs in the order they were discovered.</returns>
-        /// <exception cref="ArgumentException">Thrown if the node name does not exist.</exception>
-        public List<int> DFSRecursive(string startName)
+        /// <param name="startId">The ID of the node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSRecursive(int startId)
         {
-            int startId = Node.GetIdFromName(startName);
-            if (startId == -1)
-            {
-                throw new ArgumentException($"Node '{startName}' not found.");
-            }
-            return DFSRecursive(startId);
+            return DFSRecursive(GetNodeById(startId));
+        }
+
+        /// <summary>
+        /// Performs a recursive Depth-First Search (DFS) starting from the specified node name.
+        /// Returns the names of the visited nodes in the order they were discovered.
+        /// </summary>
+        /// <param name="startName">The name of the node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSRecursive(string startName)
+        {
+            return DFSRecursive(Node.GetIdFromName(startName));
         }
 
         /// <summary>
         /// Helper method for recursive DFS traversal.
         /// </summary>
-        private void DFSUtil(int nodeId, HashSet<int> visited, List<int> result)
+        private void DFSUtil(Node node, HashSet<Node> visited, List<string> result)
         {
-            visited.Add(nodeId);
-            result.Add(nodeId);
+            visited.Add(node);
+            result.Add(node.Name);
 
-            foreach (int neighbor in _adjacencyList[nodeId])
+            foreach (Node neighbor in _adjacencyList[node])
             {
                 if (!visited.Contains(neighbor))
                 {
@@ -267,28 +307,28 @@ namespace Karate.Models
         }
 
         /// <summary>
-        /// Performs an iterative Depth-First Search (DFS) starting from the specified node ID.
-        /// Returns the IDs of the visited nodes in the order they were discovered.
+        /// Performs an iterative Depth-First Search (DFS) starting from the specified node.
+        /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startId">The ID of the node from which to start DFS.</param>
-        /// <returns>A list of node IDs in the order they were visited.</returns>
-        public List<int> DFSIterative(int startId)
+        /// <param name="startNode">The node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSIterative(Node startNode)
         {
-            var result = new List<int>();
-            var stack = new Stack<int>();
-            var visited = new HashSet<int>();
+            var result = new List<string>();
+            var stack = new Stack<Node>();
+            var visited = new HashSet<Node>();
 
-            stack.Push(startId);
+            stack.Push(startNode);
 
             while (stack.Count > 0)
             {
-                int current = stack.Pop();
+                Node current = stack.Pop();
                 if (!visited.Contains(current))
                 {
                     visited.Add(current);
-                    result.Add(current);
+                    result.Add(current.Name);
 
-                    foreach (int neighbor in _adjacencyList[current])
+                    foreach (Node neighbor in _adjacencyList[current])
                     {
                         if (!visited.Contains(neighbor))
                         {
@@ -302,19 +342,25 @@ namespace Karate.Models
         }
 
         /// <summary>
-        /// Performs an iterative DFS starting from a node specified by its name.
+        /// Performs an iterative Depth-First Search (DFS) starting from the specified node ID.
+        /// Returns the names of the visited nodes in the order they were discovered.
         /// </summary>
-        /// <param name="startName">The name of the start node.</param>
-        /// <returns>A list of visited node IDs in the order they were discovered.</returns>
-        /// <exception cref="ArgumentException">Thrown if the node name does not exist.</exception>
-        public List<int> DFSIterative(string startName)
+        /// <param name="startId">The ID of the node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSIterative(int startId)
         {
-            int startId = Node.GetIdFromName(startName);
-            if (startId == -1)
-            {
-                throw new ArgumentException($"Node '{startName}' not found.");
-            }
-            return DFSIterative(startId);
+            return DFSIterative(GetNodeById(startId));
+        }
+
+        /// <summary>
+        /// Performs an iterative Depth-First Search (DFS) starting from the specified node name.
+        /// Returns the names of the visited nodes in the order they were discovered.
+        /// </summary>
+        /// <param name="startName">The name of the node from which to start DFS.</param>
+        /// <returns>A list of node names in the order they were visited.</returns>
+        public List<string> DFSIterative(string startName)
+        {
+            return DFSIterative(Node.GetIdFromName(startName));
         }
 
         #endregion Traversal
@@ -332,8 +378,8 @@ namespace Karate.Models
         {
             if (!_isDirected)
             {
-                int n = _nodes.Count;
-                return BFS(0).Count == n;
+                Node startNode = _nodes.First();
+                return BFS(startNode.Id).Count == _nodes.Count;
             }
 
             throw new InvalidOperationException("Algorithm not implemented for directed graphs.");
@@ -346,35 +392,42 @@ namespace Karate.Models
         /// <returns>
         /// <c>true</c> if a cycle is found, <c>false</c> otherwise.
         /// </returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method is called on a directed graph.</exception>
         public bool DetectCycleOrCircuit()
         {
-            var visited = new HashSet<int>();
-
-            foreach (int nodeId in _nodes.Select(node => node.Id))
+            if (!_isDirected)
             {
-                if (!visited.Contains(nodeId) && DFSDetectCycle(nodeId, -1, visited))
+                var visited = new HashSet<Node>();
+
+                foreach (Node node in _nodes)
                 {
-                    return true;
+                    if (!visited.Contains(node) && DFSDetectCycle(node, null, visited))
+                    {
+                        return true;
+                    }
                 }
+
+                return false;
             }
-            return false;
+
+            throw new InvalidOperationException("Algorithm not implemented for directed graphs.");
         }
 
         /// <summary>
         /// DFS used for cycle detection in an undirected graph.
-        /// Use <paramref name="parent"/> = -1 to indicate no parent for the root node.
+        /// Use <paramref name="parent"/> = null to indicate no parent for the root node.
         /// </summary>
-        /// <param name="current">The current node ID.</param>
-        /// <param name="parent">The parent node ID, or -1 if none.</param>
-        /// <param name="visited">A set of visited node IDs.</param>
+        /// <param name="current">The current node.</param>
+        /// <param name="parent">The parent node, or null if none.</param>
+        /// <param name="visited">A set of visited nodes.</param>
         /// <returns>
         /// <c>true</c> if a cycle is detected, <c>false</c> otherwise.
         /// </returns>
-        private bool DFSDetectCycle(int current, int parent, HashSet<int> visited)
+        private bool DFSDetectCycle(Node current, Node? parent, HashSet<Node> visited)
         {
             visited.Add(current);
 
-            foreach (int neighbor in _adjacencyList[current])
+            foreach (Node neighbor in _adjacencyList[current])
             {
                 if (!visited.Contains(neighbor))
                 {
@@ -383,9 +436,8 @@ namespace Karate.Models
                         return true;
                     }
                 }
-                else if (neighbor != parent)
+                else if (parent == null || neighbor != parent)
                 {
-                    // If we find a visited neighbor that is not the parent, we have a cycle
                     return true;
                 }
             }
@@ -416,14 +468,14 @@ namespace Karate.Models
                 int radius = 200;
                 Point center = new Point(width / 2, height / 2);
 
-                var positions = new Dictionary<int, Point>();
+                var positions = new Dictionary<Node, Point>();
                 int i = 0;
-                foreach (int nodeId in _nodes.Select(node => node.Id))
+                foreach (Node node in _nodes)
                 {
                     double angle = i * angleStep;
                     int x = center.X + (int)(radius * Math.Cos(angle));
                     int y = center.Y + (int)(radius * Math.Sin(angle));
-                    positions[nodeId] = new Point(x, y);
+                    positions[node] = new Point(x, y);
                     i++;
                 }
 
@@ -431,49 +483,49 @@ namespace Karate.Models
                 using Pen edgePen = new Pen(Color.Gray, 2);
                 foreach (var kvp in _adjacencyList)
                 {
-                    int sourceId = kvp.Key;
-                    foreach (int targetId in kvp.Value)
+                    Node source = kvp.Key;
+                    foreach (Node target in kvp.Value)
                     {
                         // In undirected graphs, avoid drawing the same edge twice
-                        if (!_isDirected && sourceId < targetId)
+                        if (!_isDirected && source.Id < target.Id)
                         {
-                            g.DrawLine(edgePen, positions[sourceId], positions[targetId]);
+                            g.DrawLine(edgePen, positions[source], positions[target]);
                         }
                         else if (_isDirected)
                         {
                             // Draw arrow for directed edge
-                            g.DrawLine(edgePen, positions[sourceId], positions[targetId]);
+                            g.DrawLine(edgePen, positions[source], positions[target]);
 
                             const int arrowSize = 5;
                             double angle = Math.Atan2(
-                                positions[targetId].Y - positions[sourceId].Y,
-                                positions[targetId].X - positions[sourceId].X);
+                                positions[target].Y - positions[source].Y,
+                                positions[target].X - positions[source].X);
 
                             PointF arrowPoint1 = new PointF(
-                                (float)(positions[targetId].X - arrowSize * Math.Cos(angle - Math.PI / 6)),
-                                (float)(positions[targetId].Y - arrowSize * Math.Sin(angle - Math.PI / 6)));
+                                (float)(positions[target].X - arrowSize * Math.Cos(angle - Math.PI / 6)),
+                                (float)(positions[target].Y - arrowSize * Math.Sin(angle - Math.PI / 6)));
 
                             PointF arrowPoint2 = new PointF(
-                                (float)(positions[targetId].X - arrowSize * Math.Cos(angle + Math.PI / 6)),
-                                (float)(positions[targetId].Y - arrowSize * Math.Sin(angle + Math.PI / 6)));
+                                (float)(positions[target].X - arrowSize * Math.Cos(angle + Math.PI / 6)),
+                                (float)(positions[target].Y - arrowSize * Math.Sin(angle + Math.PI / 6)));
 
-                            g.DrawLine(edgePen, positions[targetId], arrowPoint1);
-                            g.DrawLine(edgePen, positions[targetId], arrowPoint2);
+                            g.DrawLine(edgePen, positions[target], arrowPoint1);
+                            g.DrawLine(edgePen, positions[target], arrowPoint2);
                         }
                     }
                 }
 
                 // Draw nodes
                 using Brush nodeBrush = Brushes.LightBlue;
-                foreach (int nodeId in _nodes.Select(node => node.Id))
+                foreach (Node node in _nodes)
                 {
-                    Point p = positions[nodeId];
+                    Point p = positions[node];
                     int size = 20;
                     g.FillEllipse(nodeBrush, p.X - size / 2, p.Y - size / 2, size, size);
                     g.DrawEllipse(Pens.Black, p.X - size / 2, p.Y - size / 2, size, size);
 
                     // Draw the node's ID
-                    string text = nodeId.ToString();
+                    string text = node.Id.ToString();
                     SizeF textSize = g.MeasureString(text, SystemFonts.DefaultFont);
                     g.DrawString(text, SystemFonts.DefaultFont, Brushes.Black,
                                  p.X - textSize.Width / 2, p.Y - textSize.Height / 2);
