@@ -103,24 +103,6 @@
         #region IComparable<Node> Implementation
 
         /// <summary>
-        /// Compares this node to another object by their IDs.
-        /// </summary>
-        /// <param name="other">Another object, preferably a <see cref="Node"/>.</param>
-        /// <returns>
-        /// A negative value if this node's ID is less than <paramref name="other"/>'s ID,
-        /// zero if equal, or a positive value if greater.
-        /// If <paramref name="other"/> is not a <see cref="Node"/>, returns 1 by default.
-        /// </returns>
-        public int CompareTo(object? other)
-        {
-            if (other is Node otherNode)
-            {
-                return _id.CompareTo(otherNode._id);
-            }
-            return 1;
-        }
-
-        /// <summary>
         /// Compares this node to another node by their IDs.
         /// </summary>
         /// <param name="other">Another <see cref="Node"/>.</param>
@@ -158,7 +140,7 @@
         /// <returns>An integer hash code.</returns>
         public override int GetHashCode()
         {
-            return _id;
+            return _id.GetHashCode();
         }
 
         /// <summary>
@@ -192,7 +174,7 @@
         /// </summary>
         public static bool operator >(Node left, Node right)
         {
-            return Compare(left, right) > 0;
+            return left.CompareTo(right) > 0;
         }
 
         /// <summary>
@@ -200,7 +182,7 @@
         /// </summary>
         public static bool operator <(Node left, Node right)
         {
-            return Compare(left, right) < 0;
+            return left.CompareTo(right) < 0;
         }
 
         /// <summary>
@@ -216,7 +198,7 @@
         /// </summary>
         public static bool operator >=(Node left, Node right)
         {
-            return Compare(left, right) >= 0;
+            return left.CompareTo(right) >= 0;
         }
 
         /// <summary>
@@ -224,7 +206,7 @@
         /// </summary>
         public static bool operator <=(Node left, Node right)
         {
-            return Compare(left, right) <= 0;
+            return left.CompareTo(right) <= 0;
         }
 
         #endregion IComparable<Node> Implementation

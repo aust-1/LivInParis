@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using Karate;
+
+/// <summary>
 /// Programme principal : lit un fichier .mtx, construit le graphe, effectue BFS/DFS et dessine.
 /// </summary>
 public static class Program
@@ -7,7 +9,7 @@ public static class Program
     {
         string path = "data/soc-karate.mtx";
         
-        Graphe graphe = Graphe.LireFichierMtx(path, estOriente: false);
+        Graph graphe = Graph.ReadMtxFile(path, isDirected: false);
 
 
         Console.WriteLine("== BFS depuis le noeud 1 ==");
@@ -16,11 +18,11 @@ public static class Program
 
 
         Console.WriteLine("== DFS depuis le noeud 1 ==");
-        var dfs = graphe.DFSIteratif(1);
+        var dfs = graphe.DFSIterative(1);
         Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs));
         
-        graphe.ConstruireMatriceAdjacence();
+        graphe.BuildAdjacencyMatrix();
         
-        graphe.DessinerGraphe("karate.png");
+        graphe.DrawGraph("karate.png");
     }
 }
