@@ -43,7 +43,7 @@ namespace Karate.Models
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Graph"/> class.
+        /// Constructs a new instance of the <see cref="Graph"/> class.
         /// </summary>
         /// <param name="isDirected">Specifies if the graph is directed (<c>true</c>) or undirected (<c>false</c>).</param>
         public Graph(bool isDirected = false)
@@ -53,6 +53,67 @@ namespace Karate.Models
             _isDirected = isDirected;
             _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
             _adjacencyMatrix = null;
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Graph"/> class.
+        /// </summary>
+        /// <param name="adjacencyList">A dictionary mapping each node to its set of adjacent nodes.</param>
+        /// <param name="isDirected">Specifies if the graph is directed (<c>true</c>) or undirected (<c>false</c>).</param>
+        public Graph(SortedDictionary<Node, SortedSet<Node>> adjacencyList, bool isDirected = false)
+        {
+            _isDirected = isDirected;
+            _nodes = new SortedSet<Node>(adjacencyList.Keys);
+            _edges = new List<Edge>();
+            _adjacencyList = adjacencyList;
+            _adjacencyMatrix = new double[_nodes.Count, _nodes.Count];
+            foreach (var kvp in adjacencyList)
+            {
+                foreach (Node neighbor in kvp.Value)
+                {
+                    _edges.Add(new Edge(kvp.Key, neighbor));
+                    _adjacencyMatrix[kvp.Key.Id, neighbor.Id] = 1.0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Graph"/> class.
+        /// </summary>
+        /// <param name="adjacencyMatrix">A 2D array representing the adjacency matrix of the graph.</param>
+        /// <param name="isDirected">Specifies if the graph is directed (<c>true</c>) or undirected (<c>false</c>).</param>
+        /// <exception cref="ArgumentException">Thrown if the adjacency matrix is not square.</exception>
+        public Graph(double[,] adjacencyMatrix, bool isDirected = false)
+        {
+            if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
+            {
+                throw new ArgumentException("Adjacency matrix must be square.");
+            }
+            
+            _isDirected = isDirected;
+            _nodes = new SortedSet<Node>();
+            _edges = new List<Edge>();
+            _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
+            _adjacencyMatrix = adjacencyMatrix;
+
+            int n = adjacencyMatrix.GetLength(0);
+            for (int i = 0; i < n; i++)
+            {
+                Node node = new Node($"Node{i}");
+                _nodes.Add(node);
+            }
+
+            foreach (Node source in _nodes)
+            {
+                foreach (Node target in _nodes)
+                {
+                    double weight = adjacencyMatrix[source.Id, target.Id];
+                    if (weight != 0.0)
+                    {
+                        AddEdge(new Edge(source, target, weight));
+                    }
+                }
+            }
         }
 
         #endregion Constructors
@@ -561,116 +622,5 @@ namespace Karate.Models
         }
 
         #endregion Drawing
-
-        #region MTX File Import
-
-        /// <summary>
-        /// Reads a .mtx file and constructs a graph (directed or undirected).
-        /// Expected format:
-        ///   % ... (comments)
-        ///   34 34 78   (numRows, numCols, numEdges)
-        ///   2 1
-        ///   3 1
-        ///   ...
-        /// </summary>
-        /// <param name="filePath">The path to the .mtx file.</param>
-        /// <param name="isDirected">Indicates whether the graph is directed.</param>
-        /// <returns>A new <see cref="Graph"/> constructed from the file.</returns>
-        public static Graph ReadMtxFile(string filePath, bool isDirected)
-        {
-            Graph graph = new Graph(isDirected);
-            bool firstLineFound = false;
-            int numNodes = 0, expectedEdgeCount = 0, edgesReadCount = 0;
-
-            var nodesDict = new Dictionary<int, Node>();
-
-            foreach (string line in File.ReadLines(filePath))
-            {
-                if (line.StartsWith('%') || string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                if (!firstLineFound)
-                {
-                    (numNodes, expectedEdgeCount) = ParseHeaderLine(line);
-                    firstLineFound = true;
-                    InitializeNodeDictionary(numNodes, nodesDict, graph);
-                }
-                else
-                {
-                    if (TryParseEdge(line, nodesDict, out Edge? edge))
-                    {
-                        graph.AddEdge(edge);
-                        edgesReadCount++;
-                    }
-                }
-            }
-
-            Console.WriteLine($".mtx file read: {numNodes} nodes, {edgesReadCount} edges (expected: {expectedEdgeCount}).");
-            return graph;
-        }
-
-        /// <summary>
-        /// Parses the first non-comment line of the .mtx file to extract the number of nodes and edges.
-        /// </summary>
-        /// <param name="line">The line to parse.</param>
-        /// <returns>A tuple of (numNodes, expectedEdgeCount).</returns>
-        /// <exception cref="Exception">Thrown if the line format is invalid.</exception>
-        private static (int, int) ParseHeaderLine(string line)
-        {
-            string[] parts = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 3)
-            {
-                throw new Exception("Invalid .mtx format: incomplete header line.");
-            }
-
-            int numNodes = int.Parse(parts[0]);
-            int expectedEdges = int.Parse(parts[2]);
-            return (numNodes, expectedEdges);
-        }
-
-        /// <summary>
-        /// Initializes the internal dictionary of nodes and adds them to the graph.
-        /// </summary>
-        /// <param name="numNodes">The number of nodes to create.</param>
-        /// <param name="nodesDict">A dictionary from integer IDs (1-based) to <see cref="Node"/> objects.</param>
-        /// <param name="graph">The graph to which nodes will be added.</param>
-        private static void InitializeNodeDictionary(int numNodes, Dictionary<int, Node> nodesDict, Graph graph)
-        {
-            for (int i = 1; i <= numNodes; i++)
-            {
-                Node node = new Node($"Node{i}");
-                nodesDict[i] = node;
-                graph.AddNode(node);
-            }
-        }
-
-        /// <summary>
-        /// Attempts to parse an edge (source, target) from a line in the .mtx file.
-        /// </summary>
-        /// <param name="line">The line containing the edge data.</param>
-        /// <param name="nodesDict">Dictionary of existing node IDs to <see cref="Node"/> objects.</param>
-        /// <param name="edge">The resulting <see cref="Edge"/> if parsing is successful, or <c>null</c> otherwise.</param>
-        /// <returns><c>true</c> if parsing succeeded; <c>false</c> otherwise.</returns>
-        private static bool TryParseEdge(string line, Dictionary<int, Node> nodesDict, out Edge? edge)
-        {
-            edge = null;
-            string[] parts = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 2)
-                return false;
-
-            int sourceId = int.Parse(parts[0]);
-            int targetId = int.Parse(parts[1]);
-
-            if (!nodesDict.ContainsKey(sourceId) || !nodesDict.ContainsKey(targetId))
-            {
-                Console.WriteLine($"Warning: ID {sourceId} or {targetId} is out of range [1..{nodesDict.Count}].");
-                return false;
-            }
-
-            edge = new Edge(nodesDict[sourceId], nodesDict[targetId]);
-            return true;
-        }
-
-        #endregion MTX File Import
     }
 }
