@@ -16,7 +16,7 @@
             Assert.AreEqual(nodeName, node.Name);
             Assert.AreNotEqual(-1, node.Id);
         }
-
+        
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Constructor_ShouldThrowExceptionForDuplicateName()
@@ -30,47 +30,130 @@
         }
 
         [TestMethod]
-        public void GetIdFromName_ShouldReturnCorrectId()
+        public void Constructor_ShouldCreateNodeWithIncreaseId()
         {
             // Arrange
-            var nodeName = "LookupNode";
-            var node = new Node(nodeName);
-
+            var nodeName1 = "UniqueNode1";
+            var nodeName2 = "UniqueNode2";
+            var nodeName3 = "UniqueNode3";
+            
             // Act
-            var result = Node.GetIdFromName(nodeName);
-
+            var node1 = new Node(nodeName1);
+            var node2 = new Node(nodeName2);
+            var node3 = new Node(nodeName3);
+            
             // Assert
-            Assert.AreEqual(node.Id, result);
+            Assert.AreEqual(node1.Id+1, node2.Id);
+            Assert.AreEqual(node1.Id+2, node3.Id);
+        }
+        
+        [TestMethod]
+        public void Constructor_ShouldCreateNodeWithDefaultName()
+        {
+            // Arrange
+            var nodeName = "Node 0";
+            
+            // Act
+            var node = new Node();
+            
+            // Assert
+            Assert.AreEqual(nodeName, node.Name);
+        }
+        
+        [TestMethod]
+        public void Id_ShouldBeUnique()
+        {
+            // Arrange
+            var nodeName1 = "UniqueNode4";
+            var nodeName2 = "UniqueNode5";
+            
+            // Act
+            var node1 = new Node(nodeName1);
+            var node2 = new Node(nodeName2);
+            
+            // Assert
+            Assert.AreNotEqual(node1.Id, node2.Id);
+        }
+        
+        [TestMethod]
+        public void Name_ShouldNotBeAltered()
+        {
+            // Arrange
+            var nodeName = "UniqueNode6";
+            
+            // Act
+            var node = new Node(nodeName);
+            
+            // Assert
+            Assert.AreEqual(nodeName, node.Name);
         }
 
         [TestMethod]
-        public void GetNameFromId_ShouldReturnCorrectName()
+        public void GetOrCreateNode_ShouldReturnCorrectNodeFromId()
         {
             // Arrange
-            var nodeName = "ReverseLookupNode";
-            var node = new Node(nodeName);
+            var node = new Node();
 
             // Act
-            var result = Node.GetNameFromId(node.Id);
+            var result = Node.GetOrCreateNode(node.Id);
 
             // Assert
-            Assert.AreEqual(nodeName, result);
+            Assert.AreEqual(node, result);
         }
 
         [TestMethod]
-        public void Equals_ShouldReturnTrueForSameId()
+        public void GetOrCreateNode_ShouldReturnCorrectNodeFromName()
         {
             // Arrange
-            var node1 = new Node("EqualsNode1");
-            var node2 = new Node("EqualsNode2");
+            var nodeName = "nodeName";
+            var node = new Node(nodeName);
 
             // Act
-            bool areEqual = node1 == node1;
-            bool areNotEqual = node1 == node2;
+            var result = Node.GetOrCreateNode(nodeName);
 
             // Assert
-            Assert.IsTrue(areEqual);
-            Assert.IsFalse(areNotEqual);
+            Assert.AreEqual(node, result);
+        }
+        
+        [TestMethod]
+        public void GetOrCreateNode_ShouldCreateNewNodeIfNotFoundId()
+        {
+            // Arrange
+            var nodeId = 0;
+
+            // Act
+            var result = Node.GetOrCreateNode(nodeId);
+
+            // Assert
+            Assert.AreEqual(nodeId, result.Id);
+        }
+        
+        [TestMethod]
+        public void GetOrCreateNode_ShouldCreateNewNodeIfNotFoundName()
+        {
+            // Arrange
+            var nodeName = "nodeName";
+
+            // Act
+            var result = Node.GetOrCreateNode(nodeName);
+
+            // Assert
+            Assert.AreEqual(nodeName, result.Name);
+        }
+        
+        [TestMethod]
+        public void ToString_ShouldReturnTheDescriptionOfTheNode()
+        {
+            // Arrange
+            var nodeName = "nodeName";
+            var expected = $"Node: Id=0, Name={nodeName}";
+            var node = new Node(nodeName);
+
+            // Act
+            var result = node.ToString();
+
+            // Assert
+            Assert.AreEqual(expected, result);
         }
     }
 }

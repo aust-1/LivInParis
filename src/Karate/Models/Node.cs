@@ -40,6 +40,10 @@
         public Node(string name = "")
         {
             int nextId = ExistingNodes.Count;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = $"Node {nextId}";
+            }
 
             if (ExistingNodes.Any(kvp => kvp.Value.Name == name))
             {
@@ -76,15 +80,6 @@
         #region Methods
 
         /// <summary>
-        /// Returns a string that represents the current node.
-        /// </summary>
-        /// <returns>A string containing the node's ID and name.</returns>
-        public override string ToString()
-        {
-            return $"Node: Id={_id}, Name={_name}";
-        }
-
-        /// <summary>
         /// Retrieves the node associated with the specified node name or creates a new node if not found.
         /// </summary>
         /// <param name="nameToFind">The name of the node you want to retrieve.</param>
@@ -114,12 +109,21 @@
         /// </returns>
         public static Node GetOrCreateNode(int idToFind)
         {
-            if (ExistingNodes.ContainsKey(idToFind))
+            if (ExistingNodes.TryGetValue(idToFind, out Node? node))
             {
-                return ExistingNodes[idToFind];
+                return node;
             }
 
             return new Node($"Node {idToFind}");
+        }
+        
+        /// <summary>
+        /// Returns a string that represents the current node.
+        /// </summary>
+        /// <returns>A string containing the node's ID and name.</returns>
+        public override string ToString()
+        {
+            return $"Node: Id={_id}, Name={_name}";
         }
 
         #endregion Methods

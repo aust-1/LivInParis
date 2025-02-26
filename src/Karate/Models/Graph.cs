@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
+using System.Text;
 
 namespace Karate.Models
 {
@@ -662,168 +664,78 @@ namespace Karate.Models
             }
         }
 
-        public void DrawGraphForceLayout(string fileName = "graph_forced.png")
+        public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
         {
-            const int width = 800;
-            const int height = 600;
+            string dotFilePath = $"{outputImageName}.dot";
+            string outputImagePath = $"{outputImageName}.png";
 
-            int minDimension = Math.Min(width, height);
-            int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
+            ExportToDot(dotFilePath);
+            RenderDotFile(dotFilePath, outputImagePath);
+        }
 
-            using var bitmap = new Bitmap(width, height);
-            using var g = Graphics.FromImage(bitmap);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            g.Clear(Color.White);
-
-            // Paramètres du force-based layout
-            float repulsion = 0.005f;
-            float attraction = 0.0008f;
-            float damping = 1.05f;
-
-            // Positions initiales (aléatoires)
-            var positions = new Dictionary<Node, PointF>();
-            var velocities = new Dictionary<Node, PointF>();
-            var rand = new Random();
-            foreach (Node node in _nodes)
+        private static void RenderDotFile(string dotFilePath, string outputImagePath)
+        {
+            if (!File.Exists(dotFilePath))
             {
-                positions[node] = new PointF(rand.Next(width) * 3 / 4, rand.Next(height) * 3 / 4);
-                velocities[node] = new PointF(0, 0);
+                Console.WriteLine("Le fichier DOT spécifié n'existe pas.");
+                return;
             }
 
-            // Itérations du layout
-            for (int iteration = 0; iteration < 200; iteration++)
+            string graphVizPath = @"C:\Program Files\Graphviz\bin\dot.exe";
+            if (!File.Exists(graphVizPath))
             {
-                // Calcul des forces
-                foreach (Node nodeA in _nodes)
+                Console.WriteLine("GraphViz n'est pas installé ou le chemin est incorrect.");
+                Console.WriteLine("Veuillez installer GraphViz à partir de https://graphviz.org/download/");
+                return;
+            }
+
+            Process process = new Process
+            {
+                StartInfo = new ProcessStartInfo
                 {
-                    var force = new PointF(0, 0);
-                    foreach (Node nodeB in _nodes)
-                    {
-                        if (nodeA == nodeB) continue;
-                        PointF pa = positions[nodeA];
-                        PointF pb = positions[nodeB];
-                        float dx = pb.X - pa.X;
-                        float dy = pb.Y - pa.Y;
-                        float dist = (float)Math.Sqrt(dx * dx + dy * dy) + 0.01f;
-
-                        // Force de répulsion
-                        float rep = repulsion / (dist * dist);
-                        force.X -= rep * dx / dist;
-                        force.Y -= rep * dy / dist;
-                    }
-
-                    // Force d’attraction sur les voisins
-                    foreach (Node neighbor in _adjacencyList[nodeA])
-                    {
-                        PointF pa = positions[nodeA];
-                        PointF pn = positions[neighbor];
-                        float dx = pn.X - pa.X;
-                        float dy = pn.Y - pa.Y;
-                        float dist = (float)Math.Sqrt(dx * dx + dy * dy) + 0.01f;
-
-                        float att = (dist * dist) * attraction;
-                        force.X += att * dx / dist;
-                        force.Y += att * dy / dist;
-                    }
-
-                    // Mise à jour vitesse
-                    velocities[nodeA] = new PointF(
-                        (velocities[nodeA].X + force.X) * damping,
-                        (velocities[nodeA].Y + force.Y) * damping
-                    );
+                    FileName = graphVizPath,
+                    Arguments = $"-Tpng \"{dotFilePath}\" -o \"{outputImagePath}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
                 }
+            };
 
-                // Mise à jour positions (en les forçant à rester dans le bitmap)
-                foreach (Node node in _nodes)
+            process.Start();
+            process.WaitForExit();
+        }
+
+        /// <summary>
+        /// Export the graph to a DOT file.
+        /// </summary>
+        /// <param name="filePath">The path of the DOT file to generate.</param>
+        /// <param name="layout">The layout algorithm to use (default is "dot").</param>
+        private void ExportToDot(string filePath, string layout = "dot")
+        {
+            StringBuilder dotBuilder = new StringBuilder();
+            dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
+            dotBuilder.AppendLine($"    layout={layout};");
+
+            foreach (var node in _nodes)
+            {
+                dotBuilder.AppendLine($"    \"{node.Name}\";");
+            }
+
+            foreach (var edge in _edges)
+            {
+                if (!_isDirected && edge.SourceNode.Id.CompareTo(edge.TargetNode.Id) > 0)
                 {
-                    float newX = positions[node].X + velocities[node].X;
-                    float newY = positions[node].Y + velocities[node].Y;
-
-                    newX = Math.Max(nodeSize / 2, Math.Min(newX, width - nodeSize / 2));
-                    newY = Math.Max(nodeSize / 2, Math.Min(newY, height - nodeSize / 2));
-
-                    positions[node] = new PointF(newX, newY);
+                    dotBuilder.AppendLine($"    \"{edge.SourceNode.Name}\" {"--"} \"{edge.TargetNode.Name}\";");
+                }
+                else if (_isDirected)
+                {
+                    dotBuilder.AppendLine($"    \"{edge.SourceNode.Name}\" {"->"} \"{edge.TargetNode.Name}\";");
                 }
             }
 
-            // Dessin des arêtes
-            using (var edgePen = new Pen(Color.Gray, 2))
-            {
-                foreach (var kvp in _adjacencyList)
-                {
-                    Node source = kvp.Key;
-                    foreach (Node target in kvp.Value)
-                    {
-                        if (!_isDirected && source.Id < target.Id)
-                        {
-                            g.DrawLine(edgePen, positions[source], positions[target]);
-                        }
-                        else if (_isDirected)
-                        {
-                            int arrowSize = (int)(nodeSize * 0.4);
-                            double angle = Math.Atan2(
-                                positions[target].Y - positions[source].Y,
-                                positions[target].X - positions[source].X);
+            dotBuilder.AppendLine("}");
 
-                            float stopX = positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
-                            float stopY = positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
-
-                            g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
-
-                            PointF arrowPoint1 = new PointF(
-                                stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
-                                stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6));
-
-                            PointF arrowPoint2 = new PointF(
-                                stopX - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
-                                stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6));
-
-                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint1);
-                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint2);
-                        }
-                    }
-                }
-            }
-
-            // Dessin des nœuds
-            using (var nodeBrush = new SolidBrush(Color.LightBlue))
-            using (var nodePen = new Pen(Color.Black, 1))
-            {
-                foreach (Node node in _nodes)
-                {
-                    PointF p = positions[node];
-
-                    var nodeRect = new RectangleF(
-                        p.X - nodeSize / 2,
-                        p.Y - nodeSize / 2,
-                        nodeSize,
-                        nodeSize
-                    );
-
-                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 &&
-                        nodeRect.Right <= width && nodeRect.Bottom <= height)
-                    {
-                        g.FillEllipse(nodeBrush, nodeRect);
-                        g.DrawEllipse(nodePen, nodeRect);
-
-                        string text = node.Name;
-                        using (var font = new Font(SystemFonts.DefaultFont.FontFamily, 8))
-                        {
-                            SizeF textSize = g.MeasureString(text, font);
-                            g.DrawString(text, font, Brushes.Black,
-                                p.X - textSize.Width / 2,
-                                p.Y - textSize.Height / 2);
-                        }
-                    }
-                }
-            }
-
-            using (var memory = new MemoryStream())
-            {
-                bitmap.Save(memory, ImageFormat.Png);
-                byte[] bytes = memory.ToArray();
-                File.WriteAllBytes(fileName, bytes);
-            }
+            File.WriteAllText(filePath, dotBuilder.ToString());
         }
 
         #endregion Drawing
