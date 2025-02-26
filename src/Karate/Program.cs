@@ -164,7 +164,7 @@
 
             graphe1.DrawGraph("karate1.png");
 
-            string[] layout = {"dot", "neato", "fdp", "sfdp", "twopi", "circo"};
+            string[] layout = { "dot", "neato", "fdp", "sfdp", "twopi", "circo" };
             foreach (string l in layout)
             {
                 graphe1.DisplayGraph(layout: l);

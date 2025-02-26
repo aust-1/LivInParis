@@ -86,11 +86,19 @@
                 return true;
             }
 
-            if (_sourceNode.Equals(other._sourceNode) && _targetNode.Equals(other._targetNode) && _weight == other._weight)
+            if (
+                _sourceNode.Equals(other._sourceNode)
+                && _targetNode.Equals(other._targetNode)
+                && _weight == other._weight
+            )
             {
                 return true;
             }
-            if (_sourceNode.Equals(other._targetNode) && _targetNode.Equals(other._sourceNode) && _weight == other._weight)
+            if (
+                _sourceNode.Equals(other._targetNode)
+                && _targetNode.Equals(other._sourceNode)
+                && _weight == other._weight
+            )
             {
                 return true;
             }

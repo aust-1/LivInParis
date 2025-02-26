@@ -116,7 +116,7 @@
 
             return new Node($"Node {idToFind}");
         }
-        
+
         /// <summary>
         /// Returns a string that represents the current node.
         /// </summary>
@@ -140,8 +140,10 @@
         /// </returns>
         public int CompareTo(Node? other)
         {
-            if (ReferenceEquals(this, other)) return 0;
-            if (other is null) return 1;
+            if (ReferenceEquals(this, other))
+                return 0;
+            if (other is null)
+                return 1;
 
             return _id.CompareTo(other._id);
         }
@@ -156,8 +158,10 @@
         /// </returns>
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
 
             return obj is Node other && other._id == _id;
         }

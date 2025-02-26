@@ -2,6 +2,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Text;
+using System;
+using System.IO;
+
 
 namespace Karate.Models
 {
@@ -684,9 +687,39 @@ namespace Karate.Models
             string graphVizPath = @"C:\Program Files\Graphviz\bin\dot.exe";
             if (!File.Exists(graphVizPath))
             {
-                Console.WriteLine("GraphViz n'est pas installé ou le chemin est incorrect.");
-                Console.WriteLine("Veuillez installer GraphViz à partir de https://graphviz.org/download/");
-                return;
+                Console.WriteLine("GraphViz is not installed on this machine. Install it or use the other method to render the graph.");
+                Console.WriteLine("Do you want to install it now? (y/n) (y provides a silent installation with winget)");
+                string response = Console.ReadLine();
+                if (response.ToLower() == "y")
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo
+                    {
+                        FileName = "powershell",
+                        Arguments = "-NoProfile -ExecutionPolicy Bypass -Command \"winget install -e --id Graphviz.Graphviz\"",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
+
+                    using (Process processGraphVizInstall = new Process { StartInfo = psi })
+                    {
+                        processGraphVizInstall.Start();
+                        string output = processGraphVizInstall.StandardOutput.ReadToEnd();
+                        string error = processGraphVizInstall.StandardError.ReadToEnd();
+                        processGraphVizInstall.WaitForExit();
+
+                        Console.WriteLine("Output:\n" + output);
+                        if (!string.IsNullOrEmpty(error))
+                        {
+                            Console.WriteLine("Error:\n" + error);
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
             }
 
             Process process = new Process

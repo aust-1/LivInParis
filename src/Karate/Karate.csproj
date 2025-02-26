@@ -10,11 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphSharp" Version="1.1.0" />
-    <PackageReference Include="GraphViz.Net" Version="1.0.0" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.2" />
-    <PackageReference Include="WPFExtensions" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
