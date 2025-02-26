@@ -543,8 +543,11 @@ namespace Karate.Models
         {
             const int width = 800;
             const int height = 600;
-            const int nodeSize = 20;
-
+            
+            // Calculate dynamic node size based on image dimensions and graph order
+            int minDimension = Math.Min(width, height);
+            int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
+    
             using var bitmap = new Bitmap(width, height);
             using var g = Graphics.FromImage(bitmap);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -590,24 +593,29 @@ namespace Karate.Models
                         }
                         else if (_isDirected)
                         {
-                            // Draw arrow for directed edge
-                            g.DrawLine(edgePen, positions[source], positions[target]);
-
-                            const int arrowSize = 5;
+                            int arrowSize = (int)(nodeSize * 0.4);
                             double angle = Math.Atan2(
                                 positions[target].Y - positions[source].Y,
                                 positions[target].X - positions[source].X);
 
+                            // Calculate the coordinates where the line should stop (at the edge of the target node)
+                            float stopX = positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
+                            float stopY = positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
+
+                            // Draw the main line from source to the edge of target node
+                            g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
+
+                            // Draw arrow head
                             PointF arrowPoint1 = new PointF(
-                                (float)(positions[target].X - arrowSize * Math.Cos(angle - Math.PI / 6)),
-                                (float)(positions[target].Y - arrowSize * Math.Sin(angle - Math.PI / 6)));
+                                stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
+                                stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6));
 
                             PointF arrowPoint2 = new PointF(
-                                (float)(positions[target].X - arrowSize * Math.Cos(angle + Math.PI / 6)),
-                                (float)(positions[target].Y - arrowSize * Math.Sin(angle + Math.PI / 6)));
+                                stopX - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
+                                stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6));
 
-                            g.DrawLine(edgePen, positions[target], arrowPoint1);
-                            g.DrawLine(edgePen, positions[target], arrowPoint2);
+                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint1);
+                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint2);
                         }
                     }
                 }

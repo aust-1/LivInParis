@@ -130,7 +130,7 @@
             string fileName = "soc-karate";
 
             Graph graphe1 = new Graph(MtxToAdjacencyMatrix(fileName));
-            Graph graphe2 = new Graph(MtxToAdjacencyList(fileName));
+            Graph graphe2 = new Graph(MtxToAdjacencyList(fileName), true);
 
             Console.WriteLine("== BFS depuis le noeud 1 ==");
             var bfs1 = graphe1.BFS(1);
