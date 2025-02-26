@@ -4,8 +4,7 @@ using System.Drawing.Imaging;
 namespace Karate.Models
 {
     /// <summary>
-    /// Represents a graph containing a set of nodes (vertices) and edges,
-    /// along with adjacency structures for traversal and visualization.
+    /// Represents a simple graph containing a set of nodes (vertices) and edges.
     /// </summary>
     public class Graph
     {
@@ -150,6 +149,14 @@ namespace Karate.Models
         }
 
         /// <summary>
+        /// Gets the list of edges in the graph.
+        /// </summary>
+        public List<Edge> Edges
+        {
+            get { return _edges; }
+        }
+
+        /// <summary>
         /// Gets the number of nodes (the 'order' of the graph).
         /// </summary>
         public int Order
@@ -204,6 +211,11 @@ namespace Karate.Models
         /// <param name="edge">The edge to add.</param>
         public void AddEdge(Edge edge)
         {
+            if (_isDirected && _edges.Contains(edge))
+            {
+                return;
+            }
+
             _edges.Add(edge);
 
             if (!_adjacencyList.ContainsKey(edge.SourceNode))
@@ -543,20 +555,15 @@ namespace Karate.Models
         {
             const int width = 800;
             const int height = 600;
-            
-            // Calculate dynamic node size based on image dimensions and graph order
+
             int minDimension = Math.Min(width, height);
             int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
-    
+
             using var bitmap = new Bitmap(width, height);
             using var g = Graphics.FromImage(bitmap);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.Clear(Color.White);
 
-            // TODO : Placer les noeuds dans un cercle ou un layout spécifique
-            // Ex: calculer la position (x, y) de chaque noeud
-
-            // Calculate node positions
             var positions = new Dictionary<Node, Point>();
             int n = _nodes.Count;
             double angleStep = 2 * Math.PI / n;
@@ -570,7 +577,6 @@ namespace Karate.Models
                 int x = center.X + (int)(radius * Math.Cos(angle));
                 int y = center.Y + (int)(radius * Math.Sin(angle));
 
-                // Ensure the node stays within bounds
                 x = Math.Max(nodeSize, Math.Min(x, width - nodeSize));
                 y = Math.Max(nodeSize, Math.Min(y, height - nodeSize));
 
@@ -578,7 +584,6 @@ namespace Karate.Models
                 i++;
             }
 
-            // Draw edges (keep your existing edge drawing code)
             using (var edgePen = new Pen(Color.Gray, 2))
             {
                 foreach (var kvp in _adjacencyList)
@@ -586,7 +591,6 @@ namespace Karate.Models
                     Node source = kvp.Key;
                     foreach (Node target in kvp.Value)
                     {
-                        // In undirected graphs, avoid drawing the same edge twice
                         if (!_isDirected && source.Id < target.Id)
                         {
                             g.DrawLine(edgePen, positions[source], positions[target]);
@@ -598,14 +602,11 @@ namespace Karate.Models
                                 positions[target].Y - positions[source].Y,
                                 positions[target].X - positions[source].X);
 
-                            // Calculate the coordinates where the line should stop (at the edge of the target node)
                             float stopX = positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
                             float stopY = positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
 
-                            // Draw the main line from source to the edge of target node
                             g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
 
-                            // Draw arrow head
                             PointF arrowPoint1 = new PointF(
                                 stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
                                 stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6));
@@ -621,7 +622,6 @@ namespace Karate.Models
                 }
             }
 
-            // Draw nodes with validated coordinates
             using (var nodeBrush = new SolidBrush(Color.LightBlue))
             using (var nodePen = new Pen(Color.Black, 1))
             {
@@ -629,7 +629,6 @@ namespace Karate.Models
                 {
                     Point p = positions[node];
 
-                    // Create rectangle for the node
                     Rectangle nodeRect = new Rectangle(
                         p.X - nodeSize / 2,
                         p.Y - nodeSize / 2,
@@ -637,14 +636,12 @@ namespace Karate.Models
                         nodeSize
                     );
 
-                    // Validate rectangle is within bitmap bounds
                     if (nodeRect.X >= 0 && nodeRect.Y >= 0 &&
                         nodeRect.Right <= width && nodeRect.Bottom <= height)
                     {
                         g.FillEllipse(nodeBrush, nodeRect);
                         g.DrawEllipse(nodePen, nodeRect);
 
-                        // Draw label
                         string text = node.Name;
                         using (var font = new Font(SystemFonts.DefaultFont.FontFamily, 8))
                         {
@@ -657,7 +654,170 @@ namespace Karate.Models
                 }
             }
 
-            // Save using MemoryStream to avoid file locks
+            using (var memory = new MemoryStream())
+            {
+                bitmap.Save(memory, ImageFormat.Png);
+                byte[] bytes = memory.ToArray();
+                File.WriteAllBytes(fileName, bytes);
+            }
+        }
+
+        public void DrawGraphForceLayout(string fileName = "graph_forced.png")
+        {
+            const int width = 800;
+            const int height = 600;
+
+            int minDimension = Math.Min(width, height);
+            int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
+
+            using var bitmap = new Bitmap(width, height);
+            using var g = Graphics.FromImage(bitmap);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.Clear(Color.White);
+
+            // Paramètres du force-based layout
+            float repulsion = 0.005f;
+            float attraction = 0.0008f;
+            float damping = 1.05f;
+
+            // Positions initiales (aléatoires)
+            var positions = new Dictionary<Node, PointF>();
+            var velocities = new Dictionary<Node, PointF>();
+            var rand = new Random();
+            foreach (Node node in _nodes)
+            {
+                positions[node] = new PointF(rand.Next(width) * 3 / 4, rand.Next(height) * 3 / 4);
+                velocities[node] = new PointF(0, 0);
+            }
+
+            // Itérations du layout
+            for (int iteration = 0; iteration < 200; iteration++)
+            {
+                // Calcul des forces
+                foreach (Node nodeA in _nodes)
+                {
+                    var force = new PointF(0, 0);
+                    foreach (Node nodeB in _nodes)
+                    {
+                        if (nodeA == nodeB) continue;
+                        PointF pa = positions[nodeA];
+                        PointF pb = positions[nodeB];
+                        float dx = pb.X - pa.X;
+                        float dy = pb.Y - pa.Y;
+                        float dist = (float)Math.Sqrt(dx * dx + dy * dy) + 0.01f;
+
+                        // Force de répulsion
+                        float rep = repulsion / (dist * dist);
+                        force.X -= rep * dx / dist;
+                        force.Y -= rep * dy / dist;
+                    }
+
+                    // Force d’attraction sur les voisins
+                    foreach (Node neighbor in _adjacencyList[nodeA])
+                    {
+                        PointF pa = positions[nodeA];
+                        PointF pn = positions[neighbor];
+                        float dx = pn.X - pa.X;
+                        float dy = pn.Y - pa.Y;
+                        float dist = (float)Math.Sqrt(dx * dx + dy * dy) + 0.01f;
+
+                        float att = (dist * dist) * attraction;
+                        force.X += att * dx / dist;
+                        force.Y += att * dy / dist;
+                    }
+
+                    // Mise à jour vitesse
+                    velocities[nodeA] = new PointF(
+                        (velocities[nodeA].X + force.X) * damping,
+                        (velocities[nodeA].Y + force.Y) * damping
+                    );
+                }
+
+                // Mise à jour positions (en les forçant à rester dans le bitmap)
+                foreach (Node node in _nodes)
+                {
+                    float newX = positions[node].X + velocities[node].X;
+                    float newY = positions[node].Y + velocities[node].Y;
+
+                    newX = Math.Max(nodeSize / 2, Math.Min(newX, width - nodeSize / 2));
+                    newY = Math.Max(nodeSize / 2, Math.Min(newY, height - nodeSize / 2));
+
+                    positions[node] = new PointF(newX, newY);
+                }
+            }
+
+            // Dessin des arêtes
+            using (var edgePen = new Pen(Color.Gray, 2))
+            {
+                foreach (var kvp in _adjacencyList)
+                {
+                    Node source = kvp.Key;
+                    foreach (Node target in kvp.Value)
+                    {
+                        if (!_isDirected && source.Id < target.Id)
+                        {
+                            g.DrawLine(edgePen, positions[source], positions[target]);
+                        }
+                        else if (_isDirected)
+                        {
+                            int arrowSize = (int)(nodeSize * 0.4);
+                            double angle = Math.Atan2(
+                                positions[target].Y - positions[source].Y,
+                                positions[target].X - positions[source].X);
+
+                            float stopX = positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
+                            float stopY = positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
+
+                            g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
+
+                            PointF arrowPoint1 = new PointF(
+                                stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
+                                stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6));
+
+                            PointF arrowPoint2 = new PointF(
+                                stopX - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
+                                stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6));
+
+                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint1);
+                            g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint2);
+                        }
+                    }
+                }
+            }
+
+            // Dessin des nœuds
+            using (var nodeBrush = new SolidBrush(Color.LightBlue))
+            using (var nodePen = new Pen(Color.Black, 1))
+            {
+                foreach (Node node in _nodes)
+                {
+                    PointF p = positions[node];
+
+                    var nodeRect = new RectangleF(
+                        p.X - nodeSize / 2,
+                        p.Y - nodeSize / 2,
+                        nodeSize,
+                        nodeSize
+                    );
+
+                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 &&
+                        nodeRect.Right <= width && nodeRect.Bottom <= height)
+                    {
+                        g.FillEllipse(nodeBrush, nodeRect);
+                        g.DrawEllipse(nodePen, nodeRect);
+
+                        string text = node.Name;
+                        using (var font = new Font(SystemFonts.DefaultFont.FontFamily, 8))
+                        {
+                            SizeF textSize = g.MeasureString(text, font);
+                            g.DrawString(text, font, Brushes.Black,
+                                p.X - textSize.Width / 2,
+                                p.Y - textSize.Height / 2);
+                        }
+                    }
+                }
+            }
+
             using (var memory = new MemoryStream())
             {
                 bitmap.Save(memory, ImageFormat.Png);

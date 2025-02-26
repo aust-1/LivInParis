@@ -163,6 +163,17 @@
             graphe2.DrawGraph("karate2.png");
 
             graphe1.DrawGraph("karate1.png");
+
+            graphe2.DrawGraphForceLayout("karateForce2.png");
+
+            graphe1.DrawGraphForceLayout("karateForce1.png");
+
+            string[] layout = {"dot", "neato", "fdp", "sfdp", "twopi", "circo"};
+            foreach (string l in layout)
+            {
+                GraphVisualization.ExportToDot(graphe1, "karate.dot", l);
+                GraphVisualization.RenderDotFile("karate.dot", "karateDot" + l + ".png");
+            }
         }
 
         static void AfficherSortedSet(SortedSet<Node> set)

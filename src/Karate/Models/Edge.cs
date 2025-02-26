@@ -7,7 +7,7 @@
     /// - In an undirected graph, the target node is simply the other endpoint.
     /// - In a weighted graph, the <see cref="Weight"/> can be used to store the cost or capacity of the edge.
     /// </remarks>
-    public class Edge
+    public sealed class Edge : IEquatable<Edge>
     {
         #region Fields
 
@@ -74,6 +74,29 @@
         #endregion Properties
 
         #region Methods
+
+        public bool Equals(Edge? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (_sourceNode.Equals(other._sourceNode) && _targetNode.Equals(other._targetNode) && _weight == other._weight)
+            {
+                return true;
+            }
+            if (_sourceNode.Equals(other._targetNode) && _targetNode.Equals(other._sourceNode) && _weight == other._weight)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Returns a string that represents the current edge.
