@@ -482,7 +482,9 @@ namespace Karate.Models
                 return BFS(startNode.Id).Count == _nodes.Count;
             }
 
-            throw new InvalidOperationException("Algorithm not implemented for directed graphs.");
+            throw new InvalidOperationException(
+                "Cycle detection is not implemented for directed graphs."
+            );
         }
 
         /// <summary>
@@ -497,9 +499,9 @@ namespace Karate.Models
         {
             if (!_isDirected)
             {
+                var visited = new HashSet<Node>();
                 foreach (Node node in _nodes)
                 {
-                    var visited = new HashSet<Node>();
                     if (!visited.Contains(node) && DFSDetectCycle(node, null, visited))
                     {
                         return true;
@@ -535,11 +537,12 @@ namespace Karate.Models
                         return true;
                     }
                 }
-                else if (parent == null || neighbor != parent)
+                else if (neighbor != parent)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
