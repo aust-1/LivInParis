@@ -497,10 +497,9 @@ namespace Karate.Models
         {
             if (!_isDirected)
             {
-                var visited = new HashSet<Node>();
-
                 foreach (Node node in _nodes)
                 {
+                    var visited = new HashSet<Node>();
                     if (!visited.Contains(node) && DFSDetectCycle(node, null, visited))
                     {
                         return true;
