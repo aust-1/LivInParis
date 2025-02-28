@@ -552,6 +552,8 @@ namespace Karate.Models
 
         #region Drawing
 
+        #pragma warning disable CA1416
+        
         /// <summary>
         /// Draws the graph to a PNG image file with nodes arranged in a circular layout.
         /// </summary>
@@ -667,6 +669,8 @@ namespace Karate.Models
             }
         }
 
+        #pragma enable CA1416
+
         public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
         {
             string dotFilePath = $"{outputImageName}.dot";
@@ -729,6 +733,7 @@ namespace Karate.Models
                     FileName = graphVizPath,
                     Arguments = $"-Tpng \"{dotFilePath}\" -o \"{outputImagePath}\"",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
