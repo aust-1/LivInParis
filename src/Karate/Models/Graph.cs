@@ -1,10 +1,7 @@
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.Text;
-using System;
-using System.IO;
-
 
 namespace Karate.Models
 {
@@ -285,7 +282,6 @@ namespace Karate.Models
         /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
         public List<string> BFS(Node? startNode)
         {
-
             if (startNode == null || !_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
@@ -564,7 +560,10 @@ namespace Karate.Models
             const int height = 600;
 
             int minDimension = Math.Min(width, height);
-            int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
+            int nodeSize = Math.Max(
+                20,
+                Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count)))
+            );
 
             using var bitmap = new Bitmap(width, height);
             using var g = Graphics.FromImage(bitmap);
@@ -607,20 +606,25 @@ namespace Karate.Models
                             int arrowSize = (int)(nodeSize * 0.4);
                             double angle = Math.Atan2(
                                 positions[target].Y - positions[source].Y,
-                                positions[target].X - positions[source].X);
+                                positions[target].X - positions[source].X
+                            );
 
-                            float stopX = positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
-                            float stopY = positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
+                            float stopX =
+                                positions[target].X - (nodeSize / 2 * (float)Math.Cos(angle));
+                            float stopY =
+                                positions[target].Y - (nodeSize / 2 * (float)Math.Sin(angle));
 
                             g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
 
                             PointF arrowPoint1 = new PointF(
                                 stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
-                                stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6));
+                                stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6)
+                            );
 
                             PointF arrowPoint2 = new PointF(
                                 stopX - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
-                                stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6));
+                                stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6)
+                            );
 
                             g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint1);
                             g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint2);
@@ -643,8 +647,12 @@ namespace Karate.Models
                         nodeSize
                     );
 
-                    if (nodeRect.X >= 0 && nodeRect.Y >= 0 &&
-                        nodeRect.Right <= width && nodeRect.Bottom <= height)
+                    if (
+                        nodeRect.X >= 0
+                        && nodeRect.Y >= 0
+                        && nodeRect.Right <= width
+                        && nodeRect.Bottom <= height
+                    )
                     {
                         g.FillEllipse(nodeBrush, nodeRect);
                         g.DrawEllipse(nodePen, nodeRect);
@@ -653,9 +661,13 @@ namespace Karate.Models
                         using (var font = new Font(SystemFonts.DefaultFont.FontFamily, 8))
                         {
                             SizeF textSize = g.MeasureString(text, font);
-                            g.DrawString(text, font, Brushes.Black,
+                            g.DrawString(
+                                text,
+                                font,
+                                Brushes.Black,
                                 p.X - textSize.Width / 2,
-                                p.Y - textSize.Height / 2);
+                                p.Y - textSize.Height / 2
+                            );
                         }
                     }
                 }
@@ -691,19 +703,24 @@ namespace Karate.Models
             string graphVizPath = @"C:\Program Files\Graphviz\bin\dot.exe";
             if (!File.Exists(graphVizPath))
             {
-                Console.WriteLine("GraphViz is not installed on this machine. Install it or use the other method to render the graph.");
-                Console.WriteLine("Do you want to install it now? (y/n) (y provides a silent installation with winget)");
+                Console.WriteLine(
+                    "GraphViz is not installed on this machine. Install it or use the other method to render the graph."
+                );
+                Console.WriteLine(
+                    "Do you want to install it now? (y/n) (y provides a silent installation with winget)"
+                );
                 string response = Console.ReadLine();
                 if (response.ToLower() == "y")
                 {
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "powershell",
-                        Arguments = "-NoProfile -ExecutionPolicy Bypass -Command \"winget install -e --id Graphviz.Graphviz\"",
+                        Arguments =
+                            "-NoProfile -ExecutionPolicy Bypass -Command \"winget install -e --id Graphviz.Graphviz\"",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        CreateNoWindow = true
+                        CreateNoWindow = true,
                     };
 
                     using (Process processGraphVizInstall = new Process { StartInfo = psi })
@@ -735,8 +752,8 @@ namespace Karate.Models
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true
-                }
+                    CreateNoWindow = true,
+                },
             };
 
             process.Start();
@@ -763,11 +780,15 @@ namespace Karate.Models
             {
                 if (!_isDirected && edge.SourceNode.Id.CompareTo(edge.TargetNode.Id) > 0)
                 {
-                    dotBuilder.AppendLine($"    \"{edge.SourceNode.Name}\" {"--"} \"{edge.TargetNode.Name}\";");
+                    dotBuilder.AppendLine(
+                        $"    \"{edge.SourceNode.Name}\" {"--"} \"{edge.TargetNode.Name}\";"
+                    );
                 }
                 else if (_isDirected)
                 {
-                    dotBuilder.AppendLine($"    \"{edge.SourceNode.Name}\" {"->"} \"{edge.TargetNode.Name}\";");
+                    dotBuilder.AppendLine(
+                        $"    \"{edge.SourceNode.Name}\" {"->"} \"{edge.TargetNode.Name}\";"
+                    );
                 }
             }
 
