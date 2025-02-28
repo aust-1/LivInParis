@@ -51,7 +51,7 @@
         public void Constructor_ShouldCreateNodeWithDefaultName()
         {
             // Arrange
-            var nodeName = "Node 0";
+            var nodeName = "Node 12";
             
             // Act
             var node = new Node();
@@ -146,8 +146,8 @@
         {
             // Arrange
             var nodeName = "nodeName";
-            var expected = $"Node: Id=0, Name={nodeName}";
             var node = new Node(nodeName);
+            var expected = $"Node: Id={node.Id}, Name={nodeName}";
 
             // Act
             var result = node.ToString();
