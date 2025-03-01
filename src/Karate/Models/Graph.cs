@@ -23,8 +23,7 @@ namespace Karate.Models
         private readonly List<Edge> _edges;
 
         /// <summary>
-        /// Indicates whether the graph is directed.
-        /// If <c>false</c>, the graph is undirected.
+        /// Indicates whether the graph is directed. If <c>false</c>, the graph is undirected.
         /// </summary>
         private readonly bool _isDirected;
 
@@ -34,8 +33,7 @@ namespace Karate.Models
         private readonly SortedDictionary<Node, SortedSet<Node>> _adjacencyList;
 
         /// <summary>
-        /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
-        /// the presence (or weight) of an edge from <c>i</c> to <c>j</c>.
+        /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates the presence (or weight) of an edge from <c>i</c> to <c>j</c>.
         /// </summary>
         private double[,]? _adjacencyMatrix;
 
@@ -125,6 +123,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the adjacency matrix representing the graph. If not yet built, it will be constructed on-demand.
         /// </summary>
+        /// <value>A 2D array representing the adjacency matrix of the graph.</value>
         public double[,]? AdjacencyMatrix
         {
             get
@@ -137,6 +136,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the adjacency list representing the graph.
         /// </summary>
+        /// <value>A dictionary mapping each node to its set of adjacent nodes.</value>
         public SortedDictionary<Node, SortedSet<Node>> AdjacencyList
         {
             get { return _adjacencyList; }
@@ -145,6 +145,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the list of nodes in the graph.
         /// </summary>
+        /// <value>The SortedSet of nodes of graph.</value>
         public SortedSet<Node> Nodes
         {
             get { return _nodes; }
@@ -153,6 +154,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the list of edges in the graph.
         /// </summary>
+        /// <value>The list of edges of graph.</value>
         public List<Edge> Edges
         {
             get { return _edges; }
@@ -161,6 +163,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the number of nodes (the 'order' of the graph).
         /// </summary>
+        /// <value>The number of nodes in the graph (the order).</value>
         public int Order
         {
             get { return _nodes.Count; }
@@ -169,6 +172,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets the number of edges (the 'size' of the graph).
         /// </summary>
+        /// <value>The number of edges in the graph (the size).</value>
         public int Size
         {
             get { return _edges.Count; }
@@ -177,6 +181,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets a value indicating whether the graph is directed.
         /// </summary>
+        /// <value><c>true</c> if the graph is directed; otherwise, <c>false</c>.</value>
         public bool IsDirected
         {
             get { return _isDirected; }
@@ -185,6 +190,7 @@ namespace Karate.Models
         /// <summary>
         /// Gets a value indicating whether the graph is weighted (i.e., if any edge has a weight different from 1.0).
         /// </summary>
+        /// <value><c>true</c> if the graph is weighted; otherwise, <c>false</c>.</value>
         public bool IsWeighted
         {
             get { return _edges.Any(edge => !Equals(edge.Weight, 1.0)); }

@@ -62,6 +62,7 @@
         /// <summary>
         /// Gets the unique identifier for this node.
         /// </summary>
+        /// <value>The node's ID.</value>
         public int Id
         {
             get { return _id; }

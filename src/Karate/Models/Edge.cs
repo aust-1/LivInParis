@@ -50,6 +50,7 @@
         /// <summary>
         /// Gets the source node of this edge.
         /// </summary>
+        /// <value>The source node.</value>
         public Node SourceNode
         {
             get { return _sourceNode; }
@@ -58,6 +59,7 @@
         /// <summary>
         /// Gets the target node of this edge.
         /// </summary>
+        /// <value>The target node.</value>
         public Node TargetNode
         {
             get { return _targetNode; }
@@ -66,6 +68,7 @@
         /// <summary>
         /// Gets the weight of this edge.
         /// </summary>
+        /// <value>The weight.</value>
         public double Weight
         {
             get { return _weight; }

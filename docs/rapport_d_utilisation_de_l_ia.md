@@ -17,6 +17,8 @@
     - [Résultat obtenu](#résultat-obtenu-3)
   - [4. Problèmes esthétiques](#4-problèmes-esthétiques)
     - [Prompt](#prompt-2)
+    - [Résultats obtenus](#résultats-obtenus)
+  - [Conclusion](#conclusion)
 <!-- TOC -->
 ## Introduction
 
@@ -46,7 +48,7 @@ La gestion des doubles arêtes a été assurée par nous-mêmes :
 ```csharp
 if (!_isDirected && source.Id < target.Id)
 {
-        g.DrawLine(edgePen, positions[source], positions[target]);
+    g.DrawLine(edgePen, positions[source], positions[target]);
 }
 ```
 
@@ -56,7 +58,7 @@ Pour les autres défauts, nous avons reprompté.
 
 Pour pouvoir plus tard afficher des graphes orientés, nous avons cherché à afficher des flèches représentant le sens du lien.
 
-### Prompt
+### Prompt ajout
 
 >_"Add arrows to indicate edge direction in a directed graph while maintaining a clean and readable visualization. Ensure that arrow positioning remains clear regardless of node density. The solution should integrate well with the existing graph rendering logic and adhere to the project's style guidelines."_
 
