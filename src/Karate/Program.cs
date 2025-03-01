@@ -169,9 +169,21 @@
             {
                 graphe1.DisplayGraph(layout: l);
             }
+
+            HashSet<Node> set = graphe1.DetectCycleOrCircuit();
+            AfficherHashSet(set);
         }
 
         static void AfficherSortedSet(SortedSet<Node> set)
+        {
+            foreach (Node node in set)
+            {
+                Console.Write(node.Name + " ");
+            }
+            Console.WriteLine();
+        }
+
+        static void AfficherHashSet(HashSet<Node> set)
         {
             foreach (Node node in set)
             {

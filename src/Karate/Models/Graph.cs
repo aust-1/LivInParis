@@ -489,29 +489,38 @@ namespace Karate.Models
 
         /// <summary>
         /// Detects the presence of a cycle (in an undirected graph) or circuit (in a directed graph).
-        /// Currently, the cycle detection is implemented for undirected graphs only.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if a cycle is found, <c>false</c> otherwise.
+        /// <c>true</c> if a cycle (or circuit) is found, <c>false</c> otherwise.
         /// </returns>
-        /// <exception cref="InvalidOperationException">Thrown if this method is called on a directed graph.</exception>
-        public bool DetectCycleOrCircuit()
+        public HashSet<Node> DetectCycleOrCircuit()
         {
+            var visited = new HashSet<Node>();
+
             if (!_isDirected)
             {
-                var visited = new HashSet<Node>();
                 foreach (Node node in _nodes)
                 {
                     if (!visited.Contains(node) && DFSDetectCycle(node, null, visited))
                     {
-                        return true;
+                        return visited;
                     }
                 }
 
-                return false;
+                return new HashSet<Node>();
             }
 
-            throw new InvalidOperationException("Algorithm not implemented for directed graphs.");
+            var recStack = new HashSet<Node>();
+
+            foreach (Node node in _nodes)
+            {
+                if (!visited.Contains(node) && DFSDetectCycleDirected(node, visited, recStack))
+                {
+                    return visited;
+                }
+            }
+
+            return new HashSet<Node>();
         }
 
         /// <summary>
@@ -543,6 +552,43 @@ namespace Karate.Models
                 }
             }
 
+            return false;
+        }
+
+        /// <summary>
+        /// DFS used for cycle detection in an directed graph.
+        /// </summary>
+        /// <param name="current">The current node.</param>
+        /// <param name="visited">A set of visited nodes.</param>
+        /// <param name="recStack">A set of nodes in the recursion stack.</param>
+        /// <returns>
+        /// <c>true</c> if a cycle is detected, <c>false</c> otherwise.
+        /// </returns>
+        private bool DFSDetectCycleDirected(
+            Node current,
+            HashSet<Node> visited,
+            HashSet<Node> recStack
+        )
+        {
+            visited.Add(current);
+            recStack.Add(current);
+
+            foreach (Node neighbor in _adjacencyList[current])
+            {
+                if (
+                    !visited.Contains(neighbor)
+                    && DFSDetectCycleDirected(neighbor, visited, recStack)
+                )
+                {
+                    return true;
+                }
+                else if (recStack.Contains(neighbor))
+                {
+                    return true;
+                }
+            }
+
+            recStack.Remove(current);
             return false;
         }
 
