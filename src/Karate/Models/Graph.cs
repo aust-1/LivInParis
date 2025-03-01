@@ -196,6 +196,15 @@ namespace Karate.Models
             get { return _edges.Any(edge => !Equals(edge.Weight, 1.0)); }
         }
 
+        /// <summary>
+        /// Checks if the graph is connected
+        /// </summary>
+        /// <value><c>true</c> if the graph is connected; otherwise, <c>false</c>.</value>
+        public bool IsConnected
+        {
+            get { return BFS(_nodes.First().Id).Count == _nodes.Count; }
+        }
+
         #endregion Properties
 
         #region Methods
@@ -444,19 +453,6 @@ namespace Karate.Models
         #region Graph Algorithms
 
         /// <summary>
-        /// Checks if the graph is connected (valid for undirected graphs only).
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the graph is connected, <c>false</c> otherwise.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">Thrown if this method is called on a directed graph.</exception>
-        public bool IsConnected()
-        {
-            Node startNode = _nodes.First();
-            return BFS(startNode.Id).Count == _nodes.Count;
-        }
-
-        /// <summary>
         /// Detects the presence of a simple cycle (in an undirected graph) or circuit (in a directed graph).
         /// </summary>
         /// <returns>
@@ -470,7 +466,7 @@ namespace Karate.Models
             {
                 foreach (Node node in _nodes)
                 {
-                    if (!visited.Contains(node) && DFSDetectCycle(node, null, visited))
+                    if (!visited.Contains(node) && DFSDetectCycleUndirected(node, null, visited))
                     {
                         return visited;
                     }
@@ -502,7 +498,7 @@ namespace Karate.Models
         /// <returns>
         /// <c>true</c> if a cycle is detected, <c>false</c> otherwise.
         /// </returns>
-        private bool DFSDetectCycle(Node current, Node? parent, HashSet<Node> visited)
+        private bool DFSDetectCycleUndirected(Node current, Node? parent, HashSet<Node> visited)
         {
             visited.Add(current);
 
@@ -510,7 +506,7 @@ namespace Karate.Models
             {
                 if (!visited.Contains(neighbor))
                 {
-                    if (DFSDetectCycle(neighbor, current, visited))
+                    if (DFSDetectCycleUndirected(neighbor, current, visited))
                     {
                         return true;
                     }
@@ -570,11 +566,13 @@ namespace Karate.Models
         /// <summary>
         /// Draws the graph to a PNG image file with nodes arranged in a circular layout.
         /// </summary>
-        /// <param name="fileName">The name of the output file (default is "graph.png").</param>
-        public void DrawGraph(string fileName = "graph.png")
+        /// <param name="fileName">The name of the output file (default is "graph").</param>
+        public void DrawGraph(string fileName = "graph")
         {
             const int width = 800;
             const int height = 600;
+
+            string filePath = $"{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
             int minDimension = Math.Min(width, height);
             int nodeSize = Math.Max(
@@ -694,19 +692,20 @@ namespace Karate.Models
             {
                 bitmap.Save(memory, ImageFormat.Png);
                 byte[] bytes = memory.ToArray();
-                File.WriteAllBytes(fileName, bytes);
+                File.WriteAllBytes(filePath, bytes);
             }
         }
 
-#pragma enable CA1416
+#pragma warning restore CA1416
 
         public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
         {
             string dotFilePath = $"{outputImageName}.dot";
-            string outputImagePath = $"{outputImageName}.png";
+            string outputImagePath = $"{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
-            ExportToDot(dotFilePath);
+            ExportToDot(dotFilePath, layout);
             RenderDotFile(dotFilePath, outputImagePath);
+            File.Delete(dotFilePath);
         }
 
         /// <summary>
@@ -732,8 +731,8 @@ namespace Karate.Models
                 Console.WriteLine(
                     "Do you want to install it now? (y/n) ('y' provides a silent installation with winget)"
                 );
-                string response = Console.ReadLine();
-                if (response.ToLower() == "y")
+                string? response = Console.ReadLine();
+                if (response == "y")
                 {
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
