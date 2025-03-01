@@ -110,7 +110,7 @@ namespace Karate.Models
                 foreach (Node target in _nodes)
                 {
                     double weight = adjacencyMatrix[source.Id, target.Id];
-                    if (weight != 0.0)
+                    if (!Equals(weight, 0.0))
                     {
                         AddEdge(new Edge(source, target, weight));
                     }
@@ -187,7 +187,7 @@ namespace Karate.Models
         /// </summary>
         public bool IsWeighted
         {
-            get { return _edges.Any(edge => edge.Weight != 1.0); }
+            get { return _edges.Any(edge => !Equals(edge.Weight, 1.0)); }
         }
 
         #endregion Properties
@@ -488,7 +488,7 @@ namespace Karate.Models
         }
 
         /// <summary>
-        /// Detects the presence of a cycle (in an undirected graph) or circuit (in a directed graph).
+        /// Detects the presence of a simple cycle (in an undirected graph) or circuit (in a directed graph).
         /// </summary>
         /// <returns>
         /// <c>true</c> if a cycle (or circuit) is found, <c>false</c> otherwise.
@@ -740,22 +740,28 @@ namespace Karate.Models
             RenderDotFile(dotFilePath, outputImagePath);
         }
 
+        /// <summary>
+        /// Renders a DOT file to a PNG image using GraphViz.
+        /// </summary>
+        /// <param name="dotFilePath">Path to the DOT file to render.</param>
+        /// <param name="outputImagePath">Path to the output PNG image.</param>
+        /// <exception cref="FileNotFoundException">Thrown if the DOT file is not found.</exception>
         private static void RenderDotFile(string dotFilePath, string outputImagePath)
         {
             if (!File.Exists(dotFilePath))
             {
-                Console.WriteLine("Le fichier DOT spécifié n'existe pas.");
-                return;
+                throw new FileNotFoundException("DOT file not found.", dotFilePath);
             }
 
             string graphVizPath = @"C:\Program Files\Graphviz\bin\dot.exe";
             if (!File.Exists(graphVizPath))
             {
                 Console.WriteLine(
-                    "GraphViz is not installed on this machine. Install it or use the other method to render the graph."
+                    "GraphViz is not installed on this machine. Install it or use the other method to render the graph. GraphViz peut être installé via winget en exécutant la commande suivante :"
+                        + "\nwinget install -e --id Graphviz.Graphviz"
                 );
                 Console.WriteLine(
-                    "Do you want to install it now? (y/n) (y provides a silent installation with winget)"
+                    "Do you want to install it now? (y/n) ('y' provides a silent installation with winget)"
                 );
                 string response = Console.ReadLine();
                 if (response.ToLower() == "y")
