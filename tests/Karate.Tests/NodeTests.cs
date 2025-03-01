@@ -30,10 +30,10 @@ namespace Karate.Tests
         [TestMethod]
         public void GetOrCreateNode_ByName_ShouldReturnExistingNode()
         {
-            var node1 = new Node("Node1");
-            var retrievedNode = Node.GetOrCreateNode("Node1");
+            var newNode = new Node("newNode");
+            var retrievedNode = Node.GetOrCreateNode("newNode");
 
-            Assert.AreEqual(node1, retrievedNode);
+            Assert.AreEqual(newNode, retrievedNode);
         }
 
         [TestMethod]
@@ -47,10 +47,10 @@ namespace Karate.Tests
         [TestMethod]
         public void GetOrCreateNode_ById_ShouldReturnExistingNode()
         {
-            var node1 = new Node("Node1");
-            var retrievedNode = Node.GetOrCreateNode(node1.Id);
+            var newNewNode = new Node("newNewNode");
+            var retrievedNode = Node.GetOrCreateNode(newNewNode.Id);
 
-            Assert.AreEqual(node1, retrievedNode);
+            Assert.AreEqual(newNewNode, retrievedNode);
         }
 
         [TestMethod]
