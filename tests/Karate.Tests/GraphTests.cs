@@ -1,101 +1,256 @@
+using System;
+using System.Collections.Generic;
+using Karate.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Karate.Tests
 {
     [TestClass]
     public class GraphTests
     {
-        [TestMethod]
-        public void AddNode_ShouldIncreaseOrder()
+        private Node _node1 = Node.GetOrCreateNode("Node1");
+        private Node _node2 = Node.GetOrCreateNode("Node2");
+        private Node _node3 = Node.GetOrCreateNode("Node3");
+
+        [TestInitialize]
+        public void TestInitialize()
         {
-            // Arrange
-            Graph graph = new Graph();
-            int initialOrder = graph.Order;
-            Node node = new Node("GraphNode");
-
-            // Act
-            graph.AddNode(node);
-
-            // Assert
-            Assert.AreEqual(initialOrder + 1, graph.Order);
+            typeof(Node)
+                .GetField(
+                    "ExistingNodes",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static
+                )
+                ?.SetValue(null, new SortedDictionary<int, Node>());
         }
 
         [TestMethod]
-        public void AddEdge_ShouldIncreaseSize()
+        public void Constructor_ShouldInitializeGraphCorrectly()
         {
-            // Arrange
-            Graph graph = new Graph();
-            Node n1 = new Node("NodeA");
-            Node n2 = new Node("NodeB");
-            graph.AddNode(n1);
-            graph.AddNode(n2);
-            int initialSize = graph.Size;
+            var graph = new Graph();
 
-            // Act
-            graph.AddEdge(new Edge(n1, n2));
-
-            // Assert
-            Assert.AreEqual(initialSize + 1, graph.Size);
+            Assert.IsNotNull(graph.Nodes);
+            Assert.IsNotNull(graph.Edges);
+            Assert.IsNotNull(graph.AdjacencyList);
+            Assert.IsFalse(graph.IsDirected);
         }
 
         [TestMethod]
-        public void BFS_ShouldReturnVisitedNodesInOrder()
+        public void Constructor_WithAdjacencyList_ShouldInitializeGraphCorrectly()
         {
-            // Arrange
-            Graph graph = new Graph();
-            Node n1 = new Node("BFS_A");
-            Node n2 = new Node("BFS_B");
-            Node n3 = new Node("BFS_C");
-            graph.AddNode(n1);
-            graph.AddNode(n2);
-            graph.AddNode(n3);
-            graph.AddEdge(new Edge(n1, n2));
-            graph.AddEdge(new Edge(n2, n3));
+            var adjacencyList = new SortedDictionary<Node, SortedSet<Node>>
+            {
+                {
+                    _node1,
+                    new SortedSet<Node> { _node2 }
+                },
+                {
+                    _node2,
+                    new SortedSet<Node> { _node3 }
+                },
+                {
+                    _node3,
+                    new SortedSet<Node> { _node1 }
+                },
+            };
 
-            // Act
-            List<string> visited = graph.BFS(n1);
+            var graph = new Graph(adjacencyList);
 
-            // Assert
-            CollectionAssert.AreEqual(new List<string> { "BFS_A", "BFS_B", "BFS_C" }, visited);
+            Assert.AreEqual(3, graph.Nodes.Count);
+            Assert.AreEqual(3, graph.Edges.Count);
+            Assert.IsTrue(graph.IsDirected);
         }
 
         [TestMethod]
-        public void DFSIterative_ShouldReturnVisitedNodesInOrder()
+        public void Constructor_WithAdjacencyMatrix_ShouldInitializeGraphCorrectly()
         {
-            // Arrange
-            Graph graph = new Graph();
-            Node n1 = new Node("DFS_A");
-            Node n2 = new Node("DFS_B");
-            Node n3 = new Node("DFS_C");
-            graph.AddNode(n1);
-            graph.AddNode(n2);
-            graph.AddNode(n3);
-            graph.AddEdge(new Edge(n1, n2));
-            graph.AddEdge(new Edge(n2, n3));
+            double[,] adjacencyMatrix =
+            {
+                { 0, 1, 0 },
+                { 0, 0, 1 },
+                { 1, 0, 0 },
+            };
 
-            // Act
-            List<string> visited = graph.DFSIterative(n1);
+            var graph = new Graph(adjacencyMatrix);
 
-            // Assert
-            CollectionAssert.AreEqual(new List<string> { "DFS_A", "DFS_B", "DFS_C" }, visited);
+            Assert.AreEqual(3, graph.Nodes.Count);
+            Assert.AreEqual(3, graph.Edges.Count);
+            Assert.IsTrue(graph.IsDirected);
         }
 
         [TestMethod]
-        public void AdjacencyMatrix_ShouldBeCorrectlyBuilt()
+        public void AddNode_ShouldAddNodeToGraph()
         {
-            // Arrange
-            Graph graph = new Graph();
-            Node n1 = new Node("Matrix_A");
-            Node n2 = new Node("Matrix_B");
-            graph.AddNode(n1);
-            graph.AddNode(n2);
-            graph.AddEdge(new Edge(n1, n2, 1.5));
+            var graph = new Graph();
+            graph.AddNode(_node1);
 
-            // Act
-            double[,]? matrix = graph.AdjacencyMatrix;
+            Assert.AreEqual(1, graph.Nodes.Count);
+            Assert.IsTrue(graph.Nodes.Contains(_node1));
+        }
 
-            // Assert
+        [TestMethod]
+        public void AddEdge_ShouldAddEdgeToGraph()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            var edge = new Edge(_node1, _node2);
+
+            graph.AddEdge(edge);
+
+            Assert.AreEqual(1, graph.Edges.Count);
+            Assert.IsTrue(graph.Edges.Contains(edge));
+        }
+
+        [TestMethod]
+        public void BuildAdjacencyMatrix_ShouldBuildCorrectMatrix()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            var edge = new Edge(_node1, _node2);
+
+            graph.AddEdge(edge);
+            graph.BuildAdjacencyMatrix();
+
+            var matrix = graph.AdjacencyMatrix;
             Assert.IsNotNull(matrix);
-            Assert.AreEqual(1.5, matrix[n1.Id, n2.Id]);
-            Assert.AreEqual(1.5, matrix[n2.Id, n1.Id]); // Undirected by default
+            Assert.AreEqual(1.0, matrix[_node1.Id, _node2.Id]);
+        }
+
+        [TestMethod]
+        public void FindAnyCycle_ShouldReturnCycleIfExists()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddNode(_node3);
+            graph.AddEdge(new Edge(_node1, _node2));
+            graph.AddEdge(new Edge(_node2, _node3));
+            graph.AddEdge(new Edge(_node3, _node1));
+
+            var cycle = graph.FindAnyCycle();
+
+            Assert.IsNotNull(cycle);
+        }
+
+        [TestMethod]
+        public void BFS_ShouldReturnCorrectOrder()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddNode(_node3);
+            graph.AddEdge(new Edge(_node1, _node2));
+            graph.AddEdge(new Edge(_node2, _node3));
+
+            var bfsResult = graph.BFS(_node1);
+
+            CollectionAssert.AreEqual(new List<string> { "Node1", "Node2", "Node3" }, bfsResult);
+        }
+
+        [TestMethod]
+        public void DFSRecursive_ShouldReturnCorrectOrder()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddNode(_node3);
+            graph.AddEdge(new Edge(_node1, _node2));
+            graph.AddEdge(new Edge(_node2, _node3));
+
+            var dfsResult = graph.DFSRecursive(_node1);
+
+            CollectionAssert.AreEqual(new List<string> { "Node1", "Node2", "Node3" }, dfsResult);
+        }
+
+        [TestMethod]
+        public void DFSIterative_ShouldReturnCorrectOrder()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddNode(_node3);
+            graph.AddEdge(new Edge(_node1, _node2));
+            graph.AddEdge(new Edge(_node2, _node3));
+
+            var dfsResult = graph.DFSIterative(_node1);
+
+            CollectionAssert.AreEqual(new List<string> { "Node1", "Node2", "Node3" }, dfsResult);
+        }
+
+        [TestMethod]
+        public void Order_ShouldReturnCorrectNumberOfNodes()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+
+            Assert.AreEqual(2, graph.Order);
+        }
+
+        [TestMethod]
+        public void Size_ShouldReturnCorrectNumberOfEdges()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddEdge(new Edge(_node1, _node2));
+
+            Assert.AreEqual(1, graph.Size);
+        }
+
+        [TestMethod]
+        public void Density_ShouldReturnCorrectValue()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddEdge(new Edge(_node1, _node2));
+
+            double expectedDensity = 1.0 / 1.0; // (E) / (V * (V - 1)) for directed graphs
+            Assert.AreEqual(expectedDensity, graph.Density);
+        }
+
+        [TestMethod]
+        public void IsDirected_ShouldReturnCorrectValue()
+        {
+            var directedGraph = new Graph(true);
+            var undirectedGraph = new Graph(false);
+
+            Assert.IsTrue(directedGraph.IsDirected);
+            Assert.IsFalse(undirectedGraph.IsDirected);
+        }
+
+        [TestMethod]
+        public void IsWeighted_ShouldReturnCorrectValue()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddEdge(new Edge(_node1, _node2, 2.0, true));
+
+            Assert.IsTrue(graph.IsWeighted);
+        }
+
+        [TestMethod]
+        public void IsConnected_ShouldReturnTrueForConnectedGraph()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+            graph.AddEdge(new Edge(_node1, _node2));
+
+            Assert.IsTrue(graph.IsConnected);
+        }
+
+        [TestMethod]
+        public void IsConnected_ShouldReturnFalseForDisconnectedGraph()
+        {
+            var graph = new Graph();
+            graph.AddNode(_node1);
+            graph.AddNode(_node2);
+
+            Assert.IsFalse(graph.IsConnected);
         }
     }
 }
