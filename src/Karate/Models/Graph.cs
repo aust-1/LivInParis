@@ -179,6 +179,18 @@ namespace Karate.Models
         }
 
         /// <summary>
+        /// Gets the density of the graph.
+        /// </summary>
+        public double Density
+        {
+            get
+            {
+                int orientedFactor = _isDirected ? 1 : 2;
+                return (double)Size * orientedFactor / (Order * (Order - 1));
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the graph is directed.
         /// </summary>
         /// <value><c>true</c> if the graph is directed; otherwise, <c>false</c>.</value>
