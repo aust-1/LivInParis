@@ -74,7 +74,7 @@ namespace Karate.Models
                 }
             }
 
-            _isDirected = CheckIfSymmetric(_adjacencyMatrix);
+            _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Karate.Models
                 throw new ArgumentException("Adjacency matrix must be square.");
             }
 
-            _isDirected = CheckIfSymmetric(adjacencyMatrix);
+            _isDirected = !CheckIfSymmetric(adjacencyMatrix);
             _nodes = new SortedSet<Node>();
             _edges = new List<Edge>();
             _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
@@ -296,111 +296,6 @@ namespace Karate.Models
             }
         }
 
-        /// <summary>
-        /// Detects the presence of a simple cycle (in an undirected graph) or circuit (in a directed graph).
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if a cycle (or circuit) is found, <c>false</c> otherwise.
-        /// </returns>
-        public HashSet<Node> DetectCycleOrCircuit()
-        {
-            var visited = new HashSet<Node>();
-
-            if (!_isDirected)
-            {
-                foreach (Node node in _nodes)
-                {
-                    if (!visited.Contains(node) && DFSDetectCycleUndirected(node, null, visited))
-                    {
-                        return visited;
-                    }
-                }
-
-                return new HashSet<Node>();
-            }
-
-            var recStack = new HashSet<Node>();
-
-            foreach (Node node in _nodes)
-            {
-                if (!visited.Contains(node) && DFSDetectCycleDirected(node, visited, recStack))
-                {
-                    return visited;
-                }
-            }
-
-            return new HashSet<Node>();
-        }
-
-        /// <summary>
-        /// DFS used for cycle detection in an undirected graph.
-        /// Use <paramref name="parent"/> = null to indicate no parent for the root node.
-        /// </summary>
-        /// <param name="current">The current node.</param>
-        /// <param name="parent">The parent node, or null if none.</param>
-        /// <param name="visited">A set of visited nodes.</param>
-        /// <returns>
-        /// <c>true</c> if a cycle is detected, <c>false</c> otherwise.
-        /// </returns>
-        private bool DFSDetectCycleUndirected(Node current, Node? parent, HashSet<Node> visited)
-        {
-            visited.Add(current);
-
-            foreach (Node neighbor in _adjacencyList[current])
-            {
-                if (!visited.Contains(neighbor))
-                {
-                    if (DFSDetectCycleUndirected(neighbor, current, visited))
-                    {
-                        return true;
-                    }
-                }
-                else if (neighbor != parent)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// DFS used for cycle detection in an directed graph.
-        /// </summary>
-        /// <param name="current">The current node.</param>
-        /// <param name="visited">A set of visited nodes.</param>
-        /// <param name="recStack">A set of nodes in the recursion stack.</param>
-        /// <returns>
-        /// <c>true</c> if a cycle is detected, <c>false</c> otherwise.
-        /// </returns>
-        private bool DFSDetectCycleDirected(
-            Node current,
-            HashSet<Node> visited,
-            HashSet<Node> recStack
-        )
-        {
-            visited.Add(current);
-            recStack.Add(current);
-
-            foreach (Node neighbor in _adjacencyList[current])
-            {
-                if (
-                    !visited.Contains(neighbor)
-                    && DFSDetectCycleDirected(neighbor, visited, recStack)
-                )
-                {
-                    return true;
-                }
-                else if (recStack.Contains(neighbor))
-                {
-                    return true;
-                }
-            }
-
-            recStack.Remove(current);
-            return false;
-        }
-
         private static bool CheckIfSymmetric(double[,] matrix)
         {
             int n = matrix.GetLength(0);
@@ -419,6 +314,189 @@ namespace Karate.Models
         }
 
         #endregion Methods
+
+        #region Cycle Detection
+
+        public List<Node>? FindAnyCycle(bool simpleCycle = false)
+        {
+            var visited = new HashSet<Node>();
+            var recStack = new HashSet<Node>();
+            var parentMap = new Dictionary<Node, Node>();
+
+            foreach (var node in _nodes)
+            {
+                if (!visited.Contains(node))
+                {
+                    if (_isDirected)
+                    {
+                        if (
+                            TryFindCycleDirected(
+                                node,
+                                visited,
+                                recStack,
+                                parentMap,
+                                out var cycle,
+                                simpleCycle
+                            )
+                        )
+                        {
+                            return cycle;
+                        }
+                    }
+                    else
+                    {
+                        if (
+                            TryFindCycleUndirected(
+                                node,
+                                visited,
+                                parentMap,
+                                null,
+                                out var cycle,
+                                simpleCycle
+                            )
+                        )
+                        {
+                            return cycle;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private bool TryFindCycleDirected(
+            Node current,
+            HashSet<Node> visited,
+            HashSet<Node> recStack,
+            Dictionary<Node, Node> parentMap,
+            out List<Node> cycle,
+            bool simpleCycle = false
+        )
+        {
+            visited.Add(current);
+            recStack.Add(current);
+
+            if (_adjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        parentMap[neighbor] = current;
+                        if (
+                            TryFindCycleDirected(
+                                neighbor,
+                                visited,
+                                recStack,
+                                parentMap,
+                                out cycle,
+                                simpleCycle
+                            )
+                        )
+                        {
+                            return true;
+                        }
+                    }
+                    else if (recStack.Contains(neighbor))
+                    {
+                        cycle = ReconstructCycle(current, neighbor, parentMap);
+                        return true;
+                    }
+                }
+            }
+
+            recStack.Remove(current);
+            cycle = null!;
+            return false;
+        }
+
+        private bool TryFindCycleUndirected(
+            Node current,
+            HashSet<Node> visited,
+            Dictionary<Node, Node> parentMap,
+            Node? parent,
+            out List<Node> cycle,
+            bool simpleCycle = false
+        )
+        {
+            visited.Add(current);
+
+            if (_adjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors)
+                {
+                    if (neighbor.Equals(parent) && simpleCycle)
+                    {
+                        continue;
+                    }
+                    else if (!visited.Contains(neighbor))
+                    {
+                        parentMap[neighbor] = current;
+                        if (
+                            TryFindCycleUndirected(
+                                neighbor,
+                                visited,
+                                parentMap,
+                                current,
+                                out cycle,
+                                simpleCycle
+                            )
+                        )
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cycle = ReconstructCycle(current, neighbor, parentMap);
+                        return true;
+                    }
+                }
+            }
+
+            cycle = null!;
+            return false;
+        }
+
+        private static List<Node> ReconstructCycle(
+            Node current,
+            Node neighbor,
+            Dictionary<Node, Node> parentMap
+        )
+        {
+            var cycle = new List<Node>();
+            var temp = current;
+            while (!temp.Equals(neighbor))
+            {
+                cycle.Add(temp);
+                temp = parentMap[temp];
+            }
+            cycle.Add(neighbor);
+            cycle.Reverse();
+            return cycle;
+        }
+
+        public static string CycleToString(List<Node> cycle)
+        {
+            StringBuilder sbld_id = new StringBuilder();
+            StringBuilder sbld_name = new StringBuilder();
+
+            sbld_id.Append("Cycle: <");
+            sbld_name.Append("\nCycle: ");
+            foreach (Node node in cycle)
+            {
+                sbld_id.Append(node.Id + 1).Append(", ");
+                sbld_name.Append(node.Name).Append(" -> ");
+            }
+
+            sbld_id.Append(cycle[0].Id + 1).Append(">");
+            sbld_name.Append(cycle[0].Name);
+
+            return sbld_id.Append(sbld_name).ToString();
+        }
+
+        #endregion Cycle Detection
 
         #region Traversals
 

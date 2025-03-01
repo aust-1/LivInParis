@@ -127,7 +127,7 @@
 
         static void Main(string[] args)
         {
-            string fileName = "soc-karate";
+            string fileName = "test";
 
             Graph graphe1 = new Graph(MtxToAdjacencyMatrix(fileName));
 
@@ -143,7 +143,8 @@
 
             graphe1.DisplayGraph();
 
-            HashSet<Node> set = graphe1.DetectCycleOrCircuit();
+            Console.WriteLine(Graph.CycleToString(graphe1.FindAnyCycle(true)));
+            Console.WriteLine(Graph.CycleToString(graphe1.FindAnyCycle(false)));
         }
     }
 }

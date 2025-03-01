@@ -42,7 +42,7 @@
             int nextId = ExistingNodes.Count;
             if (string.IsNullOrWhiteSpace(name))
             {
-                name = $"Node {nextId}";
+                name = $"Membre {nextId + 1}";
             }
 
             if (ExistingNodes.Any(kvp => kvp.Value.Name == name))
