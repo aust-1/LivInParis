@@ -42,7 +42,7 @@
             int nextId = ExistingNodes.Count;
             if (string.IsNullOrWhiteSpace(name))
             {
-                name = $"Membre {nextId + 1}";
+                name = $"{nextId + 1}";
             }
 
             if (ExistingNodes.Any(kvp => kvp.Value.Name == name))
@@ -71,9 +71,19 @@
         /// <summary>
         /// Gets the name of this node.
         /// </summary>
+        /// <value>The node's name.</value>
         public string Name
         {
             get { return _name; }
+        }
+
+        /// <summary>
+        /// Gets the number of nodes that have been created.
+        /// </summary>
+        /// <value>The number of nodes.</value>
+        public static int Count
+        {
+            get { return ExistingNodes.Count; }
         }
 
         #endregion Properties
@@ -115,7 +125,7 @@
                 return node;
             }
 
-            return new Node($"Node {idToFind}");
+            return new Node();
         }
 
         /// <summary>

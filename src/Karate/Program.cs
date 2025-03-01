@@ -1,14 +1,35 @@
-﻿namespace Karate
+﻿using System.Runtime.CompilerServices;
+
+namespace Karate
 {
-    /// <summary>
-    /// Programme principal : lit un fichier .mtx, construit le graphe, effectue BFS/DFS et dessine.
-    /// </summary>
     public static class Program
     {
+        private const string dataDirectory = "data/";
+
+        static void Main(string[] args)
+        {
+            string fileName = "soc-karate";
+
+            Graph test = new Graph(TxtToAdjacencyList(fileName));
+
+            Console.WriteLine("== BFS depuis le noeud 1 ==");
+            var bfs1 = test.BFS(1);
+            Console.WriteLine("Ordre BFS : " + string.Join(" -> ", bfs1));
+
+            Console.WriteLine("== DFS depuis le noeud 1 ==");
+            var dfs1 = test.DFSIterative(1);
+            Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs1));
+
+            test.DrawGraph("karate1");
+
+            Console.WriteLine(test.FindAnyCycle(true));
+            Console.WriteLine(test.FindAnyCycle(false));
+        }
+
         private static double[,] MtxToAdjacencyMatrix(string fileName)
         {
             double[,] adjacencyMatrix = new double[0, 0];
-            string file = "data/" + fileName + ".mtx";
+            string file = dataDirectory + fileName + ".mtx";
             StreamReader? sReader = null;
 
             try
@@ -65,7 +86,7 @@
         private static SortedDictionary<Node, SortedSet<Node>> MtxToAdjacencyList(string fileName)
         {
             SortedDictionary<Node, SortedSet<Node>> adjacencyList = new();
-            string file = "data/" + fileName + ".mtx";
+            string file = dataDirectory + fileName + ".mtx";
             StreamReader? sReader = null;
 
             try
@@ -80,7 +101,7 @@
                         int numNodes = Convert.ToInt32(parts[0]);
                         for (int i = 1; i <= numNodes; i++)
                         {
-                            Node node = Node.GetOrCreateNode($"Node {i}");
+                            Node node = Node.GetOrCreateNode(i);
                             adjacencyList[node] = new SortedSet<Node>();
                         }
                         break;
@@ -125,26 +146,129 @@
             return adjacencyList;
         }
 
-        static void Main(string[] args)
+        private static double[,] TtxToAdjacencyMatrix(string fileName)
         {
-            string fileName = "test";
+            double[,] adjacencyMatrix = new double[0, 0];
+            string file = dataDirectory + fileName + ".txt";
+            List<string> liens = new();
 
-            Graph graphe1 = new Graph(MtxToAdjacencyMatrix(fileName));
+            StreamReader? sReader = null;
+            try
+            {
+                sReader = new StreamReader(file);
 
-            Console.WriteLine("== BFS depuis le noeud 1 ==");
-            var bfs1 = graphe1.BFS(1);
-            Console.WriteLine("Ordre BFS : " + string.Join(" -> ", bfs1));
+                string? line;
+                while ((line = sReader.ReadLine()) != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(line.Replace(":", "")))
+                    {
+                        string[] parts = line.Split(
+                            new[] { '(', ',', ')' },
+                            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
+                        );
 
-            Console.WriteLine("== DFS depuis le noeud 1 ==");
-            var dfs1 = graphe1.DFSIterative(1);
-            Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs1));
+                        Node sourceNode = Node.GetOrCreateNode(parts[0]);
+                        Node targetNode = Node.GetOrCreateNode(parts[1]);
+                        int weight = Convert.ToInt32(parts[2]);
 
-            graphe1.DrawGraph("karate1.png");
+                        liens.Add($"{sourceNode.Id} {targetNode.Id} {weight}");
+                    }
+                }
 
-            graphe1.DisplayGraph();
+                int numNodes = Node.Count;
+                adjacencyMatrix = new double[numNodes, numNodes];
+                foreach (string lien in liens)
+                {
+                    string[] parts = lien.Split(' ');
+                    int source = Convert.ToInt32(parts[0]);
+                    int target = Convert.ToInt32(parts[1]);
+                    int weight = Convert.ToInt32(parts[2]);
+                    adjacencyMatrix[source, target] = weight;
+                    adjacencyMatrix[target, source] = weight;
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("The file was not found: " + file);
+                Console.WriteLine(e.Message);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Error reading the file.");
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred while reading the file.");
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sReader?.Close();
+            }
 
-            Console.WriteLine(Graph.CycleToString(graphe1.FindAnyCycle(true)));
-            Console.WriteLine(Graph.CycleToString(graphe1.FindAnyCycle(false)));
+            return adjacencyMatrix;
+        }
+
+        private static SortedDictionary<Node, SortedSet<Node>> TxtToAdjacencyList(string fileName)
+        {
+            SortedDictionary<Node, SortedSet<Node>> adjacencyList = new();
+            string file = dataDirectory + fileName + ".txt";
+            StreamReader? sReader = null;
+
+            try
+            {
+                sReader = new StreamReader(file);
+                string? line;
+                while ((line = sReader.ReadLine()) != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(line.Replace(":", "")))
+                    {
+                        string[] parts = line.Split(
+                            new[] { '(', ',', ')' },
+                            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
+                        );
+                        string source = parts[0];
+                        string target = parts[1];
+
+                        Node sourceNode = Node.GetOrCreateNode(source);
+                        Node targetNode = Node.GetOrCreateNode(target);
+
+                        if (!adjacencyList.ContainsKey(sourceNode))
+                        {
+                            adjacencyList[sourceNode] = new SortedSet<Node>();
+                        }
+                        if (!adjacencyList.ContainsKey(targetNode))
+                        {
+                            adjacencyList[targetNode] = new SortedSet<Node>();
+                        }
+
+                        adjacencyList[sourceNode].Add(targetNode);
+                        adjacencyList[targetNode].Add(sourceNode);
+                    }
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("The file was not found: " + file);
+                Console.WriteLine(e.Message);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Error reading the file.");
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred while reading the file.");
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sReader?.Close();
+            }
+
+            return adjacencyList;
         }
     }
 }

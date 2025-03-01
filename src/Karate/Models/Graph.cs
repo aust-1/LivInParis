@@ -99,7 +99,7 @@ namespace Karate.Models
             int n = adjacencyMatrix.GetLength(0);
             for (int i = 1; i <= n; i++)
             {
-                Node node = Node.GetOrCreateNode($"Node {i}");
+                Node node = Node.GetOrCreateNode(i);
                 _nodes.Add(node);
             }
 
@@ -317,7 +317,7 @@ namespace Karate.Models
 
         #region Cycle Detection
 
-        public List<Node>? FindAnyCycle(bool simpleCycle = false)
+        public string? FindAnyCycle(bool simpleCycle = false)
         {
             var visited = new HashSet<Node>();
             var recStack = new HashSet<Node>();
@@ -340,7 +340,7 @@ namespace Karate.Models
                             )
                         )
                         {
-                            return cycle;
+                            return CycleToString(cycle);
                         }
                     }
                     else
@@ -356,7 +356,7 @@ namespace Karate.Models
                             )
                         )
                         {
-                            return cycle;
+                            return CycleToString(cycle);
                         }
                     }
                 }
@@ -477,20 +477,20 @@ namespace Karate.Models
             return cycle;
         }
 
-        public static string CycleToString(List<Node> cycle)
+        private static string CycleToString(List<Node> cycle)
         {
             StringBuilder sbld_id = new StringBuilder();
             StringBuilder sbld_name = new StringBuilder();
 
-            sbld_id.Append("Cycle: <");
-            sbld_name.Append("\nCycle: ");
+            sbld_id.Append("Cycle by Id: <");
+            sbld_name.Append("\nCycle by Name: ");
             foreach (Node node in cycle)
             {
-                sbld_id.Append(node.Id + 1).Append(", ");
+                sbld_id.Append(node.Id).Append(", ");
                 sbld_name.Append(node.Name).Append(" -> ");
             }
 
-            sbld_id.Append(cycle[0].Id + 1).Append(">");
+            sbld_id.Append(cycle[0].Id).Append(">");
             sbld_name.Append(cycle[0].Name);
 
             return sbld_id.Append(sbld_name).ToString();
@@ -675,7 +675,7 @@ namespace Karate.Models
             const int width = 800;
             const int height = 600;
 
-            string filePath = $"{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+            string filePath = $"data/result/{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
             int minDimension = Math.Min(width, height);
             int nodeSize = Math.Max(
@@ -804,7 +804,8 @@ namespace Karate.Models
         public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
         {
             string dotFilePath = $"{outputImageName}.dot";
-            string outputImagePath = $"{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+            string outputImagePath =
+                $"data/result/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
             ExportToDot(dotFilePath, layout);
             RenderDotFile(dotFilePath, outputImagePath);
