@@ -282,15 +282,29 @@ namespace Karate.Models
         /// <summary>
         /// Performs a Breadth-First Search (BFS) starting from the specified node.
         /// Returns the names of the visited nodes in the order they were discovered.
+        /// Supports input types: Node, int (Node ID), and string (Node Name).
         /// </summary>
-        /// <param name="startNode">The node from which to start the BFS.</param>
+        /// <typeparam name="T">The type of the start node, which can be Node, int, or string.</typeparam>
+        /// <param name="start">The node or identifier from which to start BFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> BFS(Node? startNode)
+        /// <exception cref="ArgumentException">Thrown if the start node type is invalid.</exception>
+        /// <exception cref="ArgumentException">Thrown if the start node is not in the graph.</exception>
+        public List<string> BFS<T>(T start)
+            where T : notnull
         {
-            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
+            Node startNode = start switch
             {
-                throw new ArgumentException("Invalid startNode.");
+                Node node => node,
+                int id => Node.GetOrCreateNode(id),
+                string name => Node.GetOrCreateNode(name),
+                _ => throw new ArgumentException(
+                    "Invalid start node type. Accepted types: Node, int, string."
+                ),
+            };
+
+            if (!_adjacencyList.ContainsKey(startNode))
+            {
+                throw new ArgumentException("Invalid start node.");
             }
 
             var result = new List<string>();
@@ -319,39 +333,29 @@ namespace Karate.Models
         }
 
         /// <summary>
-        /// Performs a Breadth-First Search (BFS) starting from the specified node ID.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startId">The ID of the node from which to start the BFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
-        public List<string> BFS(int startId)
-        {
-            return BFS(Node.GetOrCreateNode(startId));
-        }
-
-        /// <summary>
-        /// Performs a Breadth-First Search (BFS) starting from the specified node name.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startName">The name of the node from which to start the BFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
-        public List<string> BFS(string startName)
-        {
-            return BFS(Node.GetOrCreateNode(startName));
-        }
-
-        /// <summary>
         /// Performs a recursive Depth-First Search (DFS) starting from the specified node.
         /// Returns the names of the visited nodes in the order they were discovered.
+        /// Supports input types: Node, int (Node ID), and string (Node Name).
         /// </summary>
-        /// <param name="startNode">The node from which to start DFS.</param>
+        /// <typeparam name="T">The type of the start node, which can be Node, int, or string.</typeparam>
+        /// <param name="start">The node or identifier from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> DFSRecursive(Node? startNode)
+        /// <exception cref="ArgumentException">Thrown if the start node type is invalid.</exception>
+        /// <exception cref="ArgumentException">Thrown if the start node is not in the graph.</exception>
+        public List<string> DFSRecursive<T>(T start)
+            where T : notnull
         {
-            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
+            Node startNode = start switch
+            {
+                Node node => node,
+                int id => Node.GetOrCreateNode(id),
+                string name => Node.GetOrCreateNode(name),
+                _ => throw new ArgumentException(
+                    "Invalid start node type. Accepted types: Node, int, string."
+                ),
+            };
+
+            if (!_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
             }
@@ -361,30 +365,6 @@ namespace Karate.Models
 
             DFSUtil(startNode, visited, result);
             return result;
-        }
-
-        /// <summary>
-        /// Performs a recursive Depth-First Search (DFS) starting from the specified node ID.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startId">The ID of the node from which to start DFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
-        public List<string> DFSRecursive(int startId)
-        {
-            return DFSRecursive(Node.GetOrCreateNode(startId));
-        }
-
-        /// <summary>
-        /// Performs a recursive Depth-First Search (DFS) starting from the specified node name.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startName">The name of the node from which to start DFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
-        public List<string> DFSRecursive(string startName)
-        {
-            return DFSRecursive(Node.GetOrCreateNode(startName));
         }
 
         /// <summary>
@@ -407,13 +387,27 @@ namespace Karate.Models
         /// <summary>
         /// Performs an iterative Depth-First Search (DFS) starting from the specified node.
         /// Returns the names of the visited nodes in the order they were discovered.
+        /// Supports input types: Node, int (Node ID), and string (Node Name).
         /// </summary>
-        /// <param name="startNode">The node from which to start DFS.</param>
+        /// <typeparam name="T">The type of the start node, which can be Node, int, or string.</typeparam>
+        /// <param name="start">The node or identifier from which to start DFS.</param>
         /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startNode is not in the graph.</exception>
-        public List<string> DFSIterative(Node? startNode)
+        /// <exception cref="ArgumentException">Thrown if the start node type is invalid.</exception>
+        /// <exception cref="ArgumentException">Thrown if the start node is not in the graph.</exception>
+        public List<string> DFSIterative<T>(T start)
+            where T : notnull
         {
-            if (startNode == null || !_adjacencyList.ContainsKey(startNode))
+            Node startNode = start switch
+            {
+                Node node => node,
+                int id => Node.GetOrCreateNode(id),
+                string name => Node.GetOrCreateNode(name),
+                _ => throw new ArgumentException(
+                    "Invalid start node type. Accepted types: Node, int, string."
+                ),
+            };
+
+            if (!_adjacencyList.ContainsKey(startNode))
             {
                 throw new ArgumentException("Invalid startNode.");
             }
@@ -445,30 +439,6 @@ namespace Karate.Models
             return result;
         }
 
-        /// <summary>
-        /// Performs an iterative Depth-First Search (DFS) starting from the specified node ID.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startId">The ID of the node from which to start DFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startId is not in the graph.</exception>
-        public List<string> DFSIterative(int startId)
-        {
-            return DFSIterative(Node.GetOrCreateNode(startId));
-        }
-
-        /// <summary>
-        /// Performs an iterative Depth-First Search (DFS) starting from the specified node name.
-        /// Returns the names of the visited nodes in the order they were discovered.
-        /// </summary>
-        /// <param name="startName">The name of the node from which to start DFS.</param>
-        /// <returns>A list of node names in the order they were visited.</returns>
-        /// <exception cref="ArgumentException">Thrown if the startName is not in the graph.</exception>
-        public List<string> DFSIterative(string startName)
-        {
-            return DFSIterative(Node.GetOrCreateNode(startName));
-        }
-
         #endregion Traversal
 
         #region Graph Algorithms
@@ -482,15 +452,8 @@ namespace Karate.Models
         /// <exception cref="InvalidOperationException">Thrown if this method is called on a directed graph.</exception>
         public bool IsConnected()
         {
-            if (!_isDirected)
-            {
-                Node startNode = _nodes.First();
-                return BFS(startNode.Id).Count == _nodes.Count;
-            }
-
-            throw new InvalidOperationException(
-                "Cycle detection is not implemented for directed graphs."
-            );
+            Node startNode = _nodes.First();
+            return BFS(startNode.Id).Count == _nodes.Count;
         }
 
         /// <summary>
