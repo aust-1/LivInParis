@@ -123,12 +123,17 @@ g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
 ## 4. Problèmes esthétiques
 Ayant déjà utilisé PlantUML et d'autres logiques de visualisation de lien entre objets, nous avons voulu chercher une autre solution intégrant un algorithme de dispositions des noeuds plus intelligent. Après quelques recherches, notamment sur ces pages :
-https://fr.wikipedia.org/wiki/Th%C3%A9orie_des_graphes
-https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
-https://en.wikipedia.org/wiki/Graph_drawing
-https://fr.wikipedia.org/wiki/DOT_(langage)
-https://en.wikipedia.org/wiki/Graphviz
+
+- https://fr.wikipedia.org/wiki/Th%C3%A9orie_des_graphes
+- https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
+- https://en.wikipedia.org/wiki/Graph_drawing
+- https://fr.wikipedia.org/wiki/DOT_(langage)
+- https://en.wikipedia.org/wiki/Graphviz
 
 Nous avons approndi nos recherches sur GraphViz qui semble être une solution très utilisée. Cette option est également avantageuse car décrire notre graphe en DOT est simple contrairement aux autres librairies qui requiert une réadaptation de nos classes dans d'autres formats ce qui est plus lourd et complexe à implémenter.
 
-Après avoir lu la documentation, nous avons implémenté les méthodes actuelles de notre projet pour générer un fichier. Cette méthode a l'inconvénient de néccéssiter une installation de GraphViz sur la machine de l'utilisateur pour générer l'image. Nous avons donc automatisé cette installation dans notre projet (avec l'autorisations de l'utilisateur) pour que l'utilisateur n'ait pas à s'en soucier.
+Après avoir lu la documentation, nous avons implémenté les méthodes actuelles de notre projet pour générer un fichier. Cette méthode a l'inconvénient de néccéssiter une installation de GraphViz sur la machine de l'utilisateur pour générer l'image. Nous avons donc automatisé cette installation dans notre projet (avec l'autorisations de l'utilisateur) pour que l'utilisateur n'ait pas à s'en soucier en demandant à chatGPT comment éxécuter la commande `winget install -e --id Graphviz.Graphviz` dans le terminal powershell de l'utilisateur depuis C#.
+
+### Prompt
+
+_"Write a C# method that runs a PowerShell command to install GraphViz using Winget. The method should execute "winget install -e --id Graphviz.Graphviz" within PowerShell from a C# application. Ensure that the process runs silently, captures both standard output and error streams, and waits for execution to complete before returning. Implement proper exception handling to manage potential errors, such as Winget not being available or user permissions preventing installation."_
