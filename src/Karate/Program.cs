@@ -130,91 +130,20 @@
             string fileName = "soc-karate";
 
             Graph graphe1 = new Graph(MtxToAdjacencyMatrix(fileName));
-            Graph graphe2 = new Graph(MtxToAdjacencyList(fileName), true);
 
             Console.WriteLine("== BFS depuis le noeud 1 ==");
             var bfs1 = graphe1.BFS(1);
             Console.WriteLine("Ordre BFS : " + string.Join(" -> ", bfs1));
 
-            Console.WriteLine("== BFS depuis le noeud 1 ==");
-            var bfs2 = graphe2.BFS(1);
-            Console.WriteLine("Ordre BFS : " + string.Join(" -> ", bfs2));
-
             Console.WriteLine("== DFS depuis le noeud 1 ==");
             var dfs1 = graphe1.DFSIterative(1);
             Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs1));
 
-            Console.WriteLine("== DFS depuis le noeud 1 ==");
-            var dfs2 = graphe2.DFSIterative(1);
-            Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs2));
-
-            AfficherSortedSet(graphe1.Nodes);
-            AfficherSortedSet(graphe2.Nodes);
-
-            AfficherMatrice(graphe1.AdjacencyMatrix);
-            Console.WriteLine();
-            AfficherMatrice(graphe2.AdjacencyMatrix);
-            Console.WriteLine();
-
-            AfficherListeAdjacence(graphe1.AdjacencyList);
-            Console.WriteLine();
-            AfficherListeAdjacence(graphe2.AdjacencyList);
-
-            graphe2.DrawGraph("karate2.png");
-
             graphe1.DrawGraph("karate1.png");
 
-            string[] layout = { "dot", "neato", "fdp", "sfdp", "twopi", "circo" };
-            foreach (string l in layout)
-            {
-                graphe1.DisplayGraph(layout: l);
-            }
+            graphe1.DisplayGraph();
 
             HashSet<Node> set = graphe1.DetectCycleOrCircuit();
-            AfficherHashSet(set);
-        }
-
-        static void AfficherSortedSet(SortedSet<Node> set)
-        {
-            foreach (Node node in set)
-            {
-                Console.Write(node.Name + " ");
-            }
-            Console.WriteLine();
-        }
-
-        static void AfficherHashSet(HashSet<Node> set)
-        {
-            foreach (Node node in set)
-            {
-                Console.Write(node.Name + " ");
-            }
-            Console.WriteLine();
-        }
-
-        static void AfficherMatrice(double[,] matrice)
-        {
-            for (int i = 0; i < matrice.GetLength(0); i++)
-            {
-                for (int j = 0; j < matrice.GetLength(1); j++)
-                {
-                    Console.Write(matrice[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
-        }
-
-        static void AfficherListeAdjacence(SortedDictionary<Node, SortedSet<Node>> matrice)
-        {
-            foreach (var kvp in matrice)
-            {
-                Console.Write(kvp.Key.Name + " : ");
-                foreach (Node node in kvp.Value)
-                {
-                    Console.Write(node.Name + " ");
-                }
-                Console.WriteLine();
-            }
         }
     }
 }

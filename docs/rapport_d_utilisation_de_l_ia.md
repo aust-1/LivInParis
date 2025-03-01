@@ -1,6 +1,6 @@
-# Rapport d'utilisation de l'IA pour l'implémentation de DrawGraph
+# Rapport d'utilisation de l'IA pour l'implémentation de la visualisation de Graphe
 <!-- TOC -->
-- [Rapport d'utilisation de l'IA pour l'implémentation de DrawGraph](#rapport-dutilisation-de-lia-pour-limplémentation-de-drawgraph)
+- [Rapport d'utilisation de l'IA pour l'implémentation de la visualisation de Graphe](#rapport-dutilisation-de-lia-pour-limplémentation-de-la-visualisation-de-graphe)
   - [Introduction](#introduction)
   - [1. Premiers échanges](#1-premiers-échanges)
     - [Prompt](#prompt)
