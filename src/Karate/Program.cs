@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Karate
+﻿namespace Karate
 {
     public static class Program
     {
@@ -10,20 +8,61 @@ namespace Karate
         {
             string fileName = "soc-karate";
 
-            Graph test = new Graph(TxtToAdjacencyList(fileName));
+            Graph graph = new Graph(MtxToAdjacencyMatrix(fileName));
+            //Graph graph = new Graph(TxtToAdjacencyList(fileName)); //Quel était le bon fichier ?
 
-            Console.WriteLine("== BFS depuis le noeud 1 ==");
-            var bfs1 = test.BFS(1);
+            Console.WriteLine("=== Informations sur le Graphe ===");
+            Console.WriteLine($"Nombre de nœuds : {graph.Order}");
+            Console.WriteLine($"Nombre d'arêtes : {graph.Size}");
+            Console.WriteLine($"Le graphe est-il orienté ? {graph.IsDirected}");
+            Console.WriteLine($"Le graphe est-il pondéré ? {graph.IsWeighted}");
+            Console.WriteLine($"Densité du graphe : {graph.Density:F3}");
+
+            Console.WriteLine("\n=== Liste des Nœuds et leurs connexions ===");
+            foreach (var node in graph.Nodes)
+            {
+                Console.Write($"{node.Name} -> ");
+                if (graph.AdjacencyList.ContainsKey(node))
+                {
+                    Console.WriteLine(
+                        string.Join(", ", graph.AdjacencyList[node].Select(n => n.Name))
+                    );
+                }
+                else
+                {
+                    Console.WriteLine("Aucune connexion.");
+                }
+            }
+
+            // Vérification de la connectivité
+            Console.WriteLine("\n=== Vérification de la Connectivité ===");
+            bool isConnected = graph.IsConnected;
+            Console.WriteLine($"Le graphe est-il connexe ? {isConnected}");
+
+            // Parcours en Largeur d'abord (BFS)
+            Console.WriteLine("\n=== BFS depuis le nœud 1 ===");
+            var bfs1 = graph.BFS(1);
             Console.WriteLine("Ordre BFS : " + string.Join(" -> ", bfs1));
 
-            Console.WriteLine("== DFS depuis le noeud 1 ==");
-            var dfs1 = test.DFSIterative(1);
+            // Parcours en Profondeur d'abord (DFS)
+            Console.WriteLine("\n=== DFS depuis le nœud 1 ===");
+            var dfs1 = graph.DFSIterative(1);
             Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs1));
 
-            test.DrawGraph("karate1");
+            // Détection des cycles
+            Console.WriteLine("\n=== Détection de Cycles ===");
+            string? cycle = graph.FindAnyCycle(false);
+            string? cycleSimple = graph.FindAnyCycle(true);
 
-            Console.WriteLine(test.FindAnyCycle(true));
-            Console.WriteLine(test.FindAnyCycle(false));
+            Console.WriteLine("Cycle simple détecté : " + (cycleSimple ?? "Aucun"));
+            Console.WriteLine("Cycle détecté (sans restrictions) : " + (cycle ?? "Aucun"));
+
+            // Dessin du graphe
+            graph.DrawGraph("karate_graph");
+            graph.DisplayGraph("dot_graph");
+            graph.DisplayGraph("circo_graph", "circo");
+
+            Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
         }
 
         private static double[,] MtxToAdjacencyMatrix(string fileName)
@@ -146,7 +185,7 @@ namespace Karate
             return adjacencyList;
         }
 
-        private static double[,] TtxToAdjacencyMatrix(string fileName)
+        private static double[,] TxtToAdjacencyMatrix(string fileName)
         {
             double[,] adjacencyMatrix = new double[0, 0];
             string file = dataDirectory + fileName + ".txt";

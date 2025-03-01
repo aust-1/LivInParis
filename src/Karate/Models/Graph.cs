@@ -502,7 +502,7 @@ public class Graph
     /// </summary>
     /// <param name="fileName">The base name of the output file (default is "graph").</param>
     /// <remarks>
-    /// The final image is saved under <c>data/result/</c> with a timestamp
+    /// The final image is saved under <c>data/output/</c> with a timestamp
     /// to avoid overwriting existing files.
     /// </remarks>
     public void DrawGraph(string fileName = "graph")
@@ -510,7 +510,7 @@ public class Graph
         const int width = 800;
         const int height = 600;
 
-        string filePath = $"data/result/{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+        string filePath = $"data/output/{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
         int minDimension = Math.Min(width, height);
         int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
@@ -635,7 +635,7 @@ public class Graph
     {
         string dotFilePath = $"{outputImageName}.dot";
         string outputImagePath =
-            $"data/result/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+            $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
         ExportToDot(dotFilePath, layout);
         RenderDotFile(dotFilePath, outputImagePath);
