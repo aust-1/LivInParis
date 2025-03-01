@@ -59,9 +59,8 @@ namespace Karate.Models
         /// </summary>
         /// <param name="adjacencyList">A dictionary mapping each node to its set of adjacent nodes.</param>
         /// <param name="isDirected">Specifies if the graph is directed (<c>true</c>) or undirected (<c>false</c>).</param>
-        public Graph(SortedDictionary<Node, SortedSet<Node>> adjacencyList, bool isDirected = false)
+        public Graph(SortedDictionary<Node, SortedSet<Node>> adjacencyList)
         {
-            _isDirected = isDirected;
             _nodes = new SortedSet<Node>(adjacencyList.Keys);
             _edges = new List<Edge>();
             _adjacencyList = adjacencyList;
@@ -72,9 +71,10 @@ namespace Karate.Models
                 {
                     _edges.Add(new Edge(kvp.Key, neighbor));
                     _adjacencyMatrix[kvp.Key.Id, neighbor.Id] = 1.0;
-                    _adjacencyMatrix[neighbor.Id, kvp.Key.Id] = 1.0;
                 }
             }
+
+            _isDirected = CheckIfSymmetric(_adjacencyMatrix);
         }
 
         /// <summary>
@@ -83,14 +83,14 @@ namespace Karate.Models
         /// <param name="adjacencyMatrix">A 2D array representing the adjacency matrix of the graph.</param>
         /// <param name="isDirected">Specifies if the graph is directed (<c>true</c>) or undirected (<c>false</c>).</param>
         /// <exception cref="ArgumentException">Thrown if the adjacency matrix is not square.</exception>
-        public Graph(double[,] adjacencyMatrix, bool isDirected = false)
+        public Graph(double[,] adjacencyMatrix)
         {
             if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
             {
                 throw new ArgumentException("Adjacency matrix must be square.");
             }
 
-            _isDirected = isDirected;
+            _isDirected = CheckIfSymmetric(adjacencyMatrix);
             _nodes = new SortedSet<Node>();
             _edges = new List<Edge>();
             _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
@@ -110,7 +110,7 @@ namespace Karate.Models
                     double weight = adjacencyMatrix[source.Id, target.Id];
                     if (!Equals(weight, 0.0))
                     {
-                        AddEdge(new Edge(source, target, weight));
+                        AddEdge(new Edge(source, target, weight, _isDirected));
                     }
                 }
             }
@@ -387,6 +387,23 @@ namespace Karate.Models
 
             recStack.Remove(current);
             return false;
+        }
+
+        private static bool CheckIfSymmetric(double[,] matrix)
+        {
+            int n = matrix.GetLength(0);
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (!Equals(matrix[i, j], matrix[j, i]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         #endregion Methods

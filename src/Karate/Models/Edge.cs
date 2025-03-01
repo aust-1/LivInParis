@@ -26,6 +26,11 @@
         /// </summary>
         private readonly double _weight;
 
+        /// <summary>
+        /// Indicates whether this edge is directed.
+        /// </summary>
+        private readonly bool _isDirected;
+
         #endregion Fields
 
         #region Constructors
@@ -36,11 +41,13 @@
         /// <param name="sourceNode">The source node.</param>
         /// <param name="targetNode">The target node.</param>
         /// <param name="weight">The weight of this edge (default is 1.0).</param>
-        public Edge(Node sourceNode, Node targetNode, double weight = 1.0)
+        /// <param name="isDirected">Indicates whether this edge is directed (default is false).</param>
+        public Edge(Node sourceNode, Node targetNode, double weight = 1.0, bool isDirected = false)
         {
             _sourceNode = sourceNode;
             _targetNode = targetNode;
             _weight = weight;
+            _isDirected = isDirected;
         }
 
         #endregion Constructors
@@ -92,15 +99,16 @@
             if (
                 _sourceNode.Equals(other._sourceNode)
                 && _targetNode.Equals(other._targetNode)
-                && _weight == other._weight
+                && Equals(_weight, other._weight)
             )
             {
                 return true;
             }
             if (
-                _sourceNode.Equals(other._targetNode)
+                !_isDirected
+                && _sourceNode.Equals(other._targetNode)
                 && _targetNode.Equals(other._sourceNode)
-                && _weight == other._weight
+                && Equals(_weight, other._weight)
             )
             {
                 return true;
