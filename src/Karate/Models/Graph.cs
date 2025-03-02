@@ -8,19 +8,19 @@ namespace Karate.Models;
 /// <summary>
 /// Represents a simple graph containing a set of nodes (vertices) and edges.
 /// </summary>
-public class Graph
+public class Graph<T>
 {
     #region Fields
 
     /// <summary>
     /// A sorted set of all nodes in this graph.
     /// </summary>
-    private readonly SortedSet<Node> _nodes;
+    private readonly SortedSet<Node<T>> _nodes;
 
     /// <summary>
     /// A list of all edges in this graph.
     /// </summary>
-    private readonly List<Edge> _edges;
+    private readonly List<Edge<T>> _edges;
 
     /// <summary>
     /// Indicates whether the graph is directed. If <c>false</c>, the graph is undirected.
@@ -30,7 +30,7 @@ public class Graph
     /// <summary>
     /// Adjacency list mapping each node to the set of its adjacent nodes.
     /// </summary>
-    private readonly SortedDictionary<Node, SortedSet<Node>> _adjacencyList;
+    private readonly SortedDictionary<Node<T>, SortedSet<Node<T>>> _adjacencyList;
 
     /// <summary>
     /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
@@ -50,10 +50,10 @@ public class Graph
     /// </param>
     public Graph(bool isDirected = false)
     {
-        _nodes = new SortedSet<Node>();
-        _edges = new List<Edge>();
+        _nodes = new SortedSet<Node<T>>();
+        _edges = new List<Edge<T>>();
         _isDirected = isDirected;
-        _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
+        _adjacencyList = new SortedDictionary<Node<T>, SortedSet<Node<T>>>();
         _adjacencyMatrix = null;
     }
 
@@ -66,19 +66,19 @@ public class Graph
     /// This constructor infers <see cref="_isDirected"/> by checking if the adjacency matrix is symmetric.
     /// If it is not symmetric, the graph is assumed to be directed.
     /// </remarks>
-    public Graph(SortedDictionary<Node, SortedSet<Node>> adjacencyList)
+    public Graph(SortedDictionary<Node<T>, SortedSet<Node<T>>> adjacencyList)
     {
-        _nodes = new SortedSet<Node>(adjacencyList.Keys);
-        _edges = new List<Edge>();
+        _nodes = new SortedSet<Node<T>>(adjacencyList.Keys);
+        _edges = new List<Edge<T>>();
         _adjacencyList = adjacencyList;
         _adjacencyMatrix = new double[_nodes.Count, _nodes.Count];
 
         foreach (var kvp in adjacencyList)
         {
-            Node source = kvp.Key;
-            foreach (Node neighbor in kvp.Value)
+            var source = kvp.Key;
+            foreach (var neighbor in kvp.Value)
             {
-                _edges.Add(new Edge(source, neighbor));
+                _edges.Add(new Edge<T>(source, neighbor));
                 _adjacencyMatrix[source.Id, neighbor.Id] = 1.0;
             }
         }
@@ -100,26 +100,26 @@ public class Graph
         }
 
         _isDirected = !CheckIfSymmetric(adjacencyMatrix);
-        _nodes = new SortedSet<Node>();
-        _edges = new List<Edge>();
-        _adjacencyList = new SortedDictionary<Node, SortedSet<Node>>();
+        _nodes = new SortedSet<Node<T>>();
+        _edges = new List<Edge<T>>();
+        _adjacencyList = new SortedDictionary<Node<T>, SortedSet<Node<T>>>();
         _adjacencyMatrix = adjacencyMatrix;
 
         int n = adjacencyMatrix.GetLength(0);
         for (int i = 0; i < n; i++)
         {
-            Node node = Node.GetOrCreateNode(i);
+            var node = Node<T>.GetNode(i);
             _nodes.Add(node);
         }
 
-        foreach (Node source in _nodes)
+        foreach (var source in _nodes)
         {
-            foreach (Node target in _nodes)
+            foreach (var target in _nodes)
             {
                 double weight = adjacencyMatrix[source.Id, target.Id];
                 if (!Equals(weight, 0.0))
                 {
-                    AddEdge(new Edge(source, target, weight, _isDirected));
+                    AddEdge(new Edge<T>(source, target, weight, _isDirected));
                 }
             }
         }
@@ -144,7 +144,7 @@ public class Graph
     /// <summary>
     /// Gets the adjacency list representing the graph.
     /// </summary>
-    public SortedDictionary<Node, SortedSet<Node>> AdjacencyList
+    public SortedDictionary<Node<T>, SortedSet<Node<T>>> AdjacencyList
     {
         get { return _adjacencyList; }
     }
@@ -152,7 +152,7 @@ public class Graph
     /// <summary>
     /// Gets the set of all nodes in this graph.
     /// </summary>
-    public SortedSet<Node> Nodes
+    public SortedSet<Node<T>> Nodes
     {
         get { return _nodes; }
     }
@@ -160,7 +160,7 @@ public class Graph
     /// <summary>
     /// Gets the collection of edges in this graph.
     /// </summary>
-    public List<Edge> Edges
+    public List<Edge<T>> Edges
     {
         get { return _edges; }
     }
@@ -231,12 +231,12 @@ public class Graph
     /// Adds a node to the graph. If the node is new, it is also added to the adjacency list.
     /// </summary>
     /// <param name="node">The node to add.</param>
-    public void AddNode(Node node)
+    public void AddNode(Node<T> node)
     {
         _nodes.Add(node);
         if (!_adjacencyList.ContainsKey(node))
         {
-            _adjacencyList[node] = new SortedSet<Node>();
+            _adjacencyList[node] = new SortedSet<Node<T>>();
         }
     }
 
@@ -244,7 +244,7 @@ public class Graph
     /// Adds an edge between two existing nodes in the graph.
     /// </summary>
     /// <param name="edge">The edge to add, containing source, target, and (optionally) weight.</param>
-    public void AddEdge(Edge edge)
+    public void AddEdge(Edge<T> edge)
     {
         if (_isDirected && _edges.Contains(edge))
         {
@@ -255,11 +255,11 @@ public class Graph
 
         if (!_adjacencyList.ContainsKey(edge.SourceNode))
         {
-            _adjacencyList[edge.SourceNode] = new SortedSet<Node>();
+            _adjacencyList[edge.SourceNode] = new SortedSet<Node<T>>();
         }
         if (!_adjacencyList.ContainsKey(edge.TargetNode))
         {
-            _adjacencyList[edge.TargetNode] = new SortedSet<Node>();
+            _adjacencyList[edge.TargetNode] = new SortedSet<Node<T>>();
         }
 
         _adjacencyList[edge.SourceNode].Add(edge.TargetNode);
@@ -287,7 +287,7 @@ public class Graph
             }
         }
 
-        foreach (Edge edge in _edges)
+        foreach (Edge<T> edge in _edges)
         {
             int i = edge.SourceNode.Id;
             int j = edge.TargetNode.Id;
@@ -316,9 +316,9 @@ public class Graph
     /// </returns>
     public string? FindAnyCycle(bool simpleCycle = false)
     {
-        var visited = new HashSet<Node>();
-        var recStack = new HashSet<Node>();
-        var parentMap = new Dictionary<Node, Node>();
+        var visited = new HashSet<Node<T>>();
+        var recStack = new HashSet<Node<T>>();
+        var parentMap = new Dictionary<Node<T>, Node<T>>();
 
         foreach (var node in _nodes)
         {
@@ -366,40 +366,40 @@ public class Graph
 
     /// <summary>
     /// Performs a Breadth-First Search (BFS) starting from the specified node.
-    /// Returns the names of the visited nodes in the order they were discovered.
-    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="string"/> (Node Name).
+    /// Returns the visited nodes in the order they were discovered.
+    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="T"/> (Node Data).
     /// </summary>
     /// <typeparam name="T">
-    /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="string"/>.
+    /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="T"/>.
     /// </typeparam>
     /// <param name="start">The node or identifier from which to start BFS.</param>
-    /// <returns>A list of node names in the order they were visited.</returns>
+    /// <returns>A list of node in the order they were visited.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if the start node type is invalid or the start node is not in the graph.
     /// </exception>
-    public List<string> BFS<T>(T start)
-        where T : notnull
+    public List<Node<T>> BFS<U>(U start)
+        where U : notnull
     {
-        Node startNode = ResolveNode(start);
+        var startNode = ResolveNode(start);
 
         if (!_adjacencyList.ContainsKey(startNode))
         {
             throw new ArgumentException("Invalid start node.");
         }
 
-        var result = new List<string>();
-        var queue = new Queue<Node>();
-        var visited = new HashSet<Node>();
+        var result = new List<Node<T>>();
+        var queue = new Queue<Node<T>>();
+        var visited = new HashSet<Node<T>>();
 
         queue.Enqueue(startNode);
         visited.Add(startNode);
 
         while (queue.Count > 0)
         {
-            Node current = queue.Dequeue();
-            result.Add(current.Name);
+            var current = queue.Dequeue();
+            result.Add(current);
 
-            foreach (Node neighbor in _adjacencyList[current])
+            foreach (var neighbor in _adjacencyList[current])
             {
                 if (!visited.Contains(neighbor))
                 {
@@ -414,29 +414,29 @@ public class Graph
 
     /// <summary>
     /// Performs a recursive Depth-First Search (DFS) starting from the specified node.
-    /// Returns the names of the visited nodes in the order they were discovered.
-    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="string"/> (Node Name).
+    /// Returns the visited nodes in the order they were discovered.
+    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="T"/> (Node Data).
     /// </summary>
     /// <typeparam name="T">
-    /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="string"/>.
+    /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="T"/>.
     /// </typeparam>
     /// <param name="start">The node or identifier from which to start DFS.</param>
-    /// <returns>A list of node names in the order they were visited.</returns>
+    /// <returns>A list of node in the order they were visited.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if the start node type is invalid or the start node is not in the graph.
     /// </exception>
-    public List<string> DFSRecursive<T>(T start)
-        where T : notnull
+    public List<Node<T>> DFSRecursive<U>(U start)
+        where U : notnull
     {
-        Node startNode = ResolveNode(start);
+        var startNode = ResolveNode(start);
 
         if (!_adjacencyList.ContainsKey(startNode))
         {
             throw new ArgumentException("Invalid start node.");
         }
 
-        var visited = new HashSet<Node>();
-        var result = new List<string>();
+        var visited = new HashSet<Node<T>>();
+        var result = new List<Node<T>>();
 
         DFSUtil(startNode, visited, result);
         return result;
@@ -444,42 +444,42 @@ public class Graph
 
     /// <summary>
     /// Performs an iterative Depth-First Search (DFS) starting from the specified node.
-    /// Returns the names of the visited nodes in the order they were discovered.
-    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="string"/> (Node Name).
+    /// Returns the visited nodes in the order they were discovered.
+    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="T"/> (Node Data).
     /// </summary>
     /// <typeparam name="T">
     /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="string"/>.
     /// </typeparam>
     /// <param name="start">The node or identifier from which to start DFS.</param>
-    /// <returns>A list of node names in the order they were visited.</returns>
+    /// <returns>A list of node in the order they were visited.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if the start node type is invalid or the start node is not in the graph.
     /// </exception>
-    public List<string> DFSIterative<T>(T start)
-        where T : notnull
+    public List<Node<T>> DFSIterative<U>(U start)
+        where U : notnull
     {
-        Node startNode = ResolveNode(start);
+        var startNode = ResolveNode(start);
 
         if (!_adjacencyList.ContainsKey(startNode))
         {
             throw new ArgumentException("Invalid start node.");
         }
 
-        var result = new List<string>();
-        var stack = new Stack<Node>();
-        var visited = new HashSet<Node>();
+        var result = new List<Node<T>>();
+        var stack = new Stack<Node<T>>();
+        var visited = new HashSet<Node<T>>();
 
         stack.Push(startNode);
 
         while (stack.Count > 0)
         {
-            Node current = stack.Pop();
+            var current = stack.Pop();
             if (!visited.Contains(current))
             {
                 visited.Add(current);
-                result.Add(current.Name);
+                result.Add(current);
 
-                foreach (Node neighbor in _adjacencyList[current])
+                foreach (var neighbor in _adjacencyList[current])
                 {
                     if (!visited.Contains(neighbor))
                     {
@@ -520,14 +520,14 @@ public class Graph
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         g.Clear(Color.White);
 
-        var positions = new Dictionary<Node, Point>();
+        var positions = new Dictionary<Node<T>, Point>();
         int n = _nodes.Count;
         double angleStep = 2 * Math.PI / n;
         int radius = 200;
         Point center = new Point(width / 2, height / 2);
 
         int i = 0;
-        foreach (Node node in _nodes)
+        foreach (var node in _nodes)
         {
             double angle = i * angleStep;
             int x = center.X + (int)(radius * Math.Cos(angle));
@@ -544,8 +544,8 @@ public class Graph
         {
             foreach (var kvp in _adjacencyList)
             {
-                Node source = kvp.Key;
-                foreach (Node target in kvp.Value)
+                var source = kvp.Key;
+                foreach (var target in kvp.Value)
                 {
                     if (!_isDirected && source.Id < target.Id)
                     {
@@ -586,7 +586,7 @@ public class Graph
         using (var nodeBrush = new SolidBrush(Color.LightBlue))
         using (var nodePen = new Pen(Color.Black, 1))
         {
-            foreach (Node node in _nodes)
+            foreach (var node in _nodes)
             {
                 Point p = positions[node];
                 var nodeRect = new Rectangle(
@@ -599,7 +599,7 @@ public class Graph
                 g.FillEllipse(nodeBrush, nodeRect);
                 g.DrawEllipse(nodePen, nodeRect);
 
-                string text = node.Name;
+                string text = node.Data?.ToString() ?? node.Id.ToString();
                 using var font = new Font(SystemFonts.DefaultFont.FontFamily, 8);
                 SizeF textSize = g.MeasureString(text, font);
 
@@ -669,22 +669,22 @@ public class Graph
 
     /// <summary>
     /// Resolves a given object into a <see cref="Node"/>.
-    /// Supported types: <see cref="Node"/>, <see cref="int"/>, <see cref="string"/>.
+    /// Supported types: <see cref="Node"/>, <see cref="int"/>, <see cref="T"/>.
     /// </summary>
     /// <typeparam name="T">The type to resolve.</typeparam>
-    /// <param name="start">The node or ID/name to convert to a <see cref="Node"/>.</param>
+    /// <param name="start">The node or ID/data to convert to a <see cref="Node"/>.</param>
     /// <returns>The corresponding <see cref="Node"/> object.</returns>
     /// <exception cref="ArgumentException">Thrown if the type is unsupported.</exception>
-    private static Node ResolveNode<T>(T start)
-        where T : notnull
+    private static Node<T> ResolveNode<U>(U start)
+        where U : notnull
     {
         return start switch
         {
-            Node node => node,
-            int id => Node.GetOrCreateNode(id),
-            string name => Node.GetOrCreateNode(name),
+            Node<T> node => node,
+            int id => Node<T>.GetNode(id),
+            T data => Node<T>.GetOrCreateNode(data),
             _ => throw new ArgumentException(
-                "Invalid start node type. Accepted types: Node, int, string."
+                "Unsupported type. Must be Node, int (Id), or T (Data)."
             ),
         };
     }
@@ -695,11 +695,11 @@ public class Graph
     /// Attempts to find a cycle in a directed graph using DFS with recursion stack tracking.
     /// </summary>
     private bool TryFindCycleDirected(
-        Node current,
-        HashSet<Node> visited,
-        HashSet<Node> recStack,
-        Dictionary<Node, Node> parentMap,
-        out List<Node> cycle,
+        Node<T> current,
+        HashSet<Node<T>> visited,
+        HashSet<Node<T>> recStack,
+        Dictionary<Node<T>, Node<T>> parentMap,
+        out List<Node<T>> cycle,
         bool simpleCycle = false
     )
     {
@@ -745,11 +745,11 @@ public class Graph
     /// If <paramref name="simpleCycle"/> is <c>true</c>, immediate parent edges are ignored.
     /// </summary>
     private bool TryFindCycleUndirected(
-        Node current,
-        HashSet<Node> visited,
-        Dictionary<Node, Node> parentMap,
-        Node? parent,
-        out List<Node> cycle,
+        Node<T> current,
+        HashSet<Node<T>> visited,
+        Dictionary<Node<T>, Node<T>> parentMap,
+        Node<T>? parent,
+        out List<Node<T>> cycle,
         bool simpleCycle = false
     )
     {
@@ -795,13 +795,13 @@ public class Graph
     /// <summary>
     /// Reconstructs the cycle path from a meeting point of <paramref name="current"/> and <paramref name="neighbor"/>.
     /// </summary>
-    private static List<Node> ReconstructCycle(
-        Node current,
-        Node neighbor,
-        Dictionary<Node, Node> parentMap
+    private static List<Node<T>> ReconstructCycle(
+        Node<T> current,
+        Node<T> neighbor,
+        Dictionary<Node<T>, Node<T>> parentMap
     )
     {
-        var cycle = new List<Node>();
+        var cycle = new List<Node<T>>();
         var temp = current;
         while (!temp.Equals(neighbor))
         {
@@ -814,24 +814,24 @@ public class Graph
     }
 
     /// <summary>
-    /// Returns a textual representation of the cycle, including IDs and Names.
+    /// Returns a textual representation of the cycle, including IDs and Datas.
     /// </summary>
-    private static string CycleToString(List<Node> cycle)
+    private static string CycleToString(List<Node<T>> cycle)
     {
         StringBuilder sbId = new StringBuilder();
         StringBuilder sbName = new StringBuilder();
 
         sbId.Append("Cycle by Id: <");
-        sbName.Append("\nCycle by Name: ");
+        sbName.Append("\nCycle by Data: ");
 
-        foreach (Node node in cycle)
+        foreach (var node in cycle)
         {
             sbId.Append(node.Id).Append(", ");
-            sbName.Append(node.Name).Append(" -> ");
+            sbName.Append(node.Data).Append(" -> ");
         }
 
         sbId.Append(cycle[0].Id).Append('>');
-        sbName.Append(cycle[0].Name);
+        sbName.Append(cycle[0].Data);
 
         return sbId.Append(sbName).ToString();
     }
@@ -843,14 +843,14 @@ public class Graph
     /// <summary>
     /// Recursively visits nodes for a Depth-First Search, storing visited nodes in a result list.
     /// </summary>
-    private void DFSUtil(Node node, HashSet<Node> visited, List<string> result)
+    private void DFSUtil(Node<T> node, HashSet<Node<T>> visited, List<Node<T>> result)
     {
         visited.Add(node);
-        result.Add(node.Name);
+        result.Add(node);
 
         if (_adjacencyList.TryGetValue(node, out var neighbors))
         {
-            foreach (Node neighbor in neighbors)
+            foreach (var neighbor in neighbors)
             {
                 if (!visited.Contains(neighbor))
                 {
@@ -951,7 +951,7 @@ public class Graph
 
         foreach (var node in _nodes)
         {
-            dotBuilder.AppendLine($"    \"{node.Name}\";");
+            dotBuilder.AppendLine($"    \"{node.Data}\";");
         }
 
         foreach (var edge in _edges)
@@ -959,13 +959,13 @@ public class Graph
             if (!_isDirected && edge.SourceNode.Id.CompareTo(edge.TargetNode.Id) > 0)
             {
                 dotBuilder.AppendLine(
-                    $"    \"{edge.SourceNode.Name}\" -- \"{edge.TargetNode.Name}\";"
+                    $"    \"{edge.SourceNode.Data}\" -- \"{edge.TargetNode.Data}\";"
                 );
             }
             else if (_isDirected)
             {
                 dotBuilder.AppendLine(
-                    $"    \"{edge.SourceNode.Name}\" -> \"{edge.TargetNode.Name}\";"
+                    $"    \"{edge.SourceNode.Data}\" -> \"{edge.TargetNode.Data}\";"
                 );
             }
         }

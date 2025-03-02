@@ -7,8 +7,8 @@ namespace Karate.Tests
     [TestClass]
     public class EdgeTests
     {
-        private Node _node1 = Node.GetOrCreateNode("Node1");
-        private Node _node2 = Node.GetOrCreateNode("Node2");
+        private readonly Node _node1 = Node.GetOrCreateNode("Node1");
+        private readonly Node _node2 = Node.GetOrCreateNode("Node2");
 
         [TestInitialize]
         public void TestInitialize()
@@ -44,8 +44,8 @@ namespace Karate.Tests
         [TestMethod]
         public void Equals_ShouldReturnFalseForDifferentEdges()
         {
-            var edge1 = new Edge(_node1, _node2, isDirected:true);
-            var edge2 = new Edge(_node2, _node1, isDirected:true);
+            var edge1 = new Edge(_node1, _node2, isDirected: true);
+            var edge2 = new Edge(_node2, _node1, isDirected: true);
 
             Assert.IsFalse(edge1.Equals(edge2));
         }
@@ -80,7 +80,7 @@ namespace Karate.Tests
         [TestMethod]
         public void InequalityOperator_ShouldReturnTrueForDifferentEdges()
         {
-            var edge1 = new Edge(_node1, _node2, isDirected:true);
+            var edge1 = new Edge(_node1, _node2, isDirected: true);
             var edge2 = new Edge(_node2, _node1);
 
             Assert.IsTrue(edge1 != edge2);

@@ -12,19 +12,19 @@
 /// In a weighted graph, the <see cref="Weight"/> can store cost, distance, capacity, or any other metric.
 /// </para>
 /// </remarks>
-public sealed class Edge : IEquatable<Edge>
+public sealed class Edge<T> : IEquatable<Edge<T>>
 {
     #region Fields
 
     /// <summary>
     /// The source node of this edge.
     /// </summary>
-    private readonly Node _sourceNode;
+    private readonly Node<T> _sourceNode;
 
     /// <summary>
     /// The target node of this edge.
     /// </summary>
-    private readonly Node _targetNode;
+    private readonly Node<T> _targetNode;
 
     /// <summary>
     /// The weight of the edge, with a default of 1.0.
@@ -49,7 +49,12 @@ public sealed class Edge : IEquatable<Edge>
     /// <param name="isDirected">
     /// <c>true</c> if the edge is directed; <c>false</c> if it is undirected (default is false).
     /// </param>
-    public Edge(Node sourceNode, Node targetNode, double weight = 1.0, bool isDirected = false)
+    public Edge(
+        Node<T> sourceNode,
+        Node<T> targetNode,
+        double weight = 1.0,
+        bool isDirected = false
+    )
     {
         _sourceNode = sourceNode;
         _targetNode = targetNode;
@@ -64,7 +69,7 @@ public sealed class Edge : IEquatable<Edge>
     /// <summary>
     /// Gets the source node of this edge.
     /// </summary>
-    public Node SourceNode
+    public Node<T> SourceNode
     {
         get { return _sourceNode; }
     }
@@ -72,7 +77,7 @@ public sealed class Edge : IEquatable<Edge>
     /// <summary>
     /// Gets the target node of this edge.
     /// </summary>
-    public Node TargetNode
+    public Node<T> TargetNode
     {
         get { return _targetNode; }
     }
@@ -120,7 +125,7 @@ public sealed class Edge : IEquatable<Edge>
     /// <returns>
     /// <c>true</c> if the specified <see cref="Edge"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public bool Equals(Edge? other)
+    public bool Equals(Edge<T>? other)
     {
         if (other is null)
         {
@@ -156,7 +161,7 @@ public sealed class Edge : IEquatable<Edge>
     /// </returns>
     public override bool Equals(object? obj)
     {
-        if (obj is Edge edge)
+        if (obj is Edge<T> edge)
         {
             return Equals(edge);
         }
@@ -194,7 +199,7 @@ public sealed class Edge : IEquatable<Edge>
     /// <param name="left">The left <see cref="Edge"/>.</param>
     /// <param name="right">The right <see cref="Edge"/>.</param>
     /// <returns><c>true</c> if the edges are equal, otherwise <c>false</c>.</returns>
-    public static bool operator ==(Edge? left, Edge? right)
+    public static bool operator ==(Edge<T>? left, Edge<T>? right)
     {
         if (left is null)
         {
@@ -209,7 +214,7 @@ public sealed class Edge : IEquatable<Edge>
     /// <param name="left">The left <see cref="Edge"/>.</param>
     /// <param name="right">The right <see cref="Edge"/>.</param>
     /// <returns><c>true</c> if the edges are not equal, otherwise <c>false</c>.</returns>
-    public static bool operator !=(Edge? left, Edge? right)
+    public static bool operator !=(Edge<T>? left, Edge<T>? right)
     {
         return !(left == right);
     }
