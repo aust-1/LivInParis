@@ -23,7 +23,7 @@ public class Node<T> : IComparable<Node<T>>
     /// Static dictionary mapping integer IDs to node instances.
     /// Ensures each node can be retrieved by ID.
     /// </summary>
-    private static readonly SortedDictionary<int, Node<T>> _existingNodes = new();
+    private static SortedDictionary<int, Node<T>> _existingNodes = new();
 
     /// <summary>
     /// The unique identifier for this node.

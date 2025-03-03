@@ -271,38 +271,6 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Builds or rebuilds the adjacency matrix for the graph by allocating
-    /// a new 2D array and setting the appropriate edge weights.
-    /// </summary>
-    public void BuildAdjacencyMatrix()
-    {
-        int n = _nodes.Count;
-        _adjacencyMatrix = new double[n, n];
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                _adjacencyMatrix[i, j] = 0.0;
-            }
-        }
-
-        foreach (Edge<T> edge in _edges)
-        {
-            int i = edge.SourceNode.Id;
-            int j = edge.TargetNode.Id;
-            double w = edge.Weight;
-
-            _adjacencyMatrix[i, j] = w;
-
-            if (!_isDirected)
-            {
-                _adjacencyMatrix[j, i] = w;
-            }
-        }
-    }
-
-    /// <summary>
     /// Finds any cycle in the graph, either in a directed or undirected manner.
     /// Optionally restricts detection to "simple" cycles in an undirected graph
     /// (i.e., ignoring the immediate parent).
@@ -360,7 +328,107 @@ public class Graph<T>
         }
         return null;
     }
+
     #endregion Public Methods
+
+    #region Shortest Paths
+
+    public SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>> Dijkstra<U>(U start)
+        where U : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!_adjacencyList.ContainsKey(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>>();
+        var visited = new HashSet<Node<T>>();
+
+        foreach (var node in _nodes)
+        {
+            result[node] = new KeyValuePair<double, Node<T>>(double.MaxValue, null);
+        }
+
+        result[startNode] = new KeyValuePair<double, Node<T>>(0, startNode);
+
+        while (visited.Count < _nodes.Count)
+        {
+            var current = result
+                .Where(kvp => !visited.Contains(kvp.Key))
+                .OrderBy(kvp => kvp.Value.Key)
+                .First()
+                .Key;
+
+            visited.Add(current);
+
+            foreach (var neighbor in _adjacencyList[current].Where(node => !visited.Contains(node)))
+            {
+                var newDistance = result[current].Key + _adjacencyMatrix[current.Id, neighbor.Id];
+                if (newDistance < result[neighbor].Key)
+                {
+                    result[neighbor] = new KeyValuePair<double, Node<T>>(newDistance, current);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>> BellmanFord<U>(U start)
+        where U : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!_adjacencyList.ContainsKey(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>>();
+
+        foreach (var node in _nodes)
+        {
+            result[node] = new KeyValuePair<double, Node<T>>(double.MaxValue, null);
+        }
+
+        result[startNode] = new KeyValuePair<double, Node<T>>(0, startNode);
+
+        for (int i = 0; i < _nodes.Count - 1; i++)
+        {
+            foreach (var edge in _edges)
+            {
+                var source = edge.SourceNode;
+                var target = edge.TargetNode;
+                var weight = edge.Weight;
+
+                if (result[source].Key + weight < result[target].Key)
+                {
+                    result[target] = new KeyValuePair<double, Node<T>>(
+                        result[source].Key + weight,
+                        source
+                    );
+                }
+            }
+        }
+
+        foreach (var edge in _edges)
+        {
+            var source = edge.SourceNode;
+            var target = edge.TargetNode;
+            var weight = edge.Weight;
+
+            if (result[source].Key + weight < result[target].Key)
+            {
+                throw new InvalidOperationException("Graph contains a negative-weight cycle.");
+            }
+        }
+
+        return result;
+    }
+
+    #endregion Shortest Paths
 
     #region Traversals
 
@@ -425,7 +493,7 @@ public class Graph<T>
     /// <exception cref="ArgumentException">
     /// Thrown if the start node type is invalid or the start node is not in the graph.
     /// </exception>
-    public List<Node<T>> DFSRecursive<U>(U start)
+    public List<Node<T>> DFS<U>(U start)
         where U : notnull
     {
         var startNode = ResolveNode(start);
@@ -442,186 +510,9 @@ public class Graph<T>
         return result;
     }
 
-    /// <summary>
-    /// Performs an iterative Depth-First Search (DFS) starting from the specified node.
-    /// Returns the visited nodes in the order they were discovered.
-    /// Supports input types: <see cref="Node"/>, <see cref="int"/> (Node ID), and <see cref="T"/> (Node Data).
-    /// </summary>
-    /// <typeparam name="T">
-    /// The type of the start node, which can be <see cref="Node"/>, <see cref="int"/>, or <see cref="string"/>.
-    /// </typeparam>
-    /// <param name="start">The node or identifier from which to start DFS.</param>
-    /// <returns>A list of node in the order they were visited.</returns>
-    /// <exception cref="ArgumentException">
-    /// Thrown if the start node type is invalid or the start node is not in the graph.
-    /// </exception>
-    public List<Node<T>> DFSIterative<U>(U start)
-        where U : notnull
-    {
-        var startNode = ResolveNode(start);
-
-        if (!_adjacencyList.ContainsKey(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new List<Node<T>>();
-        var stack = new Stack<Node<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        stack.Push(startNode);
-
-        while (stack.Count > 0)
-        {
-            var current = stack.Pop();
-            if (!visited.Contains(current))
-            {
-                visited.Add(current);
-                result.Add(current);
-
-                foreach (var neighbor in _adjacencyList[current])
-                {
-                    if (!visited.Contains(neighbor))
-                    {
-                        stack.Push(neighbor);
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
     #endregion Traversals
 
     #region Drawing
-
-#pragma warning disable CA1416
-    /// <summary>
-    /// Draws the graph to a PNG image file with nodes arranged in a circular layout.
-    /// </summary>
-    /// <param name="fileName">The base name of the output file (default is "graph").</param>
-    /// <remarks>
-    /// The final image is saved under <c>data/output/</c> with a timestamp
-    /// to avoid overwriting existing files.
-    /// </remarks>
-    public void DrawGraph(string fileName = "graph")
-    {
-        const int width = 800;
-        const int height = 600;
-
-        string filePath = $"data/output/{fileName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
-
-        int minDimension = Math.Min(width, height);
-        int nodeSize = Math.Max(20, Math.Min(40, minDimension / (2 * Math.Max(1, _nodes.Count))));
-
-        using var bitmap = new Bitmap(width, height);
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.Clear(Color.White);
-
-        var positions = new Dictionary<Node<T>, Point>();
-        int n = _nodes.Count;
-        double angleStep = 2 * Math.PI / n;
-        int radius = 200;
-        Point center = new Point(width / 2, height / 2);
-
-        int i = 0;
-        foreach (var node in _nodes)
-        {
-            double angle = i * angleStep;
-            int x = center.X + (int)(radius * Math.Cos(angle));
-            int y = center.Y + (int)(radius * Math.Sin(angle));
-
-            x = Math.Clamp(x, nodeSize, width - nodeSize);
-            y = Math.Clamp(y, nodeSize, height - nodeSize);
-
-            positions[node] = new Point(x, y);
-            i++;
-        }
-
-        using (var edgePen = new Pen(Color.Gray, 2))
-        {
-            foreach (var kvp in _adjacencyList)
-            {
-                var source = kvp.Key;
-                foreach (var target in kvp.Value)
-                {
-                    if (!_isDirected && source.Id < target.Id)
-                    {
-                        g.DrawLine(edgePen, positions[source], positions[target]);
-                    }
-                    else if (_isDirected)
-                    {
-                        int arrowSize = (int)(nodeSize * 0.4);
-                        double angle = Math.Atan2(
-                            positions[target].Y - positions[source].Y,
-                            positions[target].X - positions[source].X
-                        );
-
-                        float stopX =
-                            positions[target].X - (nodeSize / 2f * (float)Math.Cos(angle));
-                        float stopY =
-                            positions[target].Y - (nodeSize / 2f) * (float)Math.Sin(angle);
-
-                        g.DrawLine(edgePen, positions[source], new PointF(stopX, stopY));
-
-                        PointF arrowPoint1 = new PointF(
-                            stopX - arrowSize * (float)Math.Cos(angle - Math.PI / 6),
-                            stopY - arrowSize * (float)Math.Sin(angle - Math.PI / 6)
-                        );
-
-                        PointF arrowPoint2 = new PointF(
-                            stopX - arrowSize * (float)Math.Cos(angle + Math.PI / 6),
-                            stopY - arrowSize * (float)Math.Sin(angle + Math.PI / 6)
-                        );
-
-                        g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint1);
-                        g.DrawLine(edgePen, new PointF(stopX, stopY), arrowPoint2);
-                    }
-                }
-            }
-        }
-
-        using (var nodeBrush = new SolidBrush(Color.LightBlue))
-        using (var nodePen = new Pen(Color.Black, 1))
-        {
-            foreach (var node in _nodes)
-            {
-                Point p = positions[node];
-                var nodeRect = new Rectangle(
-                    p.X - nodeSize / 2,
-                    p.Y - nodeSize / 2,
-                    nodeSize,
-                    nodeSize
-                );
-
-                g.FillEllipse(nodeBrush, nodeRect);
-                g.DrawEllipse(nodePen, nodeRect);
-
-                string text = node.Data?.ToString() ?? node.Id.ToString();
-                using var font = new Font(SystemFonts.DefaultFont.FontFamily, 8);
-                SizeF textSize = g.MeasureString(text, font);
-
-                g.DrawString(
-                    text,
-                    font,
-                    Brushes.Black,
-                    p.X - textSize.Width / 2,
-                    p.Y - textSize.Height / 2
-                );
-            }
-        }
-
-        using (var memory = new MemoryStream())
-        {
-            bitmap.Save(memory, ImageFormat.Png);
-            byte[] bytes = memory.ToArray();
-            File.WriteAllBytes(filePath, bytes);
-        }
-    }
-
-#pragma warning restore CA1416
 
     /// <summary>
     /// Exports the graph to a DOT file, then uses GraphViz to generate a PNG image,
@@ -687,6 +578,38 @@ public class Graph<T>
                 "Unsupported type. Must be Node, int (Id), or T (Data)."
             ),
         };
+    }
+
+    /// <summary>
+    /// Builds or rebuilds the adjacency matrix for the graph by allocating
+    /// a new 2D array and setting the appropriate edge weights.
+    /// </summary>
+    private void BuildAdjacencyMatrix()
+    {
+        int n = _nodes.Count;
+        _adjacencyMatrix = new double[n, n];
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                _adjacencyMatrix[i, j] = 0.0;
+            }
+        }
+
+        foreach (Edge<T> edge in _edges)
+        {
+            int i = edge.SourceNode.Id;
+            int j = edge.TargetNode.Id;
+            double w = edge.Weight;
+
+            _adjacencyMatrix[i, j] = w;
+
+            if (!_isDirected)
+            {
+                _adjacencyMatrix[j, i] = w;
+            }
+        }
     }
 
     #region Cycle Detection Helpers
