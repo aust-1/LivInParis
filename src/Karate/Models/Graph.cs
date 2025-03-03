@@ -36,26 +36,16 @@ public class Graph<T>
     /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
     /// the presence (or weight) of an edge from <c>i</c> to <c>j</c>.
     /// </summary>
-    private double[,]? _adjacencyMatrix;
+    private double[,] _adjacencyMatrix;
+
+    /// <summary>
+    /// Distance matrix for the graph, computed using Floyd-Warshall algorithm.
+    /// </summary>
+    private double[,]? _distanceMatrix;
 
     #endregion Fields
 
     #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Graph"/> class, optionally as directed or undirected.
-    /// </summary>
-    /// <param name="isDirected">
-    /// <c>true</c> if the graph should be directed; <c>false</c> for an undirected graph.
-    /// </param>
-    public Graph(bool isDirected = false)
-    {
-        _nodes = new SortedSet<Node<T>>();
-        _edges = new List<Edge<T>>();
-        _isDirected = isDirected;
-        _adjacencyList = new SortedDictionary<Node<T>, SortedSet<Node<T>>>();
-        _adjacencyMatrix = null;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Graph"/> class from a given adjacency list.
@@ -119,7 +109,30 @@ public class Graph<T>
                 double weight = adjacencyMatrix[source.Id, target.Id];
                 if (!Equals(weight, 0.0))
                 {
-                    AddEdge(new Edge<T>(source, target, weight, _isDirected));
+                    var edge = new Edge<T>(source, target, weight, _isDirected);
+                    
+                    if (_isDirected && _edges.Contains(edge))
+                    {
+                        continue;
+                    }
+
+                    _edges.Add(edge);
+
+                    if (!_adjacencyList.ContainsKey(edge.SourceNode))
+                    {
+                        _adjacencyList[edge.SourceNode] = new SortedSet<Node<T>>();
+                    }
+                    if (!_adjacencyList.ContainsKey(edge.TargetNode))
+                    {
+                        _adjacencyList[edge.TargetNode] = new SortedSet<Node<T>>();
+                    }
+
+                    _adjacencyList[edge.SourceNode].Add(edge.TargetNode);
+
+                    if (!_isDirected)
+                    {
+                        _adjacencyList[edge.TargetNode].Add(edge.SourceNode);
+                    }
                 }
             }
         }
@@ -128,26 +141,6 @@ public class Graph<T>
     #endregion Constructors
 
     #region Properties
-
-    /// <summary>
-    /// Gets the adjacency matrix representing the graph. If not yet built, it will be constructed on-demand.
-    /// </summary>
-    public double[,]? AdjacencyMatrix
-    {
-        get
-        {
-            BuildAdjacencyMatrix();
-            return _adjacencyMatrix;
-        }
-    }
-
-    /// <summary>
-    /// Gets the adjacency list representing the graph.
-    /// </summary>
-    public SortedDictionary<Node<T>, SortedSet<Node<T>>> AdjacencyList
-    {
-        get { return _adjacencyList; }
-    }
 
     /// <summary>
     /// Gets the set of all nodes in this graph.
@@ -163,6 +156,38 @@ public class Graph<T>
     public List<Edge<T>> Edges
     {
         get { return _edges; }
+    }
+
+    /// <summary>
+    /// Gets the adjacency list representing the graph.
+    /// </summary>
+    public SortedDictionary<Node<T>, SortedSet<Node<T>>> AdjacencyList
+    {
+        get { return _adjacencyList; }
+    }
+
+    /// <summary>
+    /// Gets the adjacency matrix representing the graph.
+    /// </summary>
+    public double[,] AdjacencyMatrix
+    {
+        get
+        {
+            return _adjacencyMatrix;
+        }
+    }
+
+    /// <summary>
+    /// Gets the distance matrix for the graph, computed using the Floyd-Warshall algorithm.
+    /// If not yet computed, it will be calculated on-demand.
+    /// </summary>
+    public double[,] DistanceMatrix
+    {
+        get
+        {
+            _distanceMatrix = RoyFloydWarshall();
+            return _distanceMatrix;
+        }
     }
 
     /// <summary>
@@ -226,49 +251,6 @@ public class Graph<T>
     #endregion Properties
 
     #region Public Methods
-
-    /// <summary>
-    /// Adds a node to the graph. If the node is new, it is also added to the adjacency list.
-    /// </summary>
-    /// <param name="node">The node to add.</param>
-    public void AddNode(Node<T> node)
-    {
-        _nodes.Add(node);
-        if (!_adjacencyList.ContainsKey(node))
-        {
-            _adjacencyList[node] = new SortedSet<Node<T>>();
-        }
-    }
-
-    /// <summary>
-    /// Adds an edge between two existing nodes in the graph.
-    /// </summary>
-    /// <param name="edge">The edge to add, containing source, target, and (optionally) weight.</param>
-    public void AddEdge(Edge<T> edge)
-    {
-        if (_isDirected && _edges.Contains(edge))
-        {
-            return;
-        }
-
-        _edges.Add(edge);
-
-        if (!_adjacencyList.ContainsKey(edge.SourceNode))
-        {
-            _adjacencyList[edge.SourceNode] = new SortedSet<Node<T>>();
-        }
-        if (!_adjacencyList.ContainsKey(edge.TargetNode))
-        {
-            _adjacencyList[edge.TargetNode] = new SortedSet<Node<T>>();
-        }
-
-        _adjacencyList[edge.SourceNode].Add(edge.TargetNode);
-
-        if (!_isDirected)
-        {
-            _adjacencyList[edge.TargetNode].Add(edge.SourceNode);
-        }
-    }
 
     /// <summary>
     /// Finds any cycle in the graph, either in a directed or undirected manner.
@@ -428,6 +410,36 @@ public class Graph<T>
         return result;
     }
 
+    public double[,] RoyFloydWarshall()
+    {
+        int n = _nodes.Count;
+        double[,] distanceMatrix = new double[n, n];
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                distanceMatrix[i, j] = _adjacencyMatrix[i, j];
+            }
+        }
+
+        for (int k = 0; k < n; k++)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (distanceMatrix[i, k] + distanceMatrix[k, j] < distanceMatrix[i, j])
+                    {
+                        distanceMatrix[i, j] = distanceMatrix[i, k] + distanceMatrix[k, j];
+                    }
+                }
+            }
+        }
+
+        return distanceMatrix;
+    }
+
     #endregion Shortest Paths
 
     #region Traversals
@@ -578,38 +590,6 @@ public class Graph<T>
                 "Unsupported type. Must be Node, int (Id), or T (Data)."
             ),
         };
-    }
-
-    /// <summary>
-    /// Builds or rebuilds the adjacency matrix for the graph by allocating
-    /// a new 2D array and setting the appropriate edge weights.
-    /// </summary>
-    private void BuildAdjacencyMatrix()
-    {
-        int n = _nodes.Count;
-        _adjacencyMatrix = new double[n, n];
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                _adjacencyMatrix[i, j] = 0.0;
-            }
-        }
-
-        foreach (Edge<T> edge in _edges)
-        {
-            int i = edge.SourceNode.Id;
-            int j = edge.TargetNode.Id;
-            double w = edge.Weight;
-
-            _adjacencyMatrix[i, j] = w;
-
-            if (!_isDirected)
-            {
-                _adjacencyMatrix[j, i] = w;
-            }
-        }
     }
 
     #region Cycle Detection Helpers
