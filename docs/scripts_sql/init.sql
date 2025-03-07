@@ -8,9 +8,13 @@ CREATE TABLE COMPTE(
 );
 
 CREATE TABLE INGREDIENT(
-   nom VARCHAR(50),
-   regimes VARCHAR(50),
-   PRIMARY KEY(nom)
+   ingredient_nom VARCHAR(50),
+   est_vegetarien BOOLEAN,
+   est_vegan BOOLEAN,
+   est_sans_gluten BOOLEAN,
+   est_halal BOOLEAN,
+   est_casher BOOLEAN,
+   PRIMARY KEY(ingredient_nom)
 );
 
 CREATE TABLE ADRESSE(
@@ -21,20 +25,20 @@ CREATE TABLE ADRESSE(
 );
 
 CREATE TABLE MET(
-   nom_met VARCHAR(50),
-   type VARCHAR(50),
+   met_nom VARCHAR(50),
+   met_type ENUM('entree', 'plat', 'desert'),
    date_fabrication DATE,
    date_peremption DATE,
    nationalité VARCHAR(50),
    quantité INT,
    prix VARCHAR(50),
    photo TEXT,
-   PRIMARY KEY(nom_met)
+   PRIMARY KEY(met_nom)
 );
 
 CREATE TABLE CLIENT(
    compte_id VARCHAR(50),
-   client_note DECIMAL(3,2),
+   client_note DECIMAL(2,1),
    montant_achats_cumules DECIMAL(15,2),
    est_radie BOOLEAN,
    PRIMARY KEY(compte_id),
@@ -43,7 +47,7 @@ CREATE TABLE CLIENT(
 
 CREATE TABLE CUISINIER(
    compte_id VARCHAR(50),
-   cuisinier_note DECIMAL(3,2),
+   cuisinier_note DECIMAL(2,1),
    cuisinier_mange_sur_place BOOLEAN,
    est_radie BOOLEAN,
    numero INT NOT NULL,
@@ -55,7 +59,7 @@ CREATE TABLE CUISINIER(
 
 CREATE TABLE TRANSACTION(
    transaction_id INT,
-   prix_tot DECIMAL(6,2),
+   transaction_date_heure DATETIME,
    compte_id VARCHAR(50) NOT NULL,
    PRIMARY KEY(transaction_id),
    FOREIGN KEY(compte_id) REFERENCES CLIENT(compte_id)
@@ -63,7 +67,7 @@ CREATE TABLE TRANSACTION(
 
 CREATE TABLE ENTREPRISE(
    compte_id VARCHAR(50),
-   nom VARCHAR(50),
+   entreprise_nom VARCHAR(50),
    prenom_referent VARCHAR(50),
    nom_referent VARCHAR(50),
    PRIMARY KEY(compte_id),
@@ -85,19 +89,16 @@ CREATE TABLE PARTICULIER(
 
 CREATE TABLE COMMANDE(
    commande_id INT,
-   date_heure DATETIME,
+   commande_date_heure DATETIME,
    duree VARCHAR(50),
-   statut ENUM('en attente', 'préparée', 'en livraison', 'livrée'),
+   statut ENUM('en attente', 'preparee', 'en livraison', 'livree'),
    commande_mange_sur_place BOOLEAN,
    numero INT NOT NULL,
    rue VARCHAR(50) NOT NULL,
-   numero_1 INT NOT NULL,
-   rue_1 VARCHAR(50) NOT NULL,
    transaction_id INT NOT NULL,
    compte_id VARCHAR(50) NOT NULL,
    PRIMARY KEY(commande_id),
    FOREIGN KEY(numero, rue) REFERENCES ADRESSE(numero, rue),
-   FOREIGN KEY(numero_1, rue_1) REFERENCES ADRESSE(numero, rue),
    FOREIGN KEY(transaction_id) REFERENCES TRANSACTION(transaction_id),
    FOREIGN KEY(compte_id) REFERENCES CUISINIER(compte_id)
 );
@@ -105,7 +106,7 @@ CREATE TABLE COMMANDE(
 CREATE TABLE AVIS(
    avis_id INT,
    avis_type ENUM('client', 'cuisinier'),
-   note DECIMAL(3,2),
+   note DECIMAL(2,1),
    commentaire VARCHAR(500),
    avis_date DATE,
    commande_id INT NOT NULL,
@@ -116,17 +117,16 @@ CREATE TABLE AVIS(
 CREATE TABLE PROPOSITION(
    compte_id VARCHAR(50),
    jour DATE,
-   nom_met VARCHAR(50) NOT NULL,
+   met_nom VARCHAR(50) NOT NULL,
    PRIMARY KEY(compte_id, jour),
    FOREIGN KEY(compte_id) REFERENCES CUISINIER(compte_id),
-   FOREIGN KEY(nom_met) REFERENCES MET(nom_met)
+   FOREIGN KEY(met_nom) REFERENCES MET(met_nom)
 );
 
 CREATE TABLE CONTIENT(
-   nom VARCHAR(50),
-   nom_met VARCHAR(50),
-   quantité DOUBLE,
-   PRIMARY KEY(nom, nom_met),
-   FOREIGN KEY(nom) REFERENCES INGREDIENT(nom),
-   FOREIGN KEY(nom_met) REFERENCES MET(nom_met)
+   ingredient_nom VARCHAR(50),
+   met_nom VARCHAR(50),
+   PRIMARY KEY(ingredient_nom, met_nom),
+   FOREIGN KEY(ingredient_nom) REFERENCES INGREDIENT(ingredient_nom),
+   FOREIGN KEY(met_nom) REFERENCES MET(met_nom)
 );
