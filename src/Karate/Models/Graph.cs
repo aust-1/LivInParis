@@ -110,7 +110,7 @@ public class Graph<T>
                 if (!Equals(weight, 0.0))
                 {
                     var edge = new Edge<T>(source, target, weight, _isDirected);
-                    
+
                     if (_isDirected && _edges.Contains(edge))
                     {
                         continue;
@@ -171,10 +171,7 @@ public class Graph<T>
     /// </summary>
     public double[,] AdjacencyMatrix
     {
-        get
-        {
-            return _adjacencyMatrix;
-        }
+        get { return _adjacencyMatrix; }
     }
 
     /// <summary>
