@@ -8,7 +8,7 @@
         {
             string fileName = "soc-karate";
 
-            Graph graph = new Graph(MtxToAdjacencyMatrix(fileName));
+            Graph<int> graph = new Graph<int>(MtxToAdjacencyMatrix(fileName));
             //Graph graph = new Graph(TxtToAdjacencyList(fileName)); //Quel était le bon fichier ?
 
             Console.WriteLine("=== Informations sur le Graphe ===");
@@ -21,11 +21,11 @@
             Console.WriteLine("\n=== Liste des Nœuds et leurs connexions ===");
             foreach (var node in graph.Nodes)
             {
-                Console.Write($"{node.Name} -> ");
+                Console.Write($"{node.Data} -> ");
                 if (graph.AdjacencyList.ContainsKey(node))
                 {
                     Console.WriteLine(
-                        string.Join(", ", graph.AdjacencyList[node].Select(n => n.Name))
+                        string.Join(", ", graph.AdjacencyList[node].Select(n => n.Data))
                     );
                 }
                 else
@@ -46,7 +46,7 @@
 
             // Parcours en Profondeur d'abord (DFS)
             Console.WriteLine("\n=== DFS depuis le nœud 1 ===");
-            var dfs1 = graph.DFSIterative(1);
+            var dfs1 = graph.DFS(1);
             Console.WriteLine("Ordre DFS : " + string.Join(" -> ", dfs1));
 
             // Détection des cycles
@@ -58,7 +58,6 @@
             Console.WriteLine("Cycle détecté (sans restrictions) : " + (cycle ?? "Aucun"));
 
             // Dessin du graphe
-            graph.DrawGraph("karate_graph");
             graph.DisplayGraph("dot_graph");
             graph.DisplayGraph("circo_graph", "circo");
 
@@ -122,9 +121,11 @@
             return adjacencyMatrix;
         }
 
-        private static SortedDictionary<Node, SortedSet<Node>> MtxToAdjacencyList(string fileName)
+        private static SortedDictionary<Node<int>, SortedSet<Node<int>>> MtxToAdjacencyList(
+            string fileName
+        )
         {
-            SortedDictionary<Node, SortedSet<Node>> adjacencyList = new();
+            SortedDictionary<Node<int>, SortedSet<Node<int>>> adjacencyList = new();
             string file = dataDirectory + fileName + ".mtx";
             StreamReader? sReader = null;
 
@@ -140,8 +141,8 @@
                         int numNodes = Convert.ToInt32(parts[0]);
                         for (int i = 1; i <= numNodes; i++)
                         {
-                            Node node = Node.GetOrCreateNode(i);
-                            adjacencyList[node] = new SortedSet<Node>();
+                            Node<int> node = Node<int>.GetOrCreateNode(i);
+                            adjacencyList[node] = new SortedSet<Node<int>>();
                         }
                         break;
                     }
@@ -155,8 +156,8 @@
                         string[] parts = line.Split(' ');
                         int source = Convert.ToInt32(parts[0]) - 1;
                         int target = Convert.ToInt32(parts[1]) - 1;
-                        Node sourceNode = Node.GetOrCreateNode(source);
-                        Node targetNode = Node.GetOrCreateNode(target);
+                        Node<int> sourceNode = Node<int>.GetOrCreateNode(source);
+                        Node<int> targetNode = Node<int>.GetOrCreateNode(target);
                         adjacencyList[sourceNode].Add(targetNode);
                         adjacencyList[targetNode].Add(sourceNode);
                     }
@@ -206,15 +207,15 @@
                             StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
                         );
 
-                        Node sourceNode = Node.GetOrCreateNode(parts[0]);
-                        Node targetNode = Node.GetOrCreateNode(parts[1]);
+                        Node<int> sourceNode = Node<int>.GetOrCreateNode(Convert.ToInt32(parts[0]));
+                        Node<int> targetNode = Node<int>.GetOrCreateNode(Convert.ToInt32(parts[1]));
                         int weight = Convert.ToInt32(parts[2]);
 
                         liens.Add($"{sourceNode.Id} {targetNode.Id} {weight}");
                     }
                 }
 
-                int numNodes = Node.Count;
+                int numNodes = Node<int>.Count;
                 adjacencyMatrix = new double[numNodes, numNodes];
                 foreach (string lien in liens)
                 {
@@ -249,9 +250,11 @@
             return adjacencyMatrix;
         }
 
-        private static SortedDictionary<Node, SortedSet<Node>> TxtToAdjacencyList(string fileName)
+        private static SortedDictionary<Node<int>, SortedSet<Node<int>>> TxtToAdjacencyList(
+            string fileName
+        )
         {
-            SortedDictionary<Node, SortedSet<Node>> adjacencyList = new();
+            SortedDictionary<Node<int>, SortedSet<Node<int>>> adjacencyList = new();
             string file = dataDirectory + fileName + ".txt";
             StreamReader? sReader = null;
 
@@ -267,19 +270,19 @@
                             new[] { '(', ',', ')' },
                             StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
                         );
-                        string source = parts[0];
-                        string target = parts[1];
+                        int source = Convert.ToInt32(parts[0]);
+                        int target = Convert.ToInt32(parts[1]);
 
-                        Node sourceNode = Node.GetOrCreateNode(source);
-                        Node targetNode = Node.GetOrCreateNode(target);
+                        Node<int> sourceNode = Node<int>.GetOrCreateNode(source);
+                        Node<int> targetNode = Node<int>.GetOrCreateNode(target);
 
                         if (!adjacencyList.ContainsKey(sourceNode))
                         {
-                            adjacencyList[sourceNode] = new SortedSet<Node>();
+                            adjacencyList[sourceNode] = new SortedSet<Node<int>>();
                         }
                         if (!adjacencyList.ContainsKey(targetNode))
                         {
-                            adjacencyList[targetNode] = new SortedSet<Node>();
+                            adjacencyList[targetNode] = new SortedSet<Node<int>>();
                         }
 
                         adjacencyList[sourceNode].Add(targetNode);
