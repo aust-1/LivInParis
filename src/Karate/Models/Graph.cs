@@ -571,7 +571,7 @@ public class Graph<T>
     /// Resolves a given object into a <see cref="Node"/>.
     /// Supported types: <see cref="Node"/>, <see cref="int"/>, <see cref="T"/>.
     /// </summary>
-    /// <typeparam name="T">The type to resolve.</typeparam>
+    /// <typeparam name="U">The type to resolve.</typeparam>
     /// <param name="start">The node or ID/data to convert to a <see cref="Node"/>.</param>
     /// <returns>The corresponding <see cref="Node"/> object.</returns>
     /// <exception cref="ArgumentException">Thrown if the type is unsupported.</exception>
