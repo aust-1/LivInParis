@@ -79,7 +79,7 @@ public class Graph<T>
     /// <summary>
     /// The distance matrix, computed via the Floyd-Warshall (Roy-Floyd) algorithm.
     /// </summary>
-    private readonly double[,]? _distanceMatrix;
+    private readonly double[,] _distanceMatrix;
 
     #endregion Fields
 
@@ -172,8 +172,7 @@ public class Graph<T>
                 double weight = _adjacencyMatrix[source.Id, target.Id];
                 if (Math.Abs(weight - double.MaxValue) > 1e-9)
                 {
-                    var edge = new Edge<T>(source, target, weight, _isDirected);
-                    _edges.Add(edge);
+                    _edges.Add(new Edge<T>(source, target, weight, _isDirected));
 
                     _adjacencyList[source].Add(target);
 
