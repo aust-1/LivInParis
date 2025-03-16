@@ -110,6 +110,7 @@ public class Graph<T>
             {
                 _adjacencyMatrix[i, j] = double.MaxValue;
             }
+            _adjacencyMatrix[i, i] = 0.0;
         }
 
         foreach (var kvp in adjacencyList)
@@ -170,7 +171,7 @@ public class Graph<T>
                 }
 
                 double weight = _adjacencyMatrix[source.Id, target.Id];
-                if (Math.Abs(weight - double.MaxValue) > 1e-9)
+                if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
                 {
                     _edges.Add(new Edge<T>(source, target, weight, _isDirected));
 
