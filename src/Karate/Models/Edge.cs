@@ -3,13 +3,18 @@
 /// <summary>
 /// Represents an edge (or arc) connecting two nodes in a graph.
 /// </summary>
+/// <typeparam name="T">
+/// The type of data stored in the connected nodes.
+/// </typeparam>
 /// <remarks>
 /// <para>
-/// In an undirected graph, the target node is simply the other endpoint,
-/// and reversing the source and target is considered equivalent.
+/// In an undirected graph, swapping the source and target nodes
+/// is considered equivalent. If <c>IsDirected</c> is <c>false</c>,
+/// reversing the direction does not create a new, distinct edge.
 /// </para>
 /// <para>
-/// In a weighted graph, the <see cref="Weight"/> can store cost, distance, capacity, or any other metric.
+/// In a weighted graph, the <see cref="Weight"/> can store cost, distance,
+/// capacity, or any other relevant metric.
 /// </para>
 /// </remarks>
 public sealed class Edge<T> : IEquatable<Edge<T>>
@@ -17,22 +22,23 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     #region Fields
 
     /// <summary>
-    /// The source node of this edge.
+    /// The source node for this edge.
     /// </summary>
     private readonly Node<T> _sourceNode;
 
     /// <summary>
-    /// The target node of this edge.
+    /// The target node for this edge.
     /// </summary>
     private readonly Node<T> _targetNode;
 
     /// <summary>
-    /// The weight of the edge, with a default of 1.0.
+    /// The numeric weight of this edge, defaulting to 1.0.
     /// </summary>
     private readonly double _weight;
 
     /// <summary>
-    /// Indicates whether this edge is directed (true) or undirected (false).
+    /// A value indicating whether this edge is directed.
+    /// <c>true</c> implies a directed edge; <c>false</c> implies undirected.
     /// </summary>
     private readonly bool _isDirected;
 
@@ -41,13 +47,14 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Edge"/> class.
+    /// Initializes a new instance of the <see cref="Edge{T}"/> class.
     /// </summary>
     /// <param name="sourceNode">The source node of this edge.</param>
     /// <param name="targetNode">The target node of this edge.</param>
-    /// <param name="weight">The weight of this edge (default is 1.0).</param>
+    /// <param name="weight">An optional weight for this edge (default is 1.0).</param>
     /// <param name="isDirected">
-    /// <c>true</c> if the edge is directed; <c>false</c> if it is undirected (default is false).
+    /// <c>true</c> if the edge is directed;
+    /// <c>false</c> if it is undirected (default is <c>false</c>).
     /// </param>
     public Edge(
         Node<T> sourceNode,
@@ -83,7 +90,7 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     }
 
     /// <summary>
-    /// Gets the weight associated with this edge.
+    /// Gets the numeric weight of this edge.
     /// </summary>
     public double Weight
     {
@@ -100,30 +107,39 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
 
     #endregion Properties
 
-    #region Methods
+    #region Public Methods
 
     /// <summary>
     /// Returns a string representation of this edge.
     /// </summary>
     /// <remarks>
-    /// In a directed context, this takes the form: Source --(Weight)--> Target.
+    /// In a directed context, this takes the form:
+    /// <c>Source --(Weight)--> Target</c>.
     /// </remarks>
-    /// <returns>A string describing the source, target, and weight.</returns>
+    /// <returns>
+    /// A string describing the source node, target node, and weight of the edge.
+    /// </returns>
     public override string ToString()
     {
         return $"Edge: {_sourceNode.Id} --({_weight})--> {_targetNode.Id}";
     }
 
-    #endregion Methods
+    #endregion Public Methods
 
-    #region IEquatable<Edge> Implementation
+    #region Equality and IEquatable Implementation
 
     /// <summary>
-    /// Determines whether the specified <see cref="Edge"/> is equal to the current <see cref="Edge"/>.
+    /// Determines whether the specified <see cref="Edge{T}"/> is equal
+    /// to the current <see cref="Edge{T}"/>, considering directedness,
+    /// source, target, and weight.
     /// </summary>
-    /// <param name="other">The other <see cref="Edge"/> to compare with this instance.</param>
+    /// <param name="other">
+    /// The other <see cref="Edge{T}"/> to compare with this instance.
+    /// </param>
     /// <returns>
-    /// <c>true</c> if the specified <see cref="Edge"/> is equal to this instance; otherwise, <c>false</c>.
+    /// <c>true</c> if both edges represent the same connection (orientation, weight),
+    /// or if both are undirected and effectively reversed of one another;
+    /// otherwise, <c>false</c>.
     /// </returns>
     public bool Equals(Edge<T>? other)
     {
@@ -153,11 +169,14 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     }
 
     /// <summary>
-    /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="Edge"/>.
+    /// Determines whether the specified <see cref="object"/> is equal
+    /// to the current <see cref="Edge{T}"/>.
     /// </summary>
-    /// <param name="obj">The object to compare with this edge.</param>
+    /// <param name="obj">
+    /// Another object to compare with this edge, which should also be an <see cref="Edge{T}"/>.
+    /// </param>
     /// <returns>
-    /// <c>true</c> if the specified object is an <see cref="Edge"/> and is considered equal;
+    /// <c>true</c> if <paramref name="obj"/> is an equivalent <see cref="Edge{T}"/>;
     /// otherwise, <c>false</c>.
     /// </returns>
     public override bool Equals(object? obj)
@@ -170,13 +189,16 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     }
 
     /// <summary>
-    /// Returns the hash code for this <see cref="Edge"/>.
+    /// Returns the hash code for this edge, combining source, target, weight,
+    /// and the directedness flag.
     /// </summary>
     /// <remarks>
-    /// Combines the hash codes of the source node, target node,
-    /// weight, and the directedness flag.
+    /// Ensures that edges that are considered equal produce the same hash code
+    /// in both directed and undirected contexts.
     /// </remarks>
-    /// <returns>An integer hash code.</returns>
+    /// <returns>
+    /// An integer hash code derived from the fields of this edge.
+    /// </returns>
     public override int GetHashCode()
     {
         unchecked
@@ -190,16 +212,19 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
         }
     }
 
-    #endregion IEquatable<Edge> Implementation
+    #endregion Equality and IEquatable Implementation
 
     #region Operators
 
     /// <summary>
-    /// Checks equality of two <see cref="Edge"/> objects.
+    /// Checks whether two <see cref="Edge{T}"/> objects are equivalent.
     /// </summary>
-    /// <param name="left">The left <see cref="Edge"/>.</param>
-    /// <param name="right">The right <see cref="Edge"/>.</param>
-    /// <returns><c>true</c> if the edges are equal, otherwise <c>false</c>.</returns>
+    /// <param name="left">The left <see cref="Edge{T}"/>.</param>
+    /// <param name="right">The right <see cref="Edge{T}"/>.</param>
+    /// <returns>
+    /// <c>true</c> if <paramref name="left"/> and <paramref name="right"/> are equal;
+    /// otherwise <c>false</c>.
+    /// </returns>
     public static bool operator ==(Edge<T>? left, Edge<T>? right)
     {
         if (left is null)
@@ -210,11 +235,14 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     }
 
     /// <summary>
-    /// Checks inequality of two <see cref="Edge"/> objects.
+    /// Checks whether two <see cref="Edge{T}"/> objects differ.
     /// </summary>
-    /// <param name="left">The left <see cref="Edge"/>.</param>
-    /// <param name="right">The right <see cref="Edge"/>.</param>
-    /// <returns><c>true</c> if the edges are not equal, otherwise <c>false</c>.</returns>
+    /// <param name="left">The left <see cref="Edge{T}"/>.</param>
+    /// <param name="right">The right <see cref="Edge{T}"/>.</param>
+    /// <returns>
+    /// <c>true</c> if <paramref name="left"/> and <paramref name="right"/>
+    /// are not equal; otherwise <c>false</c>.
+    /// </returns>
     public static bool operator !=(Edge<T>? left, Edge<T>? right)
     {
         return !(left == right);

@@ -1,18 +1,19 @@
 ﻿namespace Karate.Models;
 
 /// <summary>
-/// Represents a node in a graph.
+/// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.
 /// </summary>
+/// <typeparam name="T">
+/// The type of data that this node holds. Must be unique among nodes within the static dictionary.
+/// </typeparam>
 /// <remarks>
 /// <para>
-/// A static dictionary (<see cref="_existingNodes"/>) maps an integer ID to
-/// the corresponding node instance. Node names must be unique. Attempting
-/// to create a node with a duplicate name will result in an <see cref="ArgumentException"/>.
+/// A static dictionary (<see cref="_existingNodes"/>) maps integer IDs to node instances.
+/// Attempting to create a node with duplicate data will result in an <see cref="ArgumentException"/>.
 /// </para>
 /// <para>
-/// Because the dictionary is static, it applies across the entire application
-/// domain. This may introduce collisions if you instantiate multiple graphs,
-/// each requiring unique node sets.
+/// This static approach applies across the entire application domain, potentially causing collisions
+/// if multiple graphs are created in the same process.
 /// </para>
 /// </remarks>
 public class Node<T> : IComparable<Node<T>>
@@ -20,18 +21,17 @@ public class Node<T> : IComparable<Node<T>>
     #region Fields
 
     /// <summary>
-    /// Static dictionary mapping integer IDs to node instances.
-    /// Ensures each node can be retrieved by ID.
+    /// A static dictionary that associates each node's integer ID with the node instance.
     /// </summary>
-    private static SortedDictionary<int, Node<T>> _existingNodes = new();
+    private static readonly SortedDictionary<int, Node<T>> _existingNodes = new();
 
     /// <summary>
-    /// The unique identifier for this node.
+    /// The unique integer ID for this node.
     /// </summary>
     private readonly int _id;
 
     /// <summary>
-    /// The data of this node (must be unique among all nodes).
+    /// The data stored in this node.
     /// </summary>
     private readonly T _data;
 
@@ -40,19 +40,20 @@ public class Node<T> : IComparable<Node<T>>
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Node"/> class with the specified name.
-    /// If the name is empty or whitespace, a name is auto-generated based on the next ID.
+    /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
+    /// Throws an <see cref="ArgumentException"/> if another node already holds the same data.
     /// </summary>
     /// <param name="data">
-    /// The data of this node. Must be unique among all nodes;
-    /// otherwise, an <see cref="ArgumentException"/> is thrown.
+    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
     /// </param>
-    /// <exception cref="ArgumentException">Thrown if the data is already in use by another node.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown if a node with the same data already exists.
+    /// </exception>
     public Node(T data)
     {
         int nextId = _existingNodes.Count;
 
-        if (_existingNodes.Any(kvp => kvp.Value.Data?.Equals(data) == true))
+        if (_existingNodes.Values.Any(existingNode => existingNode.Data?.Equals(data) == true))
         {
             throw new ArgumentException($"A node with the data '{data}' already exists.");
         }
@@ -67,7 +68,7 @@ public class Node<T> : IComparable<Node<T>>
     #region Properties
 
     /// <summary>
-    /// Gets the unique identifier for this node.
+    /// Gets the unique integer ID for this node.
     /// </summary>
     public int Id
     {
@@ -75,7 +76,7 @@ public class Node<T> : IComparable<Node<T>>
     }
 
     /// <summary>
-    /// Gets the data of this node.
+    /// Gets the data stored in this node.
     /// </summary>
     public T Data
     {
@@ -85,6 +86,9 @@ public class Node<T> : IComparable<Node<T>>
     /// <summary>
     /// Gets the total number of nodes that have been created so far.
     /// </summary>
+    /// <value>
+    /// The current count of all nodes in <see cref="_existingNodes"/>.
+    /// </value>
     public static int Count
     {
         get { return _existingNodes.Count; }
@@ -95,34 +99,33 @@ public class Node<T> : IComparable<Node<T>>
     #region Static Methods
 
     /// <summary>
-    /// Retrieves a node by its data, or creates a new node if none is found with that data.
+    /// Retrieves an existing node with the specified data,
+    /// or creates a new one if none is found.
     /// </summary>
-    /// <param name="dataToFind">The data of the node to retrieve or create.</param>
+    /// <param name="dataToFind">The data to locate or assign to a new node.</param>
     /// <returns>
-    /// The existing node if one matches <paramref name="dataToFind"/>,
-    /// otherwise a new node is created and returned.
+    /// The existing node if found, or a newly created node if not.
     /// </returns>
     public static Node<T> GetOrCreateNode(T dataToFind)
     {
-        foreach (Node<T> existingNode in _existingNodes.Values)
+        foreach (var node in _existingNodes.Values)
         {
-            if (existingNode.Data != null && existingNode.Data.Equals(dataToFind))
+            if (node.Data != null && node.Data.Equals(dataToFind))
             {
-                return existingNode;
+                return node;
             }
         }
-
         return new Node<T>(dataToFind);
     }
 
     /// <summary>
-    /// Retrieves a node by its ID.
+    /// Retrieves a node by its integer ID.
     /// </summary>
     /// <param name="idToFind">The ID of the node to retrieve.</param>
-    /// <returns>
-    /// The existing node if one matches <paramref name="idToFind"/>.
-    /// </returns>
-    /// <exception cref="KeyNotFoundException">Thrown if no node is found with the specified ID.</exception>
+    /// <returns>The <see cref="Node{T}"/> with the specified ID.</returns>
+    /// <exception cref="KeyNotFoundException">
+    /// Thrown if no node with the specified ID is found in <see cref="_existingNodes"/>.
+    /// </exception>
     public static Node<T> GetNode(int idToFind)
     {
         if (_existingNodes.TryGetValue(idToFind, out Node<T>? node))
@@ -138,9 +141,9 @@ public class Node<T> : IComparable<Node<T>>
     #region Public Methods
 
     /// <summary>
-    /// Returns a string representation of the current node, including its ID and name.
+    /// Returns a string that represents the current node, including its ID and data.
     /// </summary>
-    /// <returns>A string in the form "Node: Id={ID}, Name={Name}".</returns>
+    /// <returns>A string in the format: "Node: Id={ID}, Data={Data}".</returns>
     public override string ToString()
     {
         return $"Node: Id={_id}, Data={_data}";
@@ -148,15 +151,15 @@ public class Node<T> : IComparable<Node<T>>
 
     #endregion Public Methods
 
-    #region IComparable<Node> Implementation
+    #region IComparable<Node<T>> Implementation
 
     /// <summary>
-    /// Compares this node to another node by their IDs.
+    /// Compares this node to another <see cref="Node{T}"/> by their IDs.
     /// </summary>
-    /// <param name="other">The other <see cref="Node"/> to compare with.</param>
+    /// <param name="other">Another node to compare with this instance.</param>
     /// <returns>
-    /// A negative value if this node's ID is less than the other's ID,
-    /// zero if the IDs are equal, or a positive value if this node's ID is greater.
+    /// A negative number if this node's ID is less than <paramref name="other"/>'s ID,
+    /// zero if the IDs are the same, or a positive number if this node's ID is greater.
     /// </returns>
     public int CompareTo(Node<T>? other)
     {
@@ -173,32 +176,31 @@ public class Node<T> : IComparable<Node<T>>
     }
 
     /// <summary>
-    /// Determines whether the specified object is equal to this node,
-    /// comparing by ID.
+    /// Determines whether the specified object is equal to this node, comparing by ID.
     /// </summary>
-    /// <param name="obj">The object to compare with the current node.</param>
+    /// <param name="obj">Another object to compare with this node.</param>
     /// <returns>
-    /// <c>true</c> if the specified object is a <see cref="Node"/> with the same ID;
+    /// <c>true</c> if <paramref name="obj"/> is a <see cref="Node{T}"/> with the same ID;
     /// otherwise, <c>false</c>.
     /// </returns>
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
-        {
-            return false;
-        }
         if (ReferenceEquals(this, obj))
         {
             return true;
+        }
+        if (obj is null)
+        {
+            return false;
         }
 
         return obj is Node<T> other && other._id == _id;
     }
 
     /// <summary>
-    /// Gets the hash code for this node, based on its unique ID.
+    /// Returns a hash code for this node, based on its unique ID.
     /// </summary>
-    /// <returns>An integer hash code derived from the node's ID.</returns>
+    /// <returns>An integer hash code that reflects this node's ID.</returns>
     public override int GetHashCode()
     {
         return _id.GetHashCode();
@@ -210,9 +212,8 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="left">The first node to compare.</param>
     /// <param name="right">The second node to compare.</param>
     /// <returns>
-    /// A negative number if <paramref name="left"/>'s ID is less than
-    /// <paramref name="right"/>'s ID, zero if they have the same ID,
-    /// or a positive number if it is greater.
+    /// A negative number if <paramref name="left"/>'s ID is less than <paramref name="right"/>'s ID,
+    /// zero if the IDs are equal, or a positive number if it is greater.
     /// </returns>
     public static int Compare(Node<T> left, Node<T> right)
     {
@@ -225,8 +226,7 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="left">The left node.</param>
     /// <param name="right">The right node.</param>
     /// <returns>
-    /// <c>true</c> if both nodes have the same ID or are both <c>null</c>;
-    /// otherwise, <c>false</c>.
+    /// <c>true</c> if both nodes have the same ID or are both <c>null</c>; otherwise, <c>false</c>.
     /// </returns>
     public static bool operator ==(Node<T>? left, Node<T>? right)
     {
@@ -234,7 +234,6 @@ public class Node<T> : IComparable<Node<T>>
         {
             return ReferenceEquals(right, null);
         }
-
         return left.Equals(right);
     }
 
@@ -244,7 +243,7 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="left">The left node.</param>
     /// <param name="right">The right node.</param>
     /// <returns>
-    /// <c>true</c> if they differ in ID or if only one is <c>null</c>; otherwise, <c>false</c>.
+    /// <c>true</c> if they differ in ID or only one is <c>null</c>; otherwise <c>false</c>.
     /// </returns>
     public static bool operator !=(Node<T>? left, Node<T>? right)
     {
@@ -285,8 +284,8 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="left">The left node.</param>
     /// <param name="right">The right node.</param>
     /// <returns>
-    /// <c>true</c> if <paramref name="left"/>'s ID is greater than or equal to
-    /// <paramref name="right"/>'s ID; otherwise, <c>false</c>.
+    /// <c>true</c> if <paramref name="left"/>'s ID is greater than or equal to <paramref name="right"/>'s ID;
+    /// otherwise, <c>false</c>.
     /// </returns>
     public static bool operator >=(Node<T> left, Node<T> right)
     {
@@ -299,8 +298,8 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="left">The left node.</param>
     /// <param name="right">The right node.</param>
     /// <returns>
-    /// <c>true</c> if <paramref name="left"/>'s ID is less than or equal to
-    /// <paramref name="right"/>'s ID; otherwise, <c>false</c>.
+    /// <c>true</c> if <paramref name="left"/>'s ID is less than or equal to <paramref name="right"/>'s ID;
+    /// otherwise, <c>false</c>.
     /// </returns>
     public static bool operator <=(Node<T> left, Node<T> right)
     {
