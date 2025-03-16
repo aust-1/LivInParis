@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Text;
 
 namespace Karate.Models;
@@ -10,6 +8,19 @@ namespace Karate.Models;
 /// </summary>
 public class Graph<T>
 {
+    public class PathfindingResult<TU>
+    {
+        public double Distance { get; set; }
+
+        public Node<TU>? Predecessor { get; set; }
+
+        public PathfindingResult(double distance, Node<TU>? predecessor)
+        {
+            Distance = distance;
+            Predecessor = predecessor;
+        }
+    }
+
     #region Fields
 
     /// <summary>
@@ -36,12 +47,12 @@ public class Graph<T>
     /// Adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
     /// the presence (or weight) of an edge from <c>i</c> to <c>j</c>.
     /// </summary>
-    private double[,] _adjacencyMatrix;
+    private readonly double[,] _adjacencyMatrix;
 
     /// <summary>
     /// Distance matrix for the graph, computed using Floyd-Warshall algorithm.
     /// </summary>
-    private double[,]? _distanceMatrix;
+    private readonly double[,]? _distanceMatrix;
 
     #endregion Fields
 
@@ -63,17 +74,26 @@ public class Graph<T>
         _adjacencyList = adjacencyList;
         _adjacencyMatrix = new double[_nodes.Count, _nodes.Count];
 
+        for (int i = 0; i < _nodes.Count; i++)
+        {
+            for (int j = 0; j < _nodes.Count; j++)
+            {
+                _adjacencyMatrix[i, j] = double.MaxValue;
+            }
+        }
+
         foreach (var kvp in adjacencyList)
         {
             var source = kvp.Key;
             foreach (var neighbor in kvp.Value)
             {
-                _edges.Add(new Edge<T>(source, neighbor));
+                _edges.Add(new Edge<T>(source, neighbor, 1.0, true));
                 _adjacencyMatrix[source.Id, neighbor.Id] = 1.0;
             }
         }
 
         _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
+        _distanceMatrix = RoyFloydWarshall();
     }
 
     /// <summary>
@@ -100,32 +120,24 @@ public class Graph<T>
         {
             var node = Node<T>.GetNode(i);
             _nodes.Add(node);
+            _adjacencyList[node] = new SortedSet<Node<T>>();
         }
 
         foreach (var source in _nodes)
         {
             foreach (var target in _nodes)
             {
+                if (!_isDirected && source.Id > target.Id)
+                {
+                    continue;
+                }
+
                 double weight = adjacencyMatrix[source.Id, target.Id];
-                if (!Equals(weight, 0.0))
+                if (Math.Abs(weight - double.MaxValue) > 1e-9)
                 {
                     var edge = new Edge<T>(source, target, weight, _isDirected);
 
-                    if (_isDirected && _edges.Contains(edge))
-                    {
-                        continue;
-                    }
-
                     _edges.Add(edge);
-
-                    if (!_adjacencyList.ContainsKey(edge.SourceNode))
-                    {
-                        _adjacencyList[edge.SourceNode] = new SortedSet<Node<T>>();
-                    }
-                    if (!_adjacencyList.ContainsKey(edge.TargetNode))
-                    {
-                        _adjacencyList[edge.TargetNode] = new SortedSet<Node<T>>();
-                    }
 
                     _adjacencyList[edge.SourceNode].Add(edge.TargetNode);
 
@@ -136,6 +148,8 @@ public class Graph<T>
                 }
             }
         }
+
+        _distanceMatrix = RoyFloydWarshall();
     }
 
     #endregion Constructors
@@ -180,11 +194,7 @@ public class Graph<T>
     /// </summary>
     public double[,] DistanceMatrix
     {
-        get
-        {
-            _distanceMatrix = RoyFloydWarshall();
-            return _distanceMatrix;
-        }
+        get { return _distanceMatrix; }
     }
 
     /// <summary>
@@ -229,7 +239,7 @@ public class Graph<T>
     /// </summary>
     public bool IsWeighted
     {
-        get { return _edges.Any(edge => !Equals(edge.Weight, 1.0)); }
+        get { return _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9); }
     }
 
     /// <summary>
@@ -312,31 +322,31 @@ public class Graph<T>
 
     #region Shortest Paths
 
-    public SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>> Dijkstra<U>(U start)
+    public SortedDictionary<Node<T>, PathfindingResult<T>> Dijkstra<U>(U start)
         where U : notnull
     {
         var startNode = ResolveNode(start);
 
-        if (!_adjacencyList.ContainsKey(startNode))
+        if (!_nodes.Contains(startNode))
         {
             throw new ArgumentException("Invalid start node.");
         }
 
-        var result = new SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>>();
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
         var visited = new HashSet<Node<T>>();
 
         foreach (var node in _nodes)
         {
-            result[node] = new KeyValuePair<double, Node<T>>(double.MaxValue, null);
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
         }
 
-        result[startNode] = new KeyValuePair<double, Node<T>>(0, startNode);
+        result[startNode].Distance = 0;
 
         while (visited.Count < _nodes.Count)
         {
             var current = result
                 .Where(kvp => !visited.Contains(kvp.Key))
-                .OrderBy(kvp => kvp.Value.Key)
+                .OrderBy(kvp => kvp.Value.Distance)
                 .First()
                 .Key;
 
@@ -344,10 +354,12 @@ public class Graph<T>
 
             foreach (var neighbor in _adjacencyList[current].Where(node => !visited.Contains(node)))
             {
-                var newDistance = result[current].Key + _adjacencyMatrix[current.Id, neighbor.Id];
-                if (newDistance < result[neighbor].Key)
+                var newDistance =
+                    result[current].Distance + _adjacencyMatrix[current.Id, neighbor.Id];
+                if (newDistance < result[neighbor].Distance)
                 {
-                    result[neighbor] = new KeyValuePair<double, Node<T>>(newDistance, current);
+                    result[neighbor].Distance = newDistance;
+                    result[neighbor].Predecessor = current;
                 }
             }
         }
@@ -355,59 +367,57 @@ public class Graph<T>
         return result;
     }
 
-    public SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>> BellmanFord<U>(U start)
+    public SortedDictionary<Node<T>, PathfindingResult<T>> BellmanFord<U>(U start)
         where U : notnull
     {
         var startNode = ResolveNode(start);
 
-        if (!_adjacencyList.ContainsKey(startNode))
+        if (!_nodes.Contains(startNode))
         {
             throw new ArgumentException("Invalid start node.");
         }
 
-        var result = new SortedDictionary<Node<T>, KeyValuePair<double, Node<T>>>();
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
 
         foreach (var node in _nodes)
         {
-            result[node] = new KeyValuePair<double, Node<T>>(double.MaxValue, null);
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
         }
 
-        result[startNode] = new KeyValuePair<double, Node<T>>(0, startNode);
+        result[startNode].Distance = 0;
 
-        for (int i = 0; i < _nodes.Count - 1; i++)
+        bool flag = false;
+        for (int i = 0; i < _nodes.Count; i++)
         {
+            flag = false;
             foreach (var edge in _edges)
             {
                 var source = edge.SourceNode;
                 var target = edge.TargetNode;
                 var weight = edge.Weight;
 
-                if (result[source].Key + weight < result[target].Key)
+                if (result[source].Distance + weight < result[target].Distance)
                 {
-                    result[target] = new KeyValuePair<double, Node<T>>(
-                        result[source].Key + weight,
-                        source
-                    );
+                    result[target].Distance = result[source].Distance + weight;
+                    result[target].Predecessor = source;
+                    flag = true;
                 }
+            }
+            if (!flag)
+            {
+                break;
             }
         }
 
-        foreach (var edge in _edges)
+        if (flag)
         {
-            var source = edge.SourceNode;
-            var target = edge.TargetNode;
-            var weight = edge.Weight;
-
-            if (result[source].Key + weight < result[target].Key)
-            {
-                throw new InvalidOperationException("Graph contains a negative-weight cycle.");
-            }
+            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
         }
 
         return result;
     }
 
-    public double[,] RoyFloydWarshall()
+    private double[,] RoyFloydWarshall()
     {
         int n = _nodes.Count;
         double[,] distanceMatrix = new double[n, n];
@@ -558,7 +568,7 @@ public class Graph<T>
         {
             for (int j = i + 1; j < n; j++)
             {
-                if (!Equals(matrix[i, j], matrix[j, i]))
+                if (Math.Abs(matrix[i, j] - matrix[j, i]) > 1e-9)
                 {
                     return false;
                 }

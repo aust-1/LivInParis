@@ -140,13 +140,14 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
             _sourceNode.Equals(other._sourceNode)
             && _targetNode.Equals(other._targetNode)
             && _isDirected == other._isDirected
-            && Equals(_weight, other._weight);
+            && Math.Abs(_weight - other._weight) < 1e-9;
 
         bool reversedOrientation =
             !_isDirected
+            && !other._isDirected
             && _sourceNode.Equals(other._targetNode)
             && _targetNode.Equals(other._sourceNode)
-            && Equals(_weight, other._weight);
+            && Math.Abs(_weight - other._weight) < 1e-9;
 
         return sameOrientation || reversedOrientation;
     }
