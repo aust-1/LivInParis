@@ -60,12 +60,6 @@ public class Graph<T>
     private readonly List<Edge<T>> _edges;
 
     /// <summary>
-    /// A value indicating whether the graph is directed (<c>true</c>)
-    /// or undirected (<c>false</c>).
-    /// </summary>
-    private readonly bool _isDirected;
-
-    /// <summary>
     /// The adjacency list: maps each node to a set of adjacent nodes.
     /// </summary>
     private readonly SortedDictionary<Node<T>, SortedSet<Node<T>>> _adjacencyList;
@@ -80,6 +74,51 @@ public class Graph<T>
     /// The distance matrix, computed via the Floyd-Warshall (Roy-Floyd) algorithm.
     /// </summary>
     private readonly double[,] _distanceMatrix;
+
+    /// <summary>
+    /// The order of the graph (number of nodes).
+    /// </summary>
+    private readonly int _order;
+
+    /// <summary>
+    /// The size of the graph (number of edges).
+    /// </summary>
+    private readonly int _size;
+
+    /// <summary>
+    /// The density of the graph.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
+    /// </para>
+    /// <para>
+    /// For a directed graph, density = E / (V * (V - 1)).
+    /// </para>
+    /// </remarks>
+    private readonly double _density;
+
+    /// <summary>
+    /// A value indicating whether the graph is directed (<c>true</c>)
+    /// or undirected (<c>false</c>).
+    /// </summary>
+    private readonly bool _isDirected;
+
+    /// <summary>
+    /// A value indicating whether the graph is weighted (<c>true</c>)
+    /// or not (<c>false</c>).
+    /// </summary>
+    private readonly bool _isWeighted;
+
+    /// <summary>
+    /// A value indicating whether the graph is connected,
+    /// checked by performing a BFS from the first node.
+    /// </summary>
+    /// <remarks>
+    /// For directed graphs, this only checks if all nodes are
+    /// reachable in a single direction from the first node.
+    /// </remarks>
+    private readonly bool _isConnected;
 
     #endregion Fields
 
@@ -125,6 +164,12 @@ public class Graph<T>
 
         _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
         _distanceMatrix = RoyFloydWarshall();
+        _order = _nodes.Count;
+        _size = _edges.Count;
+        int orientedFactor = _isDirected ? 1 : 2;
+        _density = (double)Size * orientedFactor / (Order * (Order - 1));
+        _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
+        _isConnected = BFS(_nodes.First().Id).Count == _nodes.Count;
     }
 
     /// <summary>
@@ -186,6 +231,12 @@ public class Graph<T>
         }
 
         _distanceMatrix = RoyFloydWarshall();
+        _order = _nodes.Count;
+        _size = _edges.Count;
+        int orientedFactor = _isDirected ? 1 : 2;
+        _density = (double)Size * orientedFactor / (Order * (Order - 1));
+        _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
+        _isConnected = BFS(_nodes.First().Id).Count == _nodes.Count;
     }
 
     #endregion Constructors
@@ -239,7 +290,7 @@ public class Graph<T>
     /// </summary>
     public int Order
     {
-        get { return _nodes.Count; }
+        get { return _order; }
     }
 
     /// <summary>
@@ -247,7 +298,7 @@ public class Graph<T>
     /// </summary>
     public int Size
     {
-        get { return _edges.Count; }
+        get { return _size; }
     }
 
     /// <summary>
@@ -263,11 +314,7 @@ public class Graph<T>
     /// </remarks>
     public double Density
     {
-        get
-        {
-            int orientedFactor = _isDirected ? 1 : 2;
-            return (double)Size * orientedFactor / (Order * (Order - 1));
-        }
+        get { return _density; }
     }
 
     /// <summary>
@@ -284,7 +331,7 @@ public class Graph<T>
     /// </summary>
     public bool IsWeighted
     {
-        get { return _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9); }
+        get { return _isWeighted; }
     }
 
     /// <summary>
@@ -297,7 +344,7 @@ public class Graph<T>
     /// </remarks>
     public bool IsConnected
     {
-        get { return BFS(_nodes.First().Id).Count == _nodes.Count; }
+        get { return IsConnected; }
     }
 
     #endregion Properties
@@ -954,16 +1001,18 @@ public class Graph<T>
         {
             if (!_isDirected && edge.SourceNode.Id.CompareTo(edge.TargetNode.Id) > 0)
             {
-                dotBuilder.AppendLine(
-                    $"    \"{edge.SourceNode.Data}\" -- \"{edge.TargetNode.Data}\";"
-                );
+                dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -- \"{edge.TargetNode.Data}\"");
             }
             else if (_isDirected)
             {
-                dotBuilder.AppendLine(
-                    $"    \"{edge.SourceNode.Data}\" -> \"{edge.TargetNode.Data}\";"
-                );
+                dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -> \"{edge.TargetNode.Data}\"");
             }
+
+            if (_isWeighted)
+            {
+                dotBuilder.Append($" [label=\"{edge.Weight}\"]");
+            }
+            dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
 
         dotBuilder.AppendLine("}");

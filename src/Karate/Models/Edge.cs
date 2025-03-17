@@ -42,6 +42,8 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     /// </summary>
     private readonly bool _isDirected;
 
+    private readonly string _rgbColor;
+
     #endregion Fields
 
     #region Constructors
@@ -56,17 +58,20 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     /// <c>true</c> if the edge is directed;
     /// <c>false</c> if it is undirected (default is <c>false</c>).
     /// </param>
+    /// <param name="rgbColor">The RGB color of this edge (default is black).</param>
     public Edge(
         Node<T> sourceNode,
         Node<T> targetNode,
         double weight = 1.0,
-        bool isDirected = false
+        bool isDirected = false,
+        string rgbColor = "#000000"
     )
     {
         _sourceNode = sourceNode;
         _targetNode = targetNode;
         _weight = weight;
         _isDirected = isDirected;
+        _rgbColor = rgbColor;
     }
 
     #endregion Constructors
@@ -103,6 +108,14 @@ public sealed class Edge<T> : IEquatable<Edge<T>>
     public bool IsDirected
     {
         get { return _isDirected; }
+    }
+
+    /// <summary>
+    /// Gets the RGB color of this edge.
+    /// </summary>
+    public string RGBColor
+    {
+        get { return _rgbColor; }
     }
 
     #endregion Properties

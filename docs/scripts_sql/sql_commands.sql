@@ -2,14 +2,6 @@ INSERT INTO compte VALUES(000, 'password');
 INSERT INTO compte VALUES(001, 'hellopeople');
 INSERT INTO compte VALUES(002, 'motdepasse');
 
-ALTER TABLE ingredient DROP regime;
-ALTER TABLE ingredient DROP est_vegetarien;
-ALTER TABLE ingredient ADD(est_vegetarien BOOLEAN);
-ALTER TABLE ingredient ADD(est_vegan BOOLEAN);
-ALTER TABLE ingredient ADD(est_sans_gluten BOOLEAN);
-ALTER TABLE ingredient ADD(est_halal BOOLEAN);
-ALTER TABLE ingredient ADD(est_casher BOOLEAN);
-
 INSERT INTO ingredient VALUES ('jambon', false, false, false, false, false);
 INSERT INTO ingredient VALUES ('riz', false, false, true, false, false);
 INSERT INTO ingredient VALUES ('salade', true, true, true, false, false);
