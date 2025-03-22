@@ -7,7 +7,7 @@ namespace Karate.Models;
 /// Represents a simple graph containing a set of nodes (vertices) and edges.
 /// </summary>
 /// <typeparam name="T">
-/// The type of data stored in each node of the graph.
+/// The type of data stored in each node.
 /// </typeparam>
 public class Graph<T>
 {
@@ -23,7 +23,7 @@ public class Graph<T>
     public class PathfindingResult<TU>
     {
         /// <summary>
-        /// Gets or sets the distance (or cost) to reach this node from the source.
+        /// Gets or sets the distance (cost) to reach this node from the source.
         /// </summary>
         public double Distance { get; set; }
 
@@ -66,12 +66,12 @@ public class Graph<T>
 
     /// <summary>
     /// The adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
-    // the weight of the edge from <c>i</c> to <c>j</c>.
+    /// the weight of the edge from <c>i</c> to <c>j</c>.
     /// </summary>
     private readonly double[,] _adjacencyMatrix;
 
     /// <summary>
-    /// The distance matrix, computed via the Floyd-Warshall (Roy-Floyd) algorithm.
+    /// The distance matrix computed via the Roy-Floyd-Warshall algorithm.
     /// </summary>
     private readonly double[,] _distanceMatrix;
 
@@ -99,25 +99,20 @@ public class Graph<T>
     private readonly double _density;
 
     /// <summary>
-    /// A value indicating whether the graph is directed (<c>true</c>)
-    /// or undirected (<c>false</c>).
+    /// Indicates if the graph is directed (<c>true</c>) or undirected (<c>false</c>).
     /// </summary>
     private readonly bool _isDirected;
 
     /// <summary>
-    /// A value indicating whether the graph is weighted (<c>true</c>)
-    /// or not (<c>false</c>).
+    /// Indicates if the graph is weighted (<c>true</c>) or unweighted (<c>false</c>).
     /// </summary>
     private readonly bool _isWeighted;
 
     /// <summary>
-    /// A value indicating whether the graph is connected,
-    /// checked by performing a BFS from the first node.
+    /// Indicates if the graph is connected. This is determined by performing a BFS
+    /// from the first node (for directed graphs, it checks if all nodes are reachable
+    /// in a single direction).
     /// </summary>
-    /// <remarks>
-    /// For directed graphs, this only checks if all nodes are
-    /// reachable in a single direction from the first node.
-    /// </remarks>
     private readonly bool _isConnected;
 
     #endregion Fields
@@ -127,14 +122,13 @@ public class Graph<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="Graph{T}"/> class
     /// using a given adjacency list. Determines directedness by testing
-    /// whether the corresponding adjacency matrix is symmetric.
+    /// whether the generated adjacency matrix is symmetric.
     /// </summary>
     /// <param name="adjacencyList">
-    /// A dictionary that maps each node to its set of adjacent nodes.
+    /// A dictionary mapping each node to its set of adjacent nodes.
     /// </param>
     /// <remarks>
-    /// In this constructor, all edges are assumed to have a weight of 1.0
-    /// (unweighted edges), but the graph can still be used for pathfinding.
+    /// This constructor treats all edges as if they have weight = 1.0.
     /// </remarks>
     public Graph(SortedDictionary<Node<T>, SortedSet<Node<T>>> adjacencyList)
     {
@@ -167,7 +161,7 @@ public class Graph<T>
         _order = _nodes.Count;
         _size = _edges.Count;
         int orientedFactor = _isDirected ? 1 : 2;
-        _density = (double)Size * orientedFactor / (Order * (Order - 1));
+        _density = (double)_size * orientedFactor / (_order * (_order - 1));
         _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
         _isConnected = BFS(_nodes.First().Id).Count == _nodes.Count;
     }
@@ -175,11 +169,11 @@ public class Graph<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="Graph{T}"/> class
     /// from a given adjacency matrix. Determines directedness by checking
-    /// symmetry of the matrix.
+    /// whether the matrix is symmetric.
     /// </summary>
     /// <param name="adjacencyMatrix">
-    /// The square 2D array representing adjacency weights from i to j.
-    /// If a value is <see cref="double.MaxValue"/>, no edge is assumed.
+    /// A square 2D array representing adjacency weights from i to j.
+    /// <see cref="double.MaxValue"/> indicates no edge.
     /// </param>
     /// <exception cref="ArgumentException">
     /// Thrown if the adjacency matrix is not square.
@@ -219,7 +213,6 @@ public class Graph<T>
                 if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
                 {
                     _edges.Add(new Edge<T>(source, target, weight, _isDirected));
-
                     _adjacencyList[source].Add(target);
 
                     if (!_isDirected)
@@ -234,7 +227,7 @@ public class Graph<T>
         _order = _nodes.Count;
         _size = _edges.Count;
         int orientedFactor = _isDirected ? 1 : 2;
-        _density = (double)Size * orientedFactor / (Order * (Order - 1));
+        _density = (double)_size * orientedFactor / (_order * (_order - 1));
         _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
         _isConnected = BFS(_nodes.First().Id).Count == _nodes.Count;
     }
@@ -303,22 +296,16 @@ public class Graph<T>
 
     /// <summary>
     /// Gets the density of the graph.
+    /// For directed graphs, density = E / (V*(V-1)).
+    /// For undirected graphs, density = (2*E) / (V*(V-1)).
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
-    /// </para>
-    /// <para>
-    /// For a directed graph, density = E / (V * (V - 1)).
-    /// </para>
-    /// </remarks>
     public double Density
     {
         get { return _density; }
     }
 
     /// <summary>
-    /// Gets a value indicating whether this graph is directed.
+    /// Indicates whether this graph is directed.
     /// </summary>
     public bool IsDirected
     {
@@ -326,8 +313,8 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Indicates whether the graph is weighted (true)
-    /// if any edge has a weight different from 1.0.
+    /// Indicates whether this graph is weighted,
+    /// i.e., if any edge has a weight different from 1.0.
     /// </summary>
     public bool IsWeighted
     {
@@ -335,16 +322,16 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Indicates whether the graph is connected,
-    /// checked by performing a BFS from the first node.
+    /// Indicates whether this graph is connected,
+    /// tested by a BFS from the first node.
     /// </summary>
     /// <remarks>
-    /// For directed graphs, this only checks if all nodes are
-    /// reachable in a single direction from the first node.
+    /// For directed graphs, checks if all nodes are reachable
+    /// in one direction from the first node in <see cref="_nodes"/>.
     /// </remarks>
     public bool IsConnected
     {
-        get { return IsConnected; }
+        get { return _isConnected; }
     }
 
     #endregion Properties
@@ -415,19 +402,17 @@ public class Graph<T>
     #region Public Methods - Traversals
 
     /// <summary>
-    /// Performs a Breadth-First Search (BFS) starting from the specified node
-    /// (passed as an ID, a <see cref="Node{T}"/>, or a data element of type <typeparamref name="T"/>).
+    /// Performs a Breadth-First Search (BFS) starting from the specified node,
+    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="U">
-    /// The type of <paramref name="start"/>; can be <c>int</c> (node ID),
-    /// <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="start">The starting node or identifier.</param>
-    /// <returns>
-    /// An ordered list of nodes visited by the BFS traversal.
-    /// </returns>
+    /// <returns>A list of visited nodes in the order they are discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or the node is not found in the graph.
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
     /// </exception>
     public List<Node<T>> BFS<U>(U start)
         where U : notnull
@@ -451,12 +436,15 @@ public class Graph<T>
             var current = queue.Dequeue();
             result.Add(current);
 
-            foreach (var neighbor in _adjacencyList[current])
+            if (_adjacencyList.TryGetValue(current, out var neighbors))
             {
-                if (!visited.Contains(neighbor))
+                foreach (var neighbor in neighbors)
                 {
-                    visited.Add(neighbor);
-                    queue.Enqueue(neighbor);
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
                 }
             }
         }
@@ -465,19 +453,17 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Performs a recursive Depth-First Search (DFS) from the specified node
-    /// (passed as an ID, a <see cref="Node{T}"/>, or type <typeparamref name="T"/>).
+    /// Performs a recursive Depth-First Search (DFS) from the specified node,
+    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="U">
-    /// The type of <paramref name="start"/>; can be <c>int</c>,
-    /// <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="start">The starting node or identifier.</param>
-    /// <returns>
-    /// A list of nodes visited in the order discovered by the DFS traversal.
-    /// </returns>
+    /// <returns>A list of visited nodes in the order they are discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or the node is not in this graph.
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
     /// </exception>
     public List<Node<T>> DFS<U>(U start)
         where U : notnull
@@ -502,21 +488,21 @@ public class Graph<T>
 
     /// <summary>
     /// Performs Dijkstra's algorithm from the specified start node,
-    /// returning distances and predecessors for all reachable nodes.
+    /// returning the set of paths to each reachable node.
     /// </summary>
     /// <typeparam name="U">
-    /// The type of <paramref name="start"/>; can be <c>int</c> (node ID),
-    /// <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="start">The starting node or identifier.</param>
     /// <returns>
-    /// A dictionary mapping each node to its <see cref="PathfindingResult{T}"/>,
-    /// including <c>Distance</c> and <c>Predecessor</c>.
+    /// A dictionary mapping each node to a list of nodes representing the path
+    /// from <paramref name="start"/> to that node.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or the node is not in the graph.
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not in the graph.
     /// </exception>
-    public SortedDictionary<Node<T>, PathfindingResult<T>> Dijkstra<U>(U start)
+    public SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<U>(U start)
         where U : notnull
     {
         var startNode = ResolveNode(start);
@@ -550,34 +536,38 @@ public class Graph<T>
 
             visited.Add(current);
 
-            foreach (var neighbor in _adjacencyList[current].Where(n => !visited.Contains(n)))
+            if (_adjacencyList.TryGetValue(current, out var neighbors))
             {
-                var newDistance =
-                    result[current].Distance + _adjacencyMatrix[current.Id, neighbor.Id];
-
-                if (newDistance < result[neighbor].Distance)
+                foreach (var neighbor in neighbors.Where(n => !visited.Contains(n)))
                 {
-                    result[neighbor].Distance = newDistance;
-                    result[neighbor].Predecessor = current;
+                    var newDistance =
+                        result[current].Distance + _adjacencyMatrix[current.Id, neighbor.Id];
+
+                    if (newDistance < result[neighbor].Distance)
+                    {
+                        result[neighbor].Distance = newDistance;
+                        result[neighbor].Predecessor = current;
+                    }
                 }
             }
         }
 
-        return result;
+        return BuildPaths(result);
     }
 
     /// <summary>
     /// Performs the Bellman-Ford algorithm from the specified start node,
-    /// returning distances and predecessors for all reachable nodes.
+    /// returning the set of paths to each reachable node.
     /// Detects negative-weight cycles.
     /// </summary>
     /// <typeparam name="U">
-    /// The type of <paramref name="start"/>; can be <c>int</c>, <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c>, <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="start">The starting node or identifier.</param>
     /// <returns>
-    /// A dictionary mapping each node to its <see cref="PathfindingResult{T}"/>,
-    /// including <c>Distance</c> and <c>Predecessor</c>.
+    /// A dictionary mapping each node to a list of nodes representing the path
+    /// from <paramref name="start"/> to that node.
     /// </returns>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or not present in the graph.
@@ -585,7 +575,7 @@ public class Graph<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public SortedDictionary<Node<T>, PathfindingResult<T>> BellmanFord<U>(U start)
+    public SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<U>(U start)
         where U : notnull
     {
         var startNode = ResolveNode(start);
@@ -596,7 +586,6 @@ public class Graph<T>
         }
 
         var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-
         foreach (var node in _nodes)
         {
             result[node] = new PathfindingResult<T>(double.MaxValue, null);
@@ -632,7 +621,7 @@ public class Graph<T>
             throw new InvalidOperationException("Graph contains a negative-weight cycle.");
         }
 
-        return result;
+        return BuildPaths(result);
     }
 
     #endregion Public Methods - Pathfinding
@@ -640,13 +629,13 @@ public class Graph<T>
     #region Public Methods - Drawing
 
     /// <summary>
-    /// Generates a DOT file for this graph and invokes GraphViz to produce a PNG image.
-    /// The intermediate DOT file is deleted after rendering.
+    /// Exports the graph to a DOT file, then calls GraphViz to generate a PNG image,
+    /// finally deleting the DOT file.
     /// </summary>
     /// <param name="outputImageName">
-    /// The base name (without extension) for the output file. A timestamp is added to avoid collisions.
+    /// The base file name (without extension) for the output. A timestamp is appended to avoid overwrites.
     /// </param>
-    /// <param name="layout">The GraphViz layout algorithm (e.g. "dot", "neato").</param>
+    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "neato").</param>
     public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
     {
         string dotFilePath = $"{outputImageName}.dot";
@@ -660,12 +649,14 @@ public class Graph<T>
 
     #endregion Public Methods - Drawing
 
-    #region Private Helpers - Floyd-Warshall
+    #region Private Helpers - Roy-Floyd-Warshall
 
     /// <summary>
-    /// Computes the all-pairs shortest path distances using the Floyd-Warshall algorithm.
+    /// Computes the all-pairs shortest path distances using the Roy-Floyd-Warshall algorithm.
     /// </summary>
-    /// <returns>A 2D array of distances, where distance[i, j] is the shortest path from i to j.</returns>
+    /// <returns>
+    /// A 2D array of distances, where <c>distance[i, j]</c> is the shortest path cost from i to j.
+    /// </returns>
     private double[,] RoyFloydWarshall()
     {
         int n = _nodes.Count;
@@ -697,25 +688,25 @@ public class Graph<T>
         return distanceMatrix;
     }
 
-    #endregion Private Helpers - Floyd-Warshall
+    #endregion Private Helpers - Roy-Floyd-Warshall
 
     #region Private Helpers - Cycle Detection
 
     /// <summary>
-    /// Attempts to find a cycle in a directed graph via DFS, using a recursion stack.
+    /// Attempts to find a cycle in a directed graph using DFS and a recursion stack.
     /// </summary>
-    /// <param name="current">The node currently visited.</param>
+    /// <param name="current">The current node being explored.</param>
     /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="recStack">The recursion stack containing the current path.</param>
-    /// <param name="parentMap">A map for reconstructing the cycle path.</param>
+    /// <param name="recStack">A recursion stack storing the current path.</param>
+    /// <param name="parentMap">A map to reconstruct the cycle path if found.</param>
     /// <param name="cycle">
-    /// The list of nodes forming the cycle, if one is found; otherwise <c>null</c>.
+    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
     /// </param>
     /// <param name="simpleCycle">
-    /// When <c>true</c>, used in undirected graphs to ignore the direct parent.
-    /// Not strictly relevant for directed graphs, but maintained for signature consistency.
+    /// <c>true</c> in undirected graphs to ignore edges back to the immediate parent.
+    /// Not strictly relevant for directed graphs.
     /// </param>
-    /// <returns><c>true</c> if a cycle is found; otherwise <c>false</c>.</returns>
+    /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
     private bool TryFindCycleDirected(
         Node<T> current,
         HashSet<Node<T>> visited,
@@ -763,19 +754,19 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Attempts to find a cycle in an undirected graph via DFS.
+    /// Attempts to find a cycle in an undirected graph using DFS.
     /// </summary>
     /// <param name="current">The current node being explored.</param>
     /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="parentMap">A map for reconstructing the cycle path.</param>
+    /// <param name="parentMap">A map to reconstruct the cycle if found.</param>
     /// <param name="parent">The node's parent in the DFS tree (if any).</param>
     /// <param name="cycle">
-    /// The list of nodes forming the cycle, if one is found; otherwise <c>null</c>.
+    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
     /// </param>
     /// <param name="simpleCycle">
-    /// If <c>true</c>, edges to the immediate parent are ignored to detect only simple cycles.
+    /// If <c>true</c>, ignore edges back to the immediate parent to detect only "simple" cycles.
     /// </param>
-    /// <returns><c>true</c> if a cycle is found; otherwise <c>false</c>.</returns>
+    /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
     private bool TryFindCycleUndirected(
         Node<T> current,
         HashSet<Node<T>> visited,
@@ -825,12 +816,12 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Reconstructs a cycle from a pair of meeting nodes, following the parent chain.
+    /// Reconstructs a cycle path from two meeting nodes in a DFS recursion stack.
     /// </summary>
     /// <param name="current">The node that discovered the cycle.</param>
-    /// <param name="neighbor">The node in <paramref name="current"/>'s recursion stack.</param>
-    /// <param name="parentMap">The dictionary linking each node to its parent.</param>
-    /// <returns>A list of nodes forming the cycle, in order.</returns>
+    /// <param name="neighbor">The previously visited node in the cycle.</param>
+    /// <param name="parentMap">A dictionary linking each node to its parent.</param>
+    /// <returns>A list of nodes forming the cycle.</returns>
     private static List<Node<T>> ReconstructCycle(
         Node<T> current,
         Node<T> neighbor,
@@ -839,7 +830,6 @@ public class Graph<T>
     {
         var cycle = new List<Node<T>>();
         var temp = current;
-
         while (!temp.Equals(neighbor))
         {
             cycle.Add(temp);
@@ -851,10 +841,10 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Produces a string description of the cycle's node IDs and data.
+    /// Builds a string representation of a cycle, listing node IDs and data.
     /// </summary>
-    /// <param name="cycle">The list of nodes forming the cycle.</param>
-    /// <returns>A string describing the cycle by ID and data.</returns>
+    /// <param name="cycle">The nodes forming the cycle.</param>
+    /// <returns>A string describing the cycle's IDs and data.</returns>
     private static string CycleToString(List<Node<T>> cycle)
     {
         var sbId = new StringBuilder();
@@ -880,11 +870,11 @@ public class Graph<T>
     #region Private Helpers - DFS
 
     /// <summary>
-    /// Recursively performs DFS from a starting node, adding each visited node to <paramref name="result"/>.
+    /// A helper method for performing a recursive DFS from a specified node.
     /// </summary>
-    /// <param name="node">The current node in the DFS.</param>
-    /// <param name="visited">A set of already visited nodes.</param>
-    /// <param name="result">The list storing the order of visited nodes.</param>
+    /// <param name="node">The node where DFS is currently happening.</param>
+    /// <param name="visited">A set of nodes that have been visited already.</param>
+    /// <param name="result">The list where visited nodes are accumulated.</param>
     private void DFSUtil(Node<T> node, HashSet<Node<T>> visited, List<Node<T>> result)
     {
         visited.Add(node);
@@ -904,15 +894,55 @@ public class Graph<T>
 
     #endregion Private Helpers - DFS
 
+    #region Private Helpers - Pathfinding
+
+    /// <summary>
+    /// Builds the resulting path list for each node given a dictionary
+    /// of <see cref="PathfindingResult{T}"/>.
+    /// </summary>
+    /// <param name="results">
+    /// A dictionary from each node to its pathfinding result
+    /// (distance and predecessor).
+    /// </param>
+    /// <returns>
+    /// A dictionary mapping each node to a list representing its path
+    /// from the start node to that node.
+    /// </returns>
+    private SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
+        SortedDictionary<Node<T>, PathfindingResult<T>> results
+    )
+    {
+        var paths = new SortedDictionary<Node<T>, List<Node<T>>>();
+
+        foreach (var kvp in results)
+        {
+            var node = kvp.Key;
+            var path = new List<Node<T>>();
+            var current = node;
+
+            while (current != null)
+            {
+                path.Add(current);
+                current = results[current].Predecessor;
+            }
+            path.Reverse();
+            paths[node] = path;
+        }
+
+        return paths;
+    }
+
+    #endregion Private Helpers - Pathfinding
+
     #region Private Helpers - GraphViz
 
     /// <summary>
-    /// Renders a DOT file into a PNG image using GraphViz.
-    /// Prompts for installation if GraphViz is missing.
+    /// Renders a DOT file into a PNG image using GraphViz,
+    /// installing GraphViz via winget if not found.
     /// </summary>
     /// <param name="dotFilePath">The path to the DOT file.</param>
     /// <param name="outputImagePath">The path of the resulting PNG image.</param>
-    /// <exception cref="FileNotFoundException">Thrown if the DOT file is not found.</exception>
+    /// <exception cref="FileNotFoundException">Thrown if the DOT file is missing.</exception>
     private static void RenderDotFile(string dotFilePath, string outputImagePath)
     {
         if (!File.Exists(dotFilePath))
@@ -982,7 +1012,7 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Exports the graph to a DOT file for visualization with GraphViz.
+    /// Exports the current graph to a DOT file for visualization with GraphViz.
     /// </summary>
     /// <param name="filePath">The path to the DOT file.</param>
     /// <param name="layout">The GraphViz layout algorithm (e.g., "dot" or "neato").</param>
@@ -999,7 +1029,7 @@ public class Graph<T>
 
         foreach (var edge in _edges)
         {
-            if (!_isDirected && edge.SourceNode.Id.CompareTo(edge.TargetNode.Id) > 0)
+            if (!_isDirected && edge.SourceNode.Id > edge.TargetNode.Id)
             {
                 dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -- \"{edge.TargetNode.Data}\"");
             }
@@ -1024,13 +1054,18 @@ public class Graph<T>
     #region Private Helpers - Node Resolution
 
     /// <summary>
-    /// Converts the provided <paramref name="start"/> object to a <see cref="Node{T}"/>.
-    /// Acceptable types are <see cref="Node{T}"/>, <c>int</c> (node Id), or <typeparamref name="T"/> (node Data).
+    /// Converts the given <paramref name="start"/> object into a <see cref="Node{T}"/>.
+    /// Supported types are:
+    /// - <see cref="Node{T}"/> (node object),
+    /// - <c>int</c> (node ID),
+    /// - <typeparamref name="T"/> (node data).
     /// </summary>
-    /// <typeparam name="U">The type of the <paramref name="start"/> argument.</typeparam>
-    /// <param name="start">An ID, a node, or a data element.</param>
-    /// <returns>The corresponding <see cref="Node{T}"/> object.</returns>
-    /// <exception cref="ArgumentException">Thrown if the type is unsupported.</exception>
+    /// <typeparam name="U">The type of the <paramref name="start"/> parameter.</typeparam>
+    /// <param name="start">An integer ID, a node, or a data value.</param>
+    /// <returns>The corresponding node object in this graph.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is an unsupported type or the resulting node is invalid.
+    /// </exception>
     private static Node<T> ResolveNode<U>(U start)
         where U : notnull
     {
@@ -1040,7 +1075,7 @@ public class Graph<T>
             int id => Node<T>.GetNode(id),
             T data => Node<T>.GetOrCreateNode(data),
             _ => throw new ArgumentException(
-                "Unsupported type for node resolution: must be Node<T>, int or T."
+                "Unsupported type for node resolution. Must be Node<T>, int, or T."
             ),
         };
     }
@@ -1050,11 +1085,12 @@ public class Graph<T>
     #region Private Helpers - Symmetry Check
 
     /// <summary>
-    /// Checks whether the specified adjacency matrix is symmetric.
+    /// Checks whether the given adjacency matrix is symmetric,
+    /// implying an undirected graph.
     /// </summary>
-    /// <param name="matrix">The matrix to check.</param>
+    /// <param name="matrix">The adjacency matrix to check.</param>
     /// <returns>
-    /// <c>true</c> if the matrix is symmetric across the main diagonal; otherwise <c>false</c>.
+    /// <c>true</c> if <paramref name="matrix"/> is symmetric; otherwise <c>false</c>.
     /// </returns>
     private static bool CheckIfSymmetric(double[,] matrix)
     {
