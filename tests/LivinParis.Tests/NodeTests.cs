@@ -3,7 +3,7 @@ using System.Linq;
 using LivinParis.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Karate.Tests
+namespace LivinParis.Tests
 {
     [TestClass]
     public class NodeTests

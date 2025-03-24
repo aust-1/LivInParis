@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace LivinParis.Models;
+namespace LivinParis.Models.Maps;
 
 /// <summary>
 /// Represents a simple graph containing a set of nodes (vertices) and edges.
@@ -10,6 +10,7 @@ namespace LivinParis.Models;
 /// The type of data stored in each node.
 /// </typeparam>
 public class Graph<T>
+    where T : notnull
 {
     #region Nested Types
 

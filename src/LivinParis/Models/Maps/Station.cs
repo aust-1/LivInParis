@@ -1,4 +1,4 @@
-namespace LivinParis.Models;
+namespace LivinParis.Models.Maps;
 
 /// <summary>
 /// Represents a station on Paris intra-muros metro network.

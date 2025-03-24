@@ -1,4 +1,4 @@
-﻿namespace LivinParis.Models;
+﻿namespace LivinParis.Models.Maps;
 
 /// <summary>
 /// Represents an edge (or arc) connecting two nodes in a graph.
@@ -18,6 +18,7 @@
 /// </para>
 /// </remarks>
 public sealed class Edge<T> : IEquatable<Edge<T>>
+    where T : notnull
 {
     #region Fields
 

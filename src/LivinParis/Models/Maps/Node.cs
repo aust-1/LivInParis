@@ -1,4 +1,4 @@
-﻿namespace LivinParis.Models;
+﻿namespace LivinParis.Models.Maps;
 
 /// <summary>
 /// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.
@@ -17,6 +17,7 @@
 /// </para>
 /// </remarks>
 public class Node<T> : IComparable<Node<T>>
+    where T : notnull
 {
     #region Fields
 
@@ -43,19 +44,81 @@ public class Node<T> : IComparable<Node<T>>
     /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
     /// Throws an <see cref="ArgumentException"/> if another node already holds the same data.
     /// </summary>
+    /// <param name="id">
+    /// The unique integer ID for this node. Must be greater than 0.
+    /// </param>
     /// <param name="data">
     /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
     /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="id"/> is less than 0, or if a node with the same ID or data already exists.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="data"/> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown if a node with the same data already exists.
+    /// </exception>
+    public Node(int id, T data)
+    {
+        if (id < 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
+        if (_existingNodes.ContainsKey(id))
+        {
+            throw new ArgumentException($"A node with the id '{id}' already exists.");
+        }
+
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
+        }
+
+        if (_existingNodes.Values.Any(existingNode => existingNode.Data.Equals(data)))
+        {
+            throw new ArgumentException($"A node with the data '{data}' already exists.");
+        }
+
+        _data = data;
+        _id = id;
+        _existingNodes.Add(_id, this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
+    /// Throws an <see cref="ArgumentException"/> if another node already holds the same data.
+    /// </summary>
+    /// <param name="data">
+    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="data"/> is <c>null</c>.
+    /// </exception>
     /// <exception cref="ArgumentException">
     /// Thrown if a node with the same data already exists.
     /// </exception>
     public Node(T data)
     {
-        int nextId = _existingNodes.Count;
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
+        }
 
-        if (_existingNodes.Values.Any(existingNode => existingNode.Data?.Equals(data) == true))
+        if (_existingNodes.Values.Any(existingNode => existingNode.Data.Equals(data)))
         {
             throw new ArgumentException($"A node with the data '{data}' already exists.");
+        }
+
+        int nextId;
+        if (_existingNodes.Count == 0)
+        {
+            nextId = 0;
+        }
+        else
+        {
+            nextId = _existingNodes.Last().Key + 1;
         }
 
         _data = data;
@@ -110,7 +173,7 @@ public class Node<T> : IComparable<Node<T>>
     {
         foreach (var node in _existingNodes.Values)
         {
-            if (node.Data != null && node.Data.Equals(dataToFind))
+            if (node.Data.Equals(dataToFind))
             {
                 return node;
             }

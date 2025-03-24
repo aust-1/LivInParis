@@ -1,1 +1,1 @@
-global using LivinParis.Models;
+global using LivinParis.Models.Maps;
