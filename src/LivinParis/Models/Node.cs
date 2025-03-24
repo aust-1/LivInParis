@@ -1,4 +1,4 @@
-﻿namespace Karate.Models;
+﻿namespace LivinParis.Models;
 
 /// <summary>
 /// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.

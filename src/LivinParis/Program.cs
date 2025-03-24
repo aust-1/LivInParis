@@ -1,4 +1,4 @@
-﻿namespace Karate
+﻿namespace LivinParis
 {
     public static class Program
     {

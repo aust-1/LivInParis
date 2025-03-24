@@ -1,4 +1,4 @@
-namespace Karate.Tests
+namespace LivinParis.Tests
 {
     [TestClass]
     public class EdgeTests

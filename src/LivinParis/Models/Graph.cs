@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Karate.Models;
+namespace LivinParis.Models;
 
 /// <summary>
 /// Represents a simple graph containing a set of nodes (vertices) and edges.

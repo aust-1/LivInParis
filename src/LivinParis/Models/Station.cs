@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-
-namespace Karate.Models;
+namespace LivinParis.Models;
 
 /// <summary>
 /// Represents a station on Paris intra-muros metro network.
@@ -12,19 +10,22 @@ public struct Station
     /// <summary>
     /// The name of the station.
     /// </summary>
-    private string _name;
+    private readonly string _name;
+
     /// <summary>
     /// The line the station is on.
     /// </summary>
-    private string _line;
+    private readonly string _line;
+
     /// <summary>
     /// The longitude of the station.
     /// </summary>
-    private double _longitude;
+    private readonly double _longitude;
+
     /// <summary>
     /// The latitude of the station.
     /// </summary>
-    private double _latitude;
+    private readonly double _latitude;
 
     #endregion Fields
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Karate.Models;
+using LivinParis.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Karate.Tests

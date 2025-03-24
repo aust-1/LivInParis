@@ -1,4 +1,4 @@
-﻿namespace Karate.Models;
+﻿namespace LivinParis.Models;
 
 /// <summary>
 /// Represents an edge (or arc) connecting two nodes in a graph.
