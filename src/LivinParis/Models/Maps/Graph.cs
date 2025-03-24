@@ -22,6 +22,7 @@ public class Graph<T>
     /// The type of data stored in the node, mirroring <see cref="Graph{T}"/>.
     /// </typeparam>
     public class PathfindingResult<TU>
+        where TU : notnull
     {
         /// <summary>
         /// Gets or sets the distance (cost) to reach this node from the source.
@@ -909,15 +910,14 @@ public class Graph<T>
     /// A dictionary mapping each node to a list representing its path
     /// from the start node to that node.
     /// </returns>
-    private SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
+    private static SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
         SortedDictionary<Node<T>, PathfindingResult<T>> results
     )
     {
         var paths = new SortedDictionary<Node<T>, List<Node<T>>>();
 
-        foreach (var kvp in results)
+        foreach (var node in results.Select(kvp => kvp.Key))
         {
-            var node = kvp.Key;
             var path = new List<Node<T>>();
             var current = node;
 
