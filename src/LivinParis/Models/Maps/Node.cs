@@ -9,11 +9,6 @@
 /// <remarks>
 /// <para>
 /// A static dictionary (<see cref="_existingNodes"/>) maps integer IDs to node instances.
-/// Attempting to create a node with duplicate data will result in an <see cref="ArgumentException"/>.
-/// </para>
-/// <para>
-/// This static approach applies across the entire application domain, potentially causing collisions
-/// if multiple graphs are created in the same process.
 /// </para>
 /// </remarks>
 public class Node<T> : IComparable<Node<T>>
@@ -42,7 +37,6 @@ public class Node<T> : IComparable<Node<T>>
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
-    /// Throws an <see cref="ArgumentException"/> if another node already holds the same data.
     /// </summary>
     /// <param name="id">
     /// The unique integer ID for this node. Must be greater than 0.
@@ -51,13 +45,10 @@ public class Node<T> : IComparable<Node<T>>
     /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
     /// </param>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="id"/> is less than 0, or if a node with the same ID or data already exists.
+    /// Thrown if <paramref name="id"/> is less than 0.
     /// </exception>
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="data"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown if a node with the same data already exists.
     /// </exception>
     public Node(int id, T data)
     {
@@ -76,11 +67,6 @@ public class Node<T> : IComparable<Node<T>>
             throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
         }
 
-        if (_existingNodes.Values.Any(existingNode => existingNode.Data.Equals(data)))
-        {
-            throw new ArgumentException($"A node with the data '{data}' already exists.");
-        }
-
         _data = data;
         _id = id;
         _existingNodes.Add(_id, this);
@@ -88,27 +74,18 @@ public class Node<T> : IComparable<Node<T>>
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
-    /// Throws an <see cref="ArgumentException"/> if another node already holds the same data.
     /// </summary>
     /// <param name="data">
-    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
+    /// The data to store in this node.
     /// </param>
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="data"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown if a node with the same data already exists.
     /// </exception>
     public Node(T data)
     {
         if (data is null)
         {
             throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
-        }
-
-        if (_existingNodes.Values.Any(existingNode => existingNode.Data.Equals(data)))
-        {
-            throw new ArgumentException($"A node with the data '{data}' already exists.");
         }
 
         int nextId;

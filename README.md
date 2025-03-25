@@ -76,7 +76,6 @@ LivinParis
 │     │  ├─ Individual.cs
 │     │  └─ Manager.cs
 │     ├─ Program.cs
-│     ├─ Services ???
 │     └─ Using.cs
 └─ tests
    └─ LivinParis.Tests

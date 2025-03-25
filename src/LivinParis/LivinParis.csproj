@@ -9,4 +9,8 @@
     <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspose.Cells" Version="25.3.0" />
+  </ItemGroup>
+
 </Project>

@@ -27,16 +27,28 @@ public struct Station
     /// </summary>
     private readonly double _latitude;
 
+    /// <summary>
+    /// The commune the station is in.
+    /// </summary>
+    private readonly string _commune;
+
+    /// <summary>
+    /// The INSEE code of the commune the station is in.
+    /// </summary>
+    private readonly int _insee;
+
     #endregion Fields
 
     #region Constructors
 
-    public Station(string name, string line, double longitude, double latitude)
+    public Station(string line, string name, double longitude, double latitude, string commune, int insee)
     {
-        _name = name;
         _line = line;
+        _name = name;
         _longitude = longitude;
         _latitude = latitude;
+        _commune = commune;
+        _insee = insee;
     }
 
     #endregion Constructors
