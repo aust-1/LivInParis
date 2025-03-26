@@ -66,257 +66,16 @@ namespace LivinParis
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyList("metro/MetroParis"));
-            graph.DisplayGraph();
+
+            string[] layout = { "dot", "neato", "fdp", "sfdp", "twopi", "circo" };
+
+            foreach (string l in layout)
+            {
+                graph.DisplayGraph("graph_" + l, l);
+            }
         }
 
-        private static double[,] MtxToAdjacencyMatrix(string fileName)
-        {
-            double[,] adjacencyMatrix = new double[0, 0];
-            string file = dataDirectory + fileName + ".mtx";
-            StreamReader? sReader = null;
-
-            try
-            {
-                sReader = new StreamReader(file);
-                string? headerLine;
-                while ((headerLine = sReader.ReadLine()) != null)
-                {
-                    if (!headerLine.StartsWith('%') && !string.IsNullOrWhiteSpace(headerLine))
-                    {
-                        string[] parts = headerLine.Split(' ');
-                        int numNodes = Convert.ToInt32(parts[0]);
-                        adjacencyMatrix = new double[numNodes, numNodes];
-                        break;
-                    }
-                }
-
-                string? line;
-                while ((line = sReader.ReadLine()) != null)
-                {
-                    if (!line.StartsWith('%') && !string.IsNullOrWhiteSpace(line))
-                    {
-                        string[] parts = line.Split(' ');
-                        int source = Convert.ToInt32(parts[0]) - 1;
-                        int target = Convert.ToInt32(parts[1]) - 1;
-                        adjacencyMatrix[source, target] = 1;
-                        adjacencyMatrix[target, source] = 1;
-                    }
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("The file was not found: " + file);
-                Console.WriteLine(e.Message);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("Error reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred while reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                sReader?.Close();
-            }
-
-            return adjacencyMatrix;
-        }
-
-        private static SortedDictionary<Node<int>, SortedSet<Node<int>>> MtxToAdjacencyList(
-            string fileName
-        )
-        {
-            SortedDictionary<Node<int>, SortedSet<Node<int>>> adjacencyList = new();
-            string file = dataDirectory + fileName + ".mtx";
-            StreamReader? sReader = null;
-
-            try
-            {
-                sReader = new StreamReader(file);
-                string? headerLine;
-                while ((headerLine = sReader.ReadLine()) != null)
-                {
-                    if (!headerLine.StartsWith('%') && !string.IsNullOrWhiteSpace(headerLine))
-                    {
-                        string[] parts = headerLine.Split(' ');
-                        int numNodes = Convert.ToInt32(parts[0]);
-                        for (int i = 1; i <= numNodes; i++)
-                        {
-                            Node<int> node = Node<int>.GetOrCreateNode(i);
-                            adjacencyList[node] = new SortedSet<Node<int>>();
-                        }
-                        break;
-                    }
-                }
-
-                string? line;
-                while ((line = sReader.ReadLine()) != null)
-                {
-                    if (!line.StartsWith('%') && !string.IsNullOrWhiteSpace(line))
-                    {
-                        string[] parts = line.Split(' ');
-                        int source = Convert.ToInt32(parts[0]) - 1;
-                        int target = Convert.ToInt32(parts[1]) - 1;
-                        Node<int> sourceNode = Node<int>.GetOrCreateNode(source);
-                        Node<int> targetNode = Node<int>.GetOrCreateNode(target);
-                        adjacencyList[sourceNode].Add(targetNode);
-                        adjacencyList[targetNode].Add(sourceNode);
-                    }
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("The file was not found: " + file);
-                Console.WriteLine(e.Message);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("Error reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred while reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                sReader?.Close();
-            }
-
-            return adjacencyList;
-        }
-
-        private static double[,] TxtToAdjacencyMatrix(string fileName)
-        {
-            double[,] adjacencyMatrix = new double[0, 0];
-            string file = dataDirectory + fileName + ".txt";
-            List<string> liens = new();
-
-            StreamReader? sReader = null;
-            try
-            {
-                sReader = new StreamReader(file);
-
-                string? line;
-                while ((line = sReader.ReadLine()) != null)
-                {
-                    if (!string.IsNullOrWhiteSpace(line.Replace(":", "")))
-                    {
-                        string[] parts = line.Split(
-                            new[] { '(', ',', ')' },
-                            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
-                        );
-
-                        Node<int> sourceNode = Node<int>.GetOrCreateNode(Convert.ToInt32(parts[0]));
-                        Node<int> targetNode = Node<int>.GetOrCreateNode(Convert.ToInt32(parts[1]));
-                        int weight = Convert.ToInt32(parts[2]);
-
-                        liens.Add($"{sourceNode.Id} {targetNode.Id} {weight}");
-                    }
-                }
-
-                int numNodes = Node<int>.Count;
-                adjacencyMatrix = new double[numNodes, numNodes];
-                foreach (string lien in liens)
-                {
-                    string[] parts = lien.Split(' ');
-                    int source = Convert.ToInt32(parts[0]);
-                    int target = Convert.ToInt32(parts[1]);
-                    int weight = Convert.ToInt32(parts[2]);
-                    adjacencyMatrix[source, target] = weight;
-                    adjacencyMatrix[target, source] = weight;
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("The file was not found: " + file);
-                Console.WriteLine(e.Message);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("Error reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred while reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                sReader?.Close();
-            }
-
-            return adjacencyMatrix;
-        }
-
-        private static SortedDictionary<Node<int>, SortedSet<Node<int>>> TxtToAdjacencyList(
-            string fileName
-        )
-        {
-            SortedDictionary<Node<int>, SortedSet<Node<int>>> adjacencyList = new();
-            string file = dataDirectory + fileName + ".txt";
-            StreamReader? sReader = null;
-
-            try
-            {
-                sReader = new StreamReader(file);
-                string? line;
-                while ((line = sReader.ReadLine()) != null)
-                {
-                    if (!string.IsNullOrWhiteSpace(line.Replace(":", "")))
-                    {
-                        string[] parts = line.Split(
-                            new[] { '(', ',', ')' },
-                            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
-                        );
-                        int source = Convert.ToInt32(parts[0]);
-                        int target = Convert.ToInt32(parts[1]);
-
-                        Node<int> sourceNode = Node<int>.GetOrCreateNode(source);
-                        Node<int> targetNode = Node<int>.GetOrCreateNode(target);
-
-                        if (!adjacencyList.ContainsKey(sourceNode))
-                        {
-                            adjacencyList[sourceNode] = new SortedSet<Node<int>>();
-                        }
-                        if (!adjacencyList.ContainsKey(targetNode))
-                        {
-                            adjacencyList[targetNode] = new SortedSet<Node<int>>();
-                        }
-
-                        adjacencyList[sourceNode].Add(targetNode);
-                        adjacencyList[targetNode].Add(sourceNode);
-                    }
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("The file was not found: " + file);
-                Console.WriteLine(e.Message);
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("Error reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred while reading the file.");
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                sReader?.Close();
-            }
-
-            return adjacencyList;
-        }
+        //TODO: Faire XlsxToAdjacencyMatrix
 
         private static SortedDictionary<
             Node<Station>,
@@ -324,7 +83,8 @@ namespace LivinParis
         > XlsxToAdjacencyList(string fileName)
         {
             var adjacencyList = new SortedDictionary<Node<Station>, SortedSet<Node<Station>>>();
-            string file = dataDirectory + fileName + ".xlsx";
+
+            var file = dataDirectory + fileName + ".xlsx";
             var wb = new Workbook(file);
             var stations = wb.Worksheets[0].Cells;
             var lines = wb.Worksheets[1].Cells;
@@ -348,7 +108,11 @@ namespace LivinParis
                     commune,
                     insee
                 );
-                var node = new Node<Station>(stationId, station);
+                var node = new Node<Station>(
+                    stationId,
+                    station,
+                    new VisualizationParameters(longitude, latitude, station.ColorLine, commune)
+                );
                 adjacencyList[node] = new SortedSet<Node<Station>>();
             }
 
@@ -358,7 +122,7 @@ namespace LivinParis
 
                 try
                 {
-                    var preStationId = lines[i, 2].IntValue;
+                    var preStationId = lines[i, 3].IntValue;
                     adjacencyList[Node<Station>.GetNode(stationId)]
                         .Add(Node<Station>.GetNode(preStationId));
                 }
@@ -366,7 +130,7 @@ namespace LivinParis
 
                 try
                 {
-                    var nextStationId = lines[i, 3].IntValue;
+                    var nextStationId = lines[i, 4].IntValue;
                     adjacencyList[Node<Station>.GetNode(stationId)]
                         .Add(Node<Station>.GetNode(nextStationId));
                 }
@@ -375,6 +139,7 @@ namespace LivinParis
 
             for (int i = 1; i <= correspondences.MaxDataRow; i++)
             {
+                //TODO: cluster pour correspondances
                 var stationId = correspondences[i, 1].IntValue;
                 var correspondenceId = correspondences[i, 2].IntValue;
 

@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text;
 
+//HACK: refactor
+
 namespace LivinParis.Models.Maps;
 
 /// <summary>
@@ -134,6 +136,9 @@ public class Graph<T>
     /// </remarks>
     public Graph(SortedDictionary<Node<T>, SortedSet<Node<T>>> adjacencyList)
     {
+        /*TODO: Gérer les poids des arrêtes
+        * Gérer l'accès à la ligne, x, y et tableau des vitesses par ligne ou durée totale + segmentation ?
+        */
         _nodes = new SortedSet<Node<T>>(adjacencyList.Keys);
         _edges = new List<Edge<T>>();
         _adjacencyList = adjacencyList;
@@ -153,15 +158,70 @@ public class Graph<T>
             var source = kvp.Key;
             foreach (var neighbor in kvp.Value)
             {
-                _edges.Add(new Edge<T>(source, neighbor, 1.0, true));
                 _adjacencyMatrix[source.Id, neighbor.Id] = 1.0;
             }
         }
 
         _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
+
+        if (!_isDirected)
+        {
+            foreach (var kvp in adjacencyList)
+            {
+                var source = kvp.Key;
+                foreach (var neighbor in kvp.Value)
+                {
+                    if (source.Id < neighbor.Id)
+                    {
+                        var color = "#000000";
+                        if (
+                            source.VisualizationParameters.Color
+                                == neighbor.VisualizationParameters.Color
+                            && source.Data.ToString() != neighbor.Data.ToString()
+                        )
+                        {
+                            color = source.VisualizationParameters.Color;
+                        }
+                        _edges.Add(new Edge<T>(source, neighbor, 1.0, _isDirected, color));
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < _nodes.Count; i++)
+            {
+                for (int j = 0; j < _nodes.Count; j++)
+                {
+                    double weight = _adjacencyMatrix[i, j];
+                    if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
+                    {
+                        bool isDirected = Math.Abs(weight - _adjacencyMatrix[j, i]) > 1e-9;
+
+                        if (isDirected || i < j)
+                        {
+                            var color = "#000000";
+                            var source = Node<T>.GetNode(i);
+                            var target = Node<T>.GetNode(j);
+
+                            if (
+                                source.VisualizationParameters.Color
+                                    == target.VisualizationParameters.Color
+                                && source.Data.ToString() != target.Data.ToString()
+                            )
+                            {
+                                color = source.VisualizationParameters.Color;
+                            }
+                            _edges.Add(new Edge<T>(source, target, weight, isDirected, color));
+                        }
+                    }
+                }
+            }
+        }
+
         _distanceMatrix = RoyFloydWarshall();
         _order = _nodes.Count;
-        _size = _edges.Count;
+        _size = _edges.Count + _edges.Count(e => !e.IsDirected);
         int orientedFactor = _isDirected ? 1 : 2;
         _density = (double)_size * orientedFactor / (_order * (_order - 1));
         _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
@@ -214,7 +274,23 @@ public class Graph<T>
                 double weight = _adjacencyMatrix[source.Id, target.Id];
                 if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
                 {
-                    _edges.Add(new Edge<T>(source, target, weight, _isDirected));
+                    bool isDirected =
+                        Math.Abs(weight - _adjacencyMatrix[target.Id, source.Id]) > 1e-9;
+
+                    if (isDirected || source.Id < target.Id)
+                    {
+                        var color = "#000000";
+                        if (
+                            source.VisualizationParameters.Color
+                                == target.VisualizationParameters.Color
+                            && source.Data.ToString() != target.Data.ToString()
+                        )
+                        {
+                            color = source.VisualizationParameters.Color;
+                        }
+                        _edges.Add(new Edge<T>(source, target, weight, isDirected, color));
+                    }
+
                     _adjacencyList[source].Add(target);
 
                     if (!_isDirected)
@@ -339,6 +415,8 @@ public class Graph<T>
     #endregion Properties
 
     #region Public Methods - Cycle Detection
+
+    //TODO: Méthode fortement connexe ? ctc
 
     /// <summary>
     /// Searches for any cycle in the graph.
@@ -487,6 +565,10 @@ public class Graph<T>
     #endregion Public Methods - Traversals
 
     #region Public Methods - Pathfinding
+
+    //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
+
+    //TODO: Méthode de visualisation des chemins, sous graphe. Renvoi un sous graphe
 
     /// <summary>
     /// Performs Dijkstra's algorithm from the specified start node,
@@ -637,8 +719,8 @@ public class Graph<T>
     /// <param name="outputImageName">
     /// The base file name (without extension) for the output. A timestamp is appended to avoid overwrites.
     /// </param>
-    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "neato").</param>
-    public void DisplayGraph(string outputImageName = "graph", string layout = "dot")
+    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "fdp", "neato", ...).</param>
+    public void DisplayGraph(string outputImageName = "graph", string layout = "fdp")
     {
         string dotFilePath = $"{outputImageName}.dot";
         string outputImagePath =
@@ -646,12 +728,15 @@ public class Graph<T>
 
         ExportToDot(dotFilePath, layout);
         RenderDotFile(dotFilePath, outputImagePath);
-        File.Delete(dotFilePath);
+        //File.Delete(dotFilePath);
+        //FIXME: uncomment
     }
 
     #endregion Public Methods - Drawing
 
     #region Private Helpers - Roy-Floyd-Warshall
+
+    //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
     /// Computes the all-pairs shortest path distances using the Roy-Floyd-Warshall algorithm.
@@ -1016,8 +1101,8 @@ public class Graph<T>
     /// Exports the current graph to a DOT file for visualization with GraphViz.
     /// </summary>
     /// <param name="filePath">The path to the DOT file.</param>
-    /// <param name="layout">The GraphViz layout algorithm (e.g., "dot" or "neato").</param>
-    private void ExportToDot(string filePath, string layout = "dot")
+    /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato", ...).</param>
+    private void ExportToDot(string filePath, string layout)
     {
         var dotBuilder = new StringBuilder();
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
@@ -1025,7 +1110,7 @@ public class Graph<T>
 
         foreach (var node in _nodes)
         {
-            dotBuilder.AppendLine($"    \"{node.Data}\";");
+            dotBuilder.AppendLine($"    \"{node.Data}\" {node.VisualizationParameters};");
         }
 
         foreach (var edge in _edges)
@@ -1037,12 +1122,17 @@ public class Graph<T>
             else if (_isDirected)
             {
                 dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -> \"{edge.TargetNode.Data}\"");
+                if (!edge.IsDirected)
+                {
+                    dotBuilder.Append(" [dir=both]");
+                }
             }
 
             if (_isWeighted)
             {
-                dotBuilder.Append($" [label=\"{edge.Weight}\"]");
+                dotBuilder.Append($" [weight=\"{edge.Weight}\"]");
             }
+
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
 

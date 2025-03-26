@@ -1,5 +1,7 @@
 ﻿namespace LivinParis.Models.Maps;
 
+//HACK: refactor
+
 /// <summary>
 /// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.
 /// </summary>
@@ -31,6 +33,11 @@ public class Node<T> : IComparable<Node<T>>
     /// </summary>
     private readonly T _data;
 
+    /// <summary>
+    /// The visualization parameters for this node.
+    /// </summary>
+    private readonly VisualizationParameters _visualizationParameters;
+
     #endregion Fields
 
     #region Constructors
@@ -44,13 +51,16 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="data">
     /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
     /// </param>
+    /// <param name="visualizationParameters">
+    /// The visualization parameters for this node.
+    /// </param>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="id"/> is less than 0.
     /// </exception>
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="data"/> is <c>null</c>.
     /// </exception>
-    public Node(int id, T data)
+    public Node(int id, T data, VisualizationParameters visualizationParameters)
     {
         if (id < 0)
         {
@@ -67,8 +77,9 @@ public class Node<T> : IComparable<Node<T>>
             throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
         }
 
-        _data = data;
         _id = id;
+        _data = data;
+        _visualizationParameters = visualizationParameters;
         _existingNodes.Add(_id, this);
     }
 
@@ -78,10 +89,13 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="data">
     /// The data to store in this node.
     /// </param>
+    /// <param name="visualizationParameters">
+    /// The visualization parameters for this node.
+    /// </param>
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="data"/> is <c>null</c>.
     /// </exception>
-    public Node(T data)
+    public Node(T data, VisualizationParameters visualizationParameters)
     {
         if (data is null)
         {
@@ -98,8 +112,9 @@ public class Node<T> : IComparable<Node<T>>
             nextId = _existingNodes.Last().Key + 1;
         }
 
-        _data = data;
         _id = nextId;
+        _data = data;
+        _visualizationParameters = visualizationParameters;
         _existingNodes.Add(_id, this);
     }
 
@@ -121,6 +136,14 @@ public class Node<T> : IComparable<Node<T>>
     public T Data
     {
         get { return _data; }
+    }
+
+    /// <summary>
+    /// Gets the visualization parameters for this node.
+    /// </summary>
+    public VisualizationParameters VisualizationParameters
+    {
+        get { return _visualizationParameters; }
     }
 
     /// <summary>
@@ -155,7 +178,7 @@ public class Node<T> : IComparable<Node<T>>
                 return node;
             }
         }
-        return new Node<T>(dataToFind);
+        return new Node<T>(dataToFind, new VisualizationParameters());
     }
 
     /// <summary>
