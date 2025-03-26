@@ -67,12 +67,12 @@ namespace LivinParis
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyList("metro/MetroParis"));
 
-            string[] layout = { "dot", "neato", "fdp", "sfdp", "twopi", "circo" };
-
-            foreach (string l in layout)
-            {
-                graph.DisplayGraph("graph_" + l, l);
-            }
+            graph.DisplayGraph("graph_neato", "neato", "ellipse");
+            graph.DisplayGraph("graph_fdp", "fdp", "ellipse");
+            graph.DisplayGraph("graph_sfdp", "sfdp", "ellipse");
+            graph.DisplayGraph("graph_neatopoint", "neato", "point");
+            graph.DisplayGraph("graph_fdppoint", "fdp", "point");
+            graph.DisplayGraph("graph_sfdppoint", "sfdp", "point");
         }
 
         //TODO: Faire XlsxToAdjacencyMatrix
@@ -111,7 +111,7 @@ namespace LivinParis
                 var node = new Node<Station>(
                     stationId,
                     station,
-                    new VisualizationParameters(longitude, latitude, station.ColorLine, commune)
+                    new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
                 );
                 adjacencyList[node] = new SortedSet<Node<Station>>();
             }
@@ -139,7 +139,6 @@ namespace LivinParis
 
             for (int i = 1; i <= correspondences.MaxDataRow; i++)
             {
-                //TODO: cluster pour correspondances
                 var stationId = correspondences[i, 1].IntValue;
                 var correspondenceId = correspondences[i, 2].IntValue;
 

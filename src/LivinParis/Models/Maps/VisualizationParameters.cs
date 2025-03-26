@@ -36,7 +36,7 @@ public struct VisualizationParameters
     private readonly double? _x;
     private readonly double? _y;
     private readonly string _color;
-    private string[] _cluster;
+    private string _cluster;
 
     #endregion Fields
 
@@ -59,7 +59,7 @@ public struct VisualizationParameters
         _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 20.985097455 * 10E6; //FIXME: c'est le zbeul
         _y = (latitude * 10E9 - Y_MIN) / (Y_MAX - Y_MIN) * 9 * 10E6;
         _color = color;
-        _cluster = cluster.Split(';');
+        _cluster = cluster;
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public struct VisualizationParameters
         _x = null;
         _y = null;
         _color = "#000000";
-        _cluster = new string[] { };
+        _cluster = "";
     }
 
     #endregion Constructors
@@ -88,7 +88,7 @@ public struct VisualizationParameters
     /// <summary>
     /// Gets the clusters the node belongs to.
     /// </summary>
-    public string[] Cluster
+    public string Cluster
     {
         get { return _cluster; }
         set { _cluster = value; }
@@ -100,7 +100,8 @@ public struct VisualizationParameters
 
     public override string ToString()
     {
-        return $"[pos=\"{_x},{_y}!\", style=filled, fillcolor=\"{_color}\"]";
+        return $"[pos=\"{_y},{_x}!\", style=filled, fillcolor=\"{_color}\"]";
+        //BUG: neato: y, x; sfdp: x, y voir des moins ??
     }
 
     #endregion Methods

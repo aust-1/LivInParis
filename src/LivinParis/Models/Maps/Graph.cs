@@ -720,16 +720,20 @@ public class Graph<T>
     /// The base file name (without extension) for the output. A timestamp is appended to avoid overwrites.
     /// </param>
     /// <param name="layout">The GraphViz layout to use (e.g. "dot", "fdp", "neato", ...).</param>
-    public void DisplayGraph(string outputImageName = "graph", string layout = "fdp")
+    /// <param name="shape">The shape of the nodes (e.g. "circle", "square", "triangle", ...).</param>
+    public void DisplayGraph(
+        string outputImageName = "graph",
+        string layout = "fdp",
+        string shape = "ellipse"
+    )
     {
         string dotFilePath = $"{outputImageName}.dot";
         string outputImagePath =
             $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
-        ExportToDot(dotFilePath, layout);
+        ExportToDot(dotFilePath, layout, shape);
         RenderDotFile(dotFilePath, outputImagePath);
-        //File.Delete(dotFilePath);
-        //FIXME: uncomment
+        File.Delete(dotFilePath);
     }
 
     #endregion Public Methods - Drawing
@@ -1102,16 +1106,44 @@ public class Graph<T>
     /// </summary>
     /// <param name="filePath">The path to the DOT file.</param>
     /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato", ...).</param>
-    private void ExportToDot(string filePath, string layout)
+    /// <param name="shape">The shape of the nodes (e.g., "circle", "rectangle", "diamond", ...).</param>
+    private void ExportToDot(string filePath, string layout, string shape)
     {
         var dotBuilder = new StringBuilder();
+        var clusters = new Dictionary<string, List<Node<T>>>();
+
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
+        dotBuilder.AppendLine("    ratio=0.4288757781;");
+        dotBuilder.AppendLine($"    node [shape={shape}];");
 
         foreach (var node in _nodes)
         {
             dotBuilder.AppendLine($"    \"{node.Data}\" {node.VisualizationParameters};");
+            if (!clusters.ContainsKey(node.VisualizationParameters.Cluster))
+            {
+                clusters[node.VisualizationParameters.Cluster] = new List<Node<T>>();
+            }
+            clusters[node.VisualizationParameters.Cluster].Add(node);
         }
+
+        dotBuilder.AppendLine();
+
+        int i = 0;
+        foreach (var cluster in clusters.Where(c => c.Value.Count > 1))
+        {
+            dotBuilder.AppendLine($"    subgraph cluster_{i} {{");
+            dotBuilder.AppendLine($"        label=\"{cluster.Key}\";");
+            foreach (var node in cluster.Value)
+            {
+                dotBuilder.AppendLine($"        \"{node.Data}\";");
+            }
+            dotBuilder.AppendLine("    }");
+            dotBuilder.AppendLine();
+            i++;
+        }
+
+        dotBuilder.AppendLine();
 
         foreach (var edge in _edges)
         {
