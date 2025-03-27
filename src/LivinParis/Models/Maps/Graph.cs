@@ -1086,7 +1086,7 @@ public class Graph<T>
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
         dotBuilder.AppendLine("    ratio=0.4288757781;");
-        //FIXME: uncomment ratio
+        //FIXME: ratio
         dotBuilder.AppendLine($"    node [shape={shape}];");
         //TODO: flèches correspondances plus discrètes et en arc de cercle
         foreach (var node in _nodes)
@@ -1132,10 +1132,7 @@ public class Graph<T>
                 }
             }
 
-            // if (edge.RGBColor != "#000000")
-            // {
-            //     dotBuilder.Append($" [weight=\"{1+edge.Weight}\"]");
-            // }
+            //TODO: point plus gros, pas de poids, nom écris à côté, et nom écris hors cluster
 
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
@@ -1143,7 +1140,8 @@ public class Graph<T>
         dotBuilder.AppendLine("}");
         File.WriteAllText(filePath, dotBuilder.ToString());
     }
-
+    //FIXME: correpsondance 13 10
+    //TODO: correspondance en un seul point
     #endregion Private Helpers - GraphViz
 
     #region Private Helpers - Node Resolution

@@ -5,6 +5,7 @@
 LivinParis
 ├─ docs
 │  └─ PSI.loo
+├─ LICENSE
 ├─ LivinParis.sln
 ├─ README.md
 ├─ src
@@ -13,12 +14,9 @@ LivinParis
 │  │  ├─ docker-compose.yml
 │  │  └─ init.sql
 │  └─ LivinParis
-│     ├─ Controllers ???
 │     ├─ data
 │     │  ├─ metro
-│     │  │  ├─ arcs.csv
-│     │  │  ├─ correspondance.csv
-│     │  │  └─ noeuds.csv
+│     │  │  └─ MetroParis.xlsx
 │     │  └─ Repositories
 │     │     ├─ Implementations
 │     │     │  ├─ AccountRepository.cs
@@ -54,13 +52,13 @@ LivinParis
 │     │  │  ├─ Edge.cs
 │     │  │  ├─ Graph.cs
 │     │  │  ├─ Node.cs
-│     │  │  └─ Station.cs
+│     │  │  ├─ Station.cs
+│     │  │  └─ VisualizationParameters.cs
 │     │  └─ Order
 │     │     ├─ Account.cs
 │     │     ├─ Adress.cs
 │     │     ├─ Chef.cs
 │     │     ├─ Company.cs
-│     │     ├─ Contains.cs
 │     │     ├─ Customer.cs
 │     │     ├─ Dish.cs
 │     │     ├─ Individual.cs
@@ -69,12 +67,6 @@ LivinParis
 │     │     ├─ OrderLine.cs
 │     │     ├─ Review.cs
 │     │     └─ Transaction.cs
-│     ├─ Profiles ???
-│     │  ├─ Chef.cs
-│     │  ├─ Company.cs
-│     │  ├─ Customer.cs
-│     │  ├─ Individual.cs
-│     │  └─ Manager.cs
 │     ├─ Program.cs
 │     └─ Using.cs
 └─ tests
