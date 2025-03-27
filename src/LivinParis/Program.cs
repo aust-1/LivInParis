@@ -65,17 +65,11 @@ namespace LivinParis
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyList("metro/MetroParis"));
+            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
 
             graph.DisplayGraph("graph_neato", "neato", "ellipse");
-            graph.DisplayGraph("graph_fdp", "fdp", "ellipse");
-            graph.DisplayGraph("graph_sfdp", "sfdp", "ellipse");
             graph.DisplayGraph("graph_neatopoint", "neato", "point");
-            graph.DisplayGraph("graph_fdppoint", "fdp", "point");
-            graph.DisplayGraph("graph_sfdppoint", "sfdp", "point");
         }
-
-        //TODO: Faire XlsxToAdjacencyMatrix
 
         private static SortedDictionary<
             Node<Station>,
@@ -150,6 +144,76 @@ namespace LivinParis
             }
 
             return adjacencyList;
+        }
+
+        private static double[,] XlsxToAdjacencyMatrix(string fileName)
+        {
+            var file = dataDirectory + fileName + ".xlsx";
+            var wb = new Workbook(file);
+            var stations = wb.Worksheets[0].Cells;
+            var lines = wb.Worksheets[1].Cells;
+            var correspondences = wb.Worksheets[2].Cells;
+
+            for (int i = 1; i <= stations.MaxDataRow; i++)
+            {
+                var stationId = stations[i, 0].IntValue;
+                var lineName = stations[i, 1].StringValue;
+                var stationName = stations[i, 2].StringValue;
+                var longitude = stations[i, 3].DoubleValue;
+                var latitude = stations[i, 4].DoubleValue;
+                var commune = stations[i, 5].StringValue;
+                var insee = stations[i, 6].IntValue;
+
+                var station = new Station(
+                    lineName,
+                    stationName,
+                    longitude,
+                    latitude,
+                    commune,
+                    insee
+                );
+                new Node<Station>(
+                    stationId,
+                    station,
+                    new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
+                );
+            }
+
+            var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
+
+            for (int i = 1; i <= lines.MaxDataRow; i++)
+            {
+                var stationId = lines[i, 0].IntValue;
+                var station = Node<Station>.GetNode(stationId).Data;
+
+                try
+                {
+                    var preStationId = lines[i, 3].IntValue;
+                    var preStation = Node<Station>.GetNode(preStationId).Data;
+                    adjacencyMatrix[stationId, preStationId] = station.GetTimeTo(preStation);
+                }
+                catch (Exception) { }
+
+                try
+                {
+                    var nextStationId = lines[i, 4].IntValue;
+                    var nextStation = Node<Station>.GetNode(nextStationId).Data;
+                    adjacencyMatrix[stationId, nextStationId] = station.GetTimeTo(nextStation);
+                }
+                catch (Exception) { }
+            }
+
+            for (int i = 1; i <= correspondences.MaxDataRow; i++)
+            {
+                var stationId1 = correspondences[i, 1].IntValue;
+                var stationId2 = correspondences[i, 2].IntValue;
+                var correspondenceTime = correspondences[i, 3].DoubleValue;
+
+                adjacencyMatrix[stationId1, stationId2] = correspondenceTime;
+                adjacencyMatrix[stationId2, stationId1] = correspondenceTime;
+            }
+
+            return adjacencyMatrix;
         }
     }
 }

@@ -45,8 +45,8 @@ public struct VisualizationParameters
     /// <summary>
     /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct.
     /// </summary>
-    /// <param name="longitude">The longitude of the node.</param>
-    /// <param name="latitude">The latitude of the node.</param>
+    /// <param name="longitude">The longitude of the node in radians.</param>
+    /// <param name="latitude">The latitude of the node in radians.</param>
     /// <param name="color">The fill color to use for visualization.</param>
     /// <param name="cluster">The cluster identifier the node belongs to (optional).</param>
     public VisualizationParameters(

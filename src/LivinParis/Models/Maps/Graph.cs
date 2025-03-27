@@ -136,9 +136,6 @@ public class Graph<T>
     /// </remarks>
     public Graph(SortedDictionary<Node<T>, SortedSet<Node<T>>> adjacencyList)
     {
-        /*TODO: Gérer les poids des arrêtes
-        * Gérer l'accès à la ligne, x, y et tableau des vitesses par ligne ou durée totale + segmentation ?
-        */
         _nodes = new SortedSet<Node<T>>(adjacencyList.Keys);
         _edges = new List<Edge<T>>();
         _adjacencyList = adjacencyList;
@@ -164,56 +161,30 @@ public class Graph<T>
 
         _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
 
-        if (!_isDirected)
+        for (int i = 0; i < _nodes.Count; i++)
         {
-            foreach (var kvp in adjacencyList)
+            for (int j = 0; j < _nodes.Count; j++)
             {
-                var source = kvp.Key;
-                foreach (var neighbor in kvp.Value)
+                double weight = _adjacencyMatrix[i, j];
+                if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
                 {
-                    if (source.Id < neighbor.Id)
+                    bool isDirected = Math.Abs(weight - _adjacencyMatrix[j, i]) > 1e-9;
+
+                    if (isDirected || i < j)
                     {
                         var color = "#000000";
+                        var source = Node<T>.GetNode(i);
+                        var target = Node<T>.GetNode(j);
+
                         if (
                             source.VisualizationParameters.Color
-                                == neighbor.VisualizationParameters.Color
-                            && source.Data.ToString() != neighbor.Data.ToString()
+                                == target.VisualizationParameters.Color
+                            && source.Data.ToString() != target.Data.ToString()
                         )
                         {
                             color = source.VisualizationParameters.Color;
                         }
-                        _edges.Add(new Edge<T>(source, neighbor, 1.0, _isDirected, color));
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < _nodes.Count; i++)
-            {
-                for (int j = 0; j < _nodes.Count; j++)
-                {
-                    double weight = _adjacencyMatrix[i, j];
-                    if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
-                    {
-                        bool isDirected = Math.Abs(weight - _adjacencyMatrix[j, i]) > 1e-9;
-
-                        if (isDirected || i < j)
-                        {
-                            var color = "#000000";
-                            var source = Node<T>.GetNode(i);
-                            var target = Node<T>.GetNode(j);
-
-                            if (
-                                source.VisualizationParameters.Color
-                                    == target.VisualizationParameters.Color
-                                && source.Data.ToString() != target.Data.ToString()
-                            )
-                            {
-                                color = source.VisualizationParameters.Color;
-                            }
-                            _edges.Add(new Edge<T>(source, target, weight, isDirected, color));
-                        }
+                        _edges.Add(new Edge<T>(source, target, weight, isDirected, color));
                     }
                 }
             }
@@ -303,7 +274,7 @@ public class Graph<T>
 
         _distanceMatrix = RoyFloydWarshall();
         _order = _nodes.Count;
-        _size = _edges.Count;
+        _size = _edges.Count + _edges.Count(e => !e.IsDirected);
         int orientedFactor = _isDirected ? 1 : 2;
         _density = (double)_size * orientedFactor / (_order * (_order - 1));
         _isWeighted = _edges.Any(edge => Math.Abs(edge.Weight - 1.0) > 1e-9);
@@ -1115,8 +1086,9 @@ public class Graph<T>
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
         dotBuilder.AppendLine("    ratio=0.4288757781;");
+        //FIXME: uncomment ratio
         dotBuilder.AppendLine($"    node [shape={shape}];");
-
+        //TODO: flèches correspondances plus discrètes et en arc de cercle
         foreach (var node in _nodes)
         {
             dotBuilder.AppendLine($"    \"{node.Data}\" {node.VisualizationParameters};");
@@ -1160,10 +1132,10 @@ public class Graph<T>
                 }
             }
 
-            if (_isWeighted)
-            {
-                dotBuilder.Append($" [weight=\"{edge.Weight}\"]");
-            }
+            // if (edge.RGBColor != "#000000")
+            // {
+            //     dotBuilder.Append($" [weight=\"{1+edge.Weight}\"]");
+            // }
 
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }

@@ -7,6 +7,12 @@ namespace LivinParis.Models.Maps;
 /// </summary>
 public struct Station
 {
+    #region Constants
+
+    private const int R = 6371;
+    private const double DEGRE_TO_RAD = Math.PI / 180;
+
+    #endregion Constants
     //QUESTION: Should this be a class instead of a struct?
     #region Fields
 
@@ -21,12 +27,12 @@ public struct Station
     private readonly string _line;
 
     /// <summary>
-    /// The longitude of the station.
+    /// The longitude of the station in radians.
     /// </summary>
     private readonly double _longitude;
 
     /// <summary>
-    /// The latitude of the station.
+    /// The latitude of the station in radians.
     /// </summary>
     private readonly double _latitude;
 
@@ -49,6 +55,15 @@ public struct Station
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Station"/> struct.
+    /// </summary>
+    /// <param name="line">The line the station is on.</param>
+    /// <param name="name">The name of the station.</param>
+    /// <param name="longitude">The longitude of the station in degrees.</param>
+    /// <param name="latitude">The latitude of the station in degrees.</param>
+    /// <param name="commune">The commune the station is in.</param>
+    /// <param name="insee">The INSEE code of the commune the station is in.</param>
     public Station(
         string line,
         string name,
@@ -60,8 +75,8 @@ public struct Station
     {
         _line = line;
         _name = name;
-        _longitude = longitude;
-        _latitude = latitude;
+        _longitude = longitude * DEGRE_TO_RAD;
+        _latitude = latitude * DEGRE_TO_RAD;
         _commune = commune;
         _insee = insee;
         _colorLine = GetColorByLine(line);
@@ -90,10 +105,28 @@ public struct Station
 
     #region Methods
 
+    public double GetTimeTo(Station station)
+    {
+        return GetDistanceTo(station) / GetSpeedByLine(_line);
+    }
+
+    private double GetDistanceTo(Station station)
+    {
+        return 2
+            * R
+            * Math.Asin(
+                Math.Sqrt(
+                    Math.Pow(Math.Sin((_latitude - station.Latitude) / 2), 2)
+                        + Math.Cos(_latitude)
+                            * Math.Cos(station.Latitude)
+                            * Math.Pow(Math.Sin((_longitude - station.Longitude) / 2), 2)
+                )
+            );
+    }
+
     public override string ToString()
     {
         return $"{_name} ({_line})";
-        //return $"\"{_name} ({_line})\" [pos=\"{(_longitude * 100000000000000).ToString("F0")},{(_latitude * 100000000000000).ToString("F0")}!\", style=filled, fillcolor=\"{_colorLine}\"]";
     }
 
     private static string GetColorByLine(string line)
@@ -134,6 +167,47 @@ public struct Station
                 return "#662483";
             default:
                 return "#000000";
+        }
+    }
+
+    private static double GetSpeedByLine(string line)
+    {
+        switch (line)
+        {
+            case "1":
+                return 30;
+            case "2":
+                return 21.6;
+            case "3":
+                return 22.5;
+            case "3bis":
+                return 19;
+            case "4":
+                return 21.6;
+            case "5":
+                return 25.9;
+            case "6":
+                return 26.3;
+            case "7":
+                return 28.1;
+            case "7bis":
+                return 23;
+            case "8":
+                return 26.9;
+            case "9":
+                return 22.6;
+            case "10":
+                return 25.1;
+            case "11":
+                return 28.1;
+            case "12":
+                return 27.2;
+            case "13":
+                return 39;
+            case "14":
+                return 40;
+            default:
+                throw new ArgumentException("Invalid line");
         }
     }
 
