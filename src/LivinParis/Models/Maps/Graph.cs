@@ -1081,43 +1081,44 @@ public class Graph<T>
     private void ExportToDot(string filePath, string layout, string shape)
     {
         var dotBuilder = new StringBuilder();
-        var clusters = new Dictionary<string, List<Node<T>>>();
+        // var clusters = new Dictionary<string, List<Node<T>>>();
 
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
-        dotBuilder.AppendLine("    ratio=0.4288757781;");
+        //dotBuilder.AppendLine("    ratio=0.4288758139;");
+        dotBuilder.AppendLine("    ratio=0.6438356164;");
         //FIXME: ratio
         dotBuilder.AppendLine($"    node [shape={shape}];");
         //TODO: flèches correspondances plus discrètes et en arc de cercle
         foreach (var node in _nodes)
         {
             dotBuilder.AppendLine($"    \"{node.Data}\" {node.VisualizationParameters};");
-            if (!clusters.ContainsKey(node.VisualizationParameters.Cluster))
-            {
-                clusters[node.VisualizationParameters.Cluster] = new List<Node<T>>();
-            }
-            clusters[node.VisualizationParameters.Cluster].Add(node);
+            // if (!clusters.ContainsKey(node.VisualizationParameters.Cluster))
+            // {
+            //     clusters[node.VisualizationParameters.Cluster] = new List<Node<T>>();
+            // }
+            // clusters[node.VisualizationParameters.Cluster].Add(node);
         }
 
         dotBuilder.AppendLine();
 
-        int i = 0;
-        foreach (var cluster in clusters.Where(c => c.Value.Count > 1))
-        {
-            dotBuilder.AppendLine($"    subgraph cluster_{i} {{");
-            dotBuilder.AppendLine($"        label=\"{cluster.Key}\";");
-            foreach (var node in cluster.Value)
-            {
-                dotBuilder.AppendLine($"        \"{node.Data}\";");
-            }
-            dotBuilder.AppendLine("    }");
-            dotBuilder.AppendLine();
-            i++;
-        }
+        // int i = 0;
+        // foreach (var cluster in clusters.Where(c => c.Value.Count > 1))
+        // {
+        //     dotBuilder.AppendLine($"    subgraph cluster_{i} {{");
+        //     dotBuilder.AppendLine($"        label=\"{cluster.Key}\";");
+        //     foreach (var node in cluster.Value)
+        //     {
+        //         dotBuilder.AppendLine($"        \"{node.Data}\";");
+        //     }
+        //     dotBuilder.AppendLine("    }");
+        //     dotBuilder.AppendLine();
+        //     i++;
+        // }
 
         dotBuilder.AppendLine();
 
-        foreach (var edge in _edges)
+        foreach (var edge in _edges.Where(e => e.RGBColor != "#000000"))
         {
             if (!_isDirected && edge.SourceNode.Id > edge.TargetNode.Id)
             {
@@ -1132,15 +1133,13 @@ public class Graph<T>
                 }
             }
 
-            //TODO: point plus gros, pas de poids, nom écris à côté, et nom écris hors cluster
-
+            //TODO: point plus gros, nom écris à côté, et nom écris hors cluster
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
 
         dotBuilder.AppendLine("}");
         File.WriteAllText(filePath, dotBuilder.ToString());
     }
-    //FIXME: correpsondance 13 10
     //TODO: correspondance en un seul point
     #endregion Private Helpers - GraphViz
 

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace LivinParis.Models.Maps;
 
 //HACK: refactor
@@ -12,22 +14,22 @@ public struct VisualizationParameters
     /// <summary>
     /// Minimum longitude value within the map bounds.
     /// </summary>
-    public const double X_MIN = 2257046193;
+    public const double X_MIN = 22570461929;
 
     /// <summary>
     /// Maximum longitude value within the map bounds.
     /// </summary>
-    public const double X_MAX = 2440540095;
+    public const double X_MAX = 24405400954;
 
     /// <summary>
     /// Minimum latitude value within the map bounds.
     /// </summary>
-    public const double Y_MIN = 48819106600;
+    public const double Y_MIN = 488191065956;
 
     /// <summary>
     /// Maximum latitude value within the map bounds.
     /// </summary>
-    public const double Y_MAX = 48897802690;
+    public const double Y_MAX = 488978026914;
 
     #endregion Constants
 
@@ -36,7 +38,7 @@ public struct VisualizationParameters
     private readonly double? _x;
     private readonly double? _y;
     private readonly string _color;
-    private string _cluster;
+    private string _label;
 
     #endregion Fields
 
@@ -45,21 +47,16 @@ public struct VisualizationParameters
     /// <summary>
     /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct.
     /// </summary>
-    /// <param name="longitude">The longitude of the node in radians.</param>
-    /// <param name="latitude">The latitude of the node in radians.</param>
+    /// <param name="longitude">The longitude of the node in degree.</param>
+    /// <param name="latitude">The latitude of the node in degree.</param>
     /// <param name="color">The fill color to use for visualization.</param>
-    /// <param name="cluster">The cluster identifier the node belongs to (optional).</param>
-    public VisualizationParameters(
-        double longitude,
-        double latitude,
-        string color,
-        string cluster = ""
-    )
+    /// <param name="label">The name of the node.</param>
+    public VisualizationParameters(double longitude, double latitude, string color, string label)
     {
-        _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 20.985097455 * 10E6; //FIXME: c'est le zbeul
-        _y = (latitude * 10E9 - Y_MIN) / (Y_MAX - Y_MIN) * 9 * 10E6;
+        _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 25; //FIXME: c'est le zbeul
+        _y = (latitude * 10E9 - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
         _color = color;
-        _cluster = cluster;
+        _label = label;
     }
 
     /// <summary>
@@ -70,7 +67,7 @@ public struct VisualizationParameters
         _x = null;
         _y = null;
         _color = "#000000";
-        _cluster = "";
+        _label = "";
     }
 
     #endregion Constructors
@@ -86,12 +83,12 @@ public struct VisualizationParameters
     }
 
     /// <summary>
-    /// Gets the clusters the node belongs to.
+    /// Gets the label of the node.
     /// </summary>
-    public string Cluster
+    public string Label
     {
-        get { return _cluster; }
-        set { _cluster = value; }
+        get { return _label; }
+        set { _label = value; }
     }
 
     #endregion Properties
@@ -100,8 +97,7 @@ public struct VisualizationParameters
 
     public override string ToString()
     {
-        return $"[pos=\"{_y},{_x}!\", style=filled, fillcolor=\"{_color}\"]";
-        //BUG: neato: y, x; sfdp: x, y voir des moins ??
+        return $"[label=\"{_label}\", pos=\"{_x:F4},{_y:F4}!\", style=filled, fillcolor=\"{_color}\"]";
     }
 
     #endregion Methods
