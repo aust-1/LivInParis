@@ -11,8 +11,8 @@ Pour chosir entre ces deux structures, nous avons testé les deux en chargeant l
 
 |       Méthode       | Temps (ms) |
 |---------------------|------------|
-| Matrice d'adjacence | 193        |
-| Liste d'adjacence   | 199        |
+| Matrice d'adjacence | 11        |
+| Liste d'adjacence   | 23        |
 
 Nous avons donc choisi d'utiliser la matrice d'adjacence pour sa rapidité d'initialisation.
 
@@ -22,6 +22,15 @@ Pour le pathfinding, nous avons implémenté l'algorithme de Dijkstra, de Bellma
 
 |     Algorithme     | Temps (ms) |
 |--------------------|------------|
-| Dijkstra           | 8          |
-| Bellman-Ford       | 5          |
-| Roy-Floyd-Warshall |         |
+| Dijkstra           | 5          |
+| Bellman-Ford       | 4          |
+| Roy-Floyd-Warshall | 198        |
+
+Pour une meilleure comparaison, nous avons également mesuré les temps total d'exécution de Dijkstra et de Bellman-Ford sur l'ensemble du graphe. Voici les résultats obtenus :
+
+|     Algorithme     | Temps (ms) |
+|--------------------|------------|
+| Dijkstra           | 1542       |
+| Bellman-Ford       | 1429       |
+
+Donc nous pouvons dans un but d'optimisation soit calculer la `pathMatrix` avec l'algorithme de Roy-Floyd-Warshall dès l'initialisation du graphe, soit la calculer à la demande avec l'algorithme de Bellman-Ford. Nous avons choisi de la calculer à la demande avec l'algorithme de Bellman-Ford car cela permet de ne pas surcharger la mémoire avec une matrice de 330x330 et de ne pas avoir à recalculer la matrice à chaque fois que le graphe est modifié si nous décidons d'intégrer les perturbations du réseau en temps réel plus tard.

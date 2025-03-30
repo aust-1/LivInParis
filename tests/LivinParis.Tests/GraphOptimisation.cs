@@ -218,9 +218,9 @@ public class GraphOptimisation
             sw.Stop();
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
             total += elapsedMilliseconds;
-            Console.WriteLine(elapsedMilliseconds + " ms");
         }
         Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
+        Debug.WriteLine("Total: " + total + " ms");
     }
 
     [TestMethod]
@@ -237,9 +237,28 @@ public class GraphOptimisation
             sw.Stop();
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
             total += elapsedMilliseconds;
-            Console.WriteLine(elapsedMilliseconds + " ms");
         }
         Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
+        Debug.WriteLine("Total: " + total + " ms");
+    }
+
+    [TestMethod]
+    [DataRow(30)]
+    public void PathfindingTimeByRoyFloydWarshall(int iterations)
+    {
+        long total = 0;
+        Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+        for (int i = 0; i < iterations; i++)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var result = graph.RoyFloydWarshall();
+            sw.Stop();
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            total += elapsedMilliseconds;
+            Debug.WriteLine(elapsedMilliseconds + " ms");
+        }
+        Debug.WriteLine("Moyenne: " + total / iterations + " ms");
     }
 
     #endregion Temps en fonction des méthodes de pathfinding

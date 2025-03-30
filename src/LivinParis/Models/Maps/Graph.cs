@@ -80,6 +80,11 @@ public class Graph<T>
     private readonly double[,] _distanceMatrix;
 
     /// <summary>
+    /// The path matrix computed via the Roy-Floyd-Warshall algorithm.
+    /// </summary>
+    private readonly List<Node<T>>[,] _pathMatrix;
+
+    /// <summary>
     /// The order of the graph (number of nodes).
     /// </summary>
     private readonly int _order;
@@ -189,7 +194,7 @@ public class Graph<T>
             }
         }
 
-        _distanceMatrix = RoyFloydWarshall();
+        //_pathMatrix = RoyFloydWarshall();
         _order = _nodes.Count;
         _size = _edges.Count + _edges.Count(e => !e.IsDirected);
         int orientedFactor = _isDirected ? 1 : 2;
@@ -271,7 +276,7 @@ public class Graph<T>
             }
         }
 
-        _distanceMatrix = RoyFloydWarshall();
+        //_pathMatrix = RoyFloydWarshall();
         _order = _nodes.Count;
         _size = _edges.Count + _edges.Count(e => !e.IsDirected);
         int orientedFactor = _isDirected ? 1 : 2;
@@ -284,103 +289,103 @@ public class Graph<T>
 
     #region Properties
 
-    /// <summary>
-    /// Gets the set of all nodes in this graph.
-    /// </summary>
-    public SortedSet<Node<T>> Nodes
-    {
-        get { return _nodes; }
-    }
+    // /// <summary>
+    // /// Gets the set of all nodes in this graph.
+    // /// </summary>
+    // public SortedSet<Node<T>> Nodes
+    // {
+    //     get { return _nodes; }
+    // }
 
-    /// <summary>
-    /// Gets the collection of edges in this graph.
-    /// </summary>
-    public List<Edge<T>> Edges
-    {
-        get { return _edges; }
-    }
+    // /// <summary>
+    // /// Gets the collection of edges in this graph.
+    // /// </summary>
+    // public List<Edge<T>> Edges
+    // {
+    //     get { return _edges; }
+    // }
 
-    /// <summary>
-    /// Gets the adjacency list representing this graph.
-    /// </summary>
-    public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
-    {
-        get { return _adjacencyList; }
-    }
+    // /// <summary>
+    // /// Gets the adjacency list representing this graph.
+    // /// </summary>
+    // public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
+    // {
+    //     get { return _adjacencyList; }
+    // }
 
-    /// <summary>
-    /// Gets the adjacency matrix for this graph,
-    /// where <see cref="double.MaxValue"/> indicates no edge.
-    /// </summary>
-    public double[,] AdjacencyMatrix
-    {
-        get { return _adjacencyMatrix; }
-    }
+    // /// <summary>
+    // /// Gets the adjacency matrix for this graph,
+    // /// where <see cref="double.MaxValue"/> indicates no edge.
+    // /// </summary>
+    // public double[,] AdjacencyMatrix
+    // {
+    //     get { return _adjacencyMatrix; }
+    // }
 
-    /// <summary>
-    /// Gets the distance matrix for all pairs of nodes,
-    /// computed by the Roy-Floyd-Warshall algorithm.
-    /// </summary>
-    public double[,] DistanceMatrix
-    {
-        get { return _distanceMatrix; }
-    }
+    // /// <summary>
+    // /// Gets the distance matrix for all pairs of nodes,
+    // /// computed by the Roy-Floyd-Warshall algorithm.
+    // /// </summary>
+    // public double[,] DistanceMatrix
+    // {
+    //     get { return _distanceMatrix; }
+    // }
 
-    /// <summary>
-    /// Gets the number of nodes (the order of the graph).
-    /// </summary>
-    public int Order
-    {
-        get { return _order; }
-    }
+    // /// <summary>
+    // /// Gets the number of nodes (the order of the graph).
+    // /// </summary>
+    // public int Order
+    // {
+    //     get { return _order; }
+    // }
 
-    /// <summary>
-    /// Gets the number of edges (the size of the graph).
-    /// </summary>
-    public int Size
-    {
-        get { return _size; }
-    }
+    // /// <summary>
+    // /// Gets the number of edges (the size of the graph).
+    // /// </summary>
+    // public int Size
+    // {
+    //     get { return _size; }
+    // }
 
-    /// <summary>
-    /// Gets the density of the graph.
-    /// For directed graphs, density = E / (V*(V-1)).
-    /// For undirected graphs, density = (2*E) / (V*(V-1)).
-    /// </summary>
-    public double Density
-    {
-        get { return _density; }
-    }
+    // /// <summary>
+    // /// Gets the density of the graph.
+    // /// For directed graphs, density = E / (V*(V-1)).
+    // /// For undirected graphs, density = (2*E) / (V*(V-1)).
+    // /// </summary>
+    // public double Density
+    // {
+    //     get { return _density; }
+    // }
 
-    /// <summary>
-    /// Indicates whether this graph is directed.
-    /// </summary>
-    public bool IsDirected
-    {
-        get { return _isDirected; }
-    }
+    // /// <summary>
+    // /// Indicates whether this graph is directed.
+    // /// </summary>
+    // public bool IsDirected
+    // {
+    //     get { return _isDirected; }
+    // }
 
-    /// <summary>
-    /// Indicates whether this graph is weighted,
-    /// i.e., if any edge has a weight different from 1.0.
-    /// </summary>
-    public bool IsWeighted
-    {
-        get { return _isWeighted; }
-    }
+    // /// <summary>
+    // /// Indicates whether this graph is weighted,
+    // /// i.e., if any edge has a weight different from 1.0.
+    // /// </summary>
+    // public bool IsWeighted
+    // {
+    //     get { return _isWeighted; }
+    // }
 
-    /// <summary>
-    /// Indicates whether this graph is connected,
-    /// tested by a BFS from the first node.
-    /// </summary>
-    /// <remarks>
-    /// For directed graphs, checks if all nodes are reachable
-    /// in one direction from the first node in <see cref="_nodes"/>.
-    /// </remarks>
-    public bool IsConnected
-    {
-        get { return _isConnected; }
-    }
+    // /// <summary>
+    // /// Indicates whether this graph is connected,
+    // /// tested by a BFS from the first node.
+    // /// </summary>
+    // /// <remarks>
+    // /// For directed graphs, checks if all nodes are reachable
+    // /// in one direction from the first node in <see cref="_nodes"/>.
+    // /// </remarks>
+    // public bool IsConnected
+    // {
+    //     get { return _isConnected; }
+    // }
 
     #endregion Properties
 
@@ -725,16 +730,22 @@ public class Graph<T>
     /// <returns>
     /// A 2D array of distances, where <c>distance[i, j]</c> is the shortest path cost from i to j.
     /// </returns>
-    private double[,] RoyFloydWarshall()
+    public List<Node<T>>[,] RoyFloydWarshall()
     {
         int n = _nodes.Count;
-        double[,] distanceMatrix = new double[n, n];
-
+        var distanceMatrix = new double[n, n];
+        var pathMatrix = new List<Node<T>>[n, n];
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
             {
                 distanceMatrix[i, j] = _adjacencyMatrix[i, j];
+                pathMatrix[i, j] = new List<Node<T>>();
+                if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9 && i != j)
+                {
+                    pathMatrix[i, j].Add(Node<T>.GetNode(i));
+                    pathMatrix[i, j].Add(Node<T>.GetNode(j));
+                }
             }
         }
 
@@ -748,12 +759,15 @@ public class Graph<T>
                     if (pathViaK < distanceMatrix[i, j])
                     {
                         distanceMatrix[i, j] = pathViaK;
+                        pathMatrix[i, j] = new List<Node<T>>(pathMatrix[i, k]);
+                        pathMatrix[i, j].AddRange(pathMatrix[k, j]);
+                        pathMatrix[i, j].Add(Node<T>.GetNode(j));
                     }
                 }
             }
         }
 
-        return distanceMatrix;
+        return pathMatrix;
     }
 
     #endregion Private Helpers - Roy-Floyd-Warshall
