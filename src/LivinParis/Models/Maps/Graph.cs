@@ -66,7 +66,7 @@ public class Graph<T>
     /// <summary>
     /// The adjacency list: maps each node to a set of adjacent nodes.
     /// </summary>
-    private readonly SortedDictionary<Node<T>, SortedSet<Node<T>>> _adjacencyList;
+    private readonly SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> _adjacencyList;
 
     /// <summary>
     /// The adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
@@ -134,7 +134,7 @@ public class Graph<T>
     /// <remarks>
     /// This constructor treats all edges as if they have weight = 1.0.
     /// </remarks>
-    public Graph(SortedDictionary<Node<T>, SortedSet<Node<T>>> adjacencyList)
+    public Graph(SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> adjacencyList)
     {
         _nodes = new SortedSet<Node<T>>(adjacencyList.Keys);
         _edges = new List<Edge<T>>();
@@ -152,10 +152,9 @@ public class Graph<T>
 
         foreach (var kvp in adjacencyList)
         {
-            var source = kvp.Key;
             foreach (var neighbor in kvp.Value)
             {
-                _adjacencyMatrix[source.Id, neighbor.Id] = 1.0;
+                _adjacencyMatrix[kvp.Key.Id, neighbor.Key.Id] = neighbor.Value;
             }
         }
 
@@ -221,7 +220,7 @@ public class Graph<T>
         _isDirected = !CheckIfSymmetric(adjacencyMatrix);
         _nodes = new SortedSet<Node<T>>();
         _edges = new List<Edge<T>>();
-        _adjacencyList = new SortedDictionary<Node<T>, SortedSet<Node<T>>>();
+        _adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
         _adjacencyMatrix = adjacencyMatrix;
 
         int n = _adjacencyMatrix.GetLength(0);
@@ -230,7 +229,7 @@ public class Graph<T>
         {
             var node = Node<T>.GetNode(i);
             _nodes.Add(node);
-            _adjacencyList[node] = new SortedSet<Node<T>>();
+            _adjacencyList[node] = new SortedDictionary<Node<T>, double>();
         }
 
         foreach (var source in _nodes)
@@ -262,11 +261,11 @@ public class Graph<T>
                         _edges.Add(new Edge<T>(source, target, weight, isDirected, color));
                     }
 
-                    _adjacencyList[source].Add(target);
+                    _adjacencyList[source].Add(target, weight);
 
                     if (!_isDirected)
                     {
-                        _adjacencyList[target].Add(source);
+                        _adjacencyList[target].Add(source, weight);
                     }
                 }
             }
@@ -304,7 +303,7 @@ public class Graph<T>
     /// <summary>
     /// Gets the adjacency list representing this graph.
     /// </summary>
-    public SortedDictionary<Node<T>, SortedSet<Node<T>>> AdjacencyList
+    public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
     {
         get { return _adjacencyList; }
     }
@@ -489,7 +488,7 @@ public class Graph<T>
 
             if (_adjacencyList.TryGetValue(current, out var neighbors))
             {
-                foreach (var neighbor in neighbors)
+                foreach (var neighbor in neighbors.Keys)
                 {
                     if (!visited.Contains(neighbor))
                     {
@@ -593,7 +592,7 @@ public class Graph<T>
 
             if (_adjacencyList.TryGetValue(current, out var neighbors))
             {
-                foreach (var neighbor in neighbors.Where(n => !visited.Contains(n)))
+                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
                 {
                     var newDistance =
                         result[current].Distance + _adjacencyMatrix[current.Id, neighbor.Id];
@@ -783,7 +782,7 @@ public class Graph<T>
 
         if (_adjacencyList.TryGetValue(current, out var neighbors))
         {
-            foreach (var neighbor in neighbors)
+            foreach (var neighbor in neighbors.Keys)
             {
                 if (!visited.Contains(neighbor))
                 {
@@ -842,7 +841,7 @@ public class Graph<T>
 
         if (_adjacencyList.TryGetValue(current, out var neighbors))
         {
-            foreach (var neighbor in neighbors)
+            foreach (var neighbor in neighbors.Keys)
             {
                 if (neighbor.Equals(parent) && simpleCycle)
                 {
@@ -944,7 +943,7 @@ public class Graph<T>
 
         if (_adjacencyList.TryGetValue(node, out var neighbors))
         {
-            foreach (var neighbor in neighbors)
+            foreach (var neighbor in neighbors.Keys)
             {
                 if (!visited.Contains(neighbor))
                 {

@@ -76,10 +76,11 @@ namespace LivinParis
 
         private static SortedDictionary<
             Node<Station>,
-            SortedSet<Node<Station>>
+            SortedDictionary<Node<Station>, double>
         > XlsxToAdjacencyList(string fileName)
         {
-            var adjacencyList = new SortedDictionary<Node<Station>, SortedSet<Node<Station>>>();
+            var adjacencyList =
+                new SortedDictionary<Node<Station>, SortedDictionary<Node<Station>, double>>();
 
             var file = dataDirectory + fileName + ".xlsx";
             var wb = new Workbook(file);
@@ -110,26 +111,28 @@ namespace LivinParis
                     station,
                     new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
                 );
-                adjacencyList[node] = new SortedSet<Node<Station>>();
+                adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
             }
 
             for (int i = 1; i <= lines.MaxDataRow; i++)
             {
                 var stationId = lines[i, 0].IntValue;
+                var station = Node<Station>.GetNode(stationId);
 
                 try
                 {
                     var preStationId = lines[i, 3].IntValue;
-                    adjacencyList[Node<Station>.GetNode(stationId)]
-                        .Add(Node<Station>.GetNode(preStationId));
+                    var preStation = Node<Station>.GetNode(preStationId);
+                    adjacencyList[station].Add(preStation, station.Data.GetTimeTo(preStation.Data));
                 }
                 catch (Exception) { }
 
                 try
                 {
                     var nextStationId = lines[i, 4].IntValue;
-                    adjacencyList[Node<Station>.GetNode(stationId)]
-                        .Add(Node<Station>.GetNode(nextStationId));
+                    var nextStation = Node<Station>.GetNode(nextStationId);
+                    adjacencyList[station]
+                        .Add(nextStation, station.Data.GetTimeTo(nextStation.Data));
                 }
                 catch (Exception) { }
             }
@@ -138,12 +141,13 @@ namespace LivinParis
             {
                 var stationId = correspondences[i, 1].IntValue;
                 var correspondenceId = correspondences[i, 2].IntValue;
+                var correspondenceTime = correspondences[i, 3].DoubleValue;
 
                 var node = Node<Station>.GetNode(stationId);
                 var correspondence = Node<Station>.GetNode(correspondenceId);
 
-                adjacencyList[node].Add(correspondence);
-                adjacencyList[correspondence].Add(node);
+                adjacencyList[node].Add(correspondence, correspondenceTime);
+                adjacencyList[correspondence].Add(node, correspondenceTime);
             }
 
             return adjacencyList;
