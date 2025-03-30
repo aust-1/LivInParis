@@ -1086,46 +1086,24 @@ public class Graph<T>
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
         dotBuilder.AppendLine("    ratio=0.6438356164;");
-        //dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"10\"];");
-        dotBuilder.AppendLine($"    node [shape={shape}];");
+        dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"10\"];");
 
         foreach (var node in _nodes)
         {
             dotBuilder.Append($"    \"{node.Data}\" [{node.VisualizationParameters}");
             if (clusters.Contains(node.VisualizationParameters.Label))
             {
-                dotBuilder.AppendLine(", penwidth=4];");
+                dotBuilder.AppendLine(", penwidth=4");
             }
             else
             {
-                dotBuilder.AppendLine("];");
-                //dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
+                dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
                 clusters.Add(node.VisualizationParameters.Label);
-                dotBuilder.AppendLine(
-                    $"    \"{node.VisualizationParameters.Label}_label\" [shape=plaintext, label=\"{node.VisualizationParameters.Label}\"];"
-                );
-                dotBuilder.AppendLine(
-                    $"    \"{node.Data}\" -> \"{node.VisualizationParameters.Label}_label\" [style=dashed, arrowhead=none];"
-                );
-                //TODO: is directed or not
             }
+            dotBuilder.AppendLine("];");
         }
 
         dotBuilder.AppendLine();
-
-        // int i = 0;
-        // foreach (var cluster in clusters.Where(c => c.Value.Count > 1))
-        // {
-        //     dotBuilder.AppendLine($"    subgraph cluster_{i} {{");
-        //     dotBuilder.AppendLine($"        label=\"{cluster.Key}\";");
-        //     foreach (var node in cluster.Value)
-        //     {
-        //         dotBuilder.AppendLine($"        \"{node.Data}\";");
-        //     }
-        //     dotBuilder.AppendLine("    }");
-        //     dotBuilder.AppendLine();
-        //     i++;
-        // }
 
         dotBuilder.AppendLine();
 
@@ -1144,7 +1122,6 @@ public class Graph<T>
                 }
             }
 
-            //TODO: point plus gros, nom écris à côté, et nom écris hors cluster
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
 
