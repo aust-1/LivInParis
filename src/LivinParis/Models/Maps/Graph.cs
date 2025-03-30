@@ -662,6 +662,13 @@ public class Graph<T>
                     result[target].Predecessor = source;
                     relaxed = true;
                 }
+
+                if (!edge.IsDirected && result[target].Distance + weight < result[source].Distance)
+                {
+                    result[source].Distance = result[target].Distance + weight;
+                    result[source].Predecessor = target;
+                    relaxed = true;
+                }
             }
 
             if (!relaxed)
@@ -975,7 +982,7 @@ public class Graph<T>
     {
         var paths = new SortedDictionary<Node<T>, List<Node<T>>>();
 
-        foreach (var node in results.Select(kvp => kvp.Key))
+        foreach (var node in results.Keys)
         {
             var path = new List<Node<T>>();
             var current = node;
@@ -1101,8 +1108,6 @@ public class Graph<T>
             }
             dotBuilder.AppendLine("];");
         }
-
-        dotBuilder.AppendLine();
 
         dotBuilder.AppendLine();
 

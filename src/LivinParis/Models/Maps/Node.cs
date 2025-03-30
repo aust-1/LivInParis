@@ -370,4 +370,9 @@ public class Node<T> : IComparable<Node<T>>
     }
 
     #endregion IComparable<Node<T>> Implementation
+
+    public static void Clean()
+    {
+        _existingNodes.Clear();
+    }
 }
