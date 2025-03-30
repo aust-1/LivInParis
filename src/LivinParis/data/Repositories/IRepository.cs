@@ -2,6 +2,8 @@ using LivinParis.Models.Order;
 
 namespace LivinParis.Repositories;
 
+//C'est le copié collé de morgan, tu dois 100% refaire
+
 interface IRepository
 {
     public static void CreateCustomer()

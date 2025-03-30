@@ -4,7 +4,11 @@
 
 LivinParis
 ├─ docs
-│  └─ PSI.loo
+│  ├─ output_archive
+│  │  ├─ graph_20250330_16-33-05.png
+│  │  └─ ...
+│  ├─ PSI.loo
+│  └─ rapport_d_utilisation_de_l_ia.md
 ├─ LICENSE
 ├─ LivinParis.sln
 ├─ README.md
@@ -14,38 +18,14 @@ LivinParis
 │  │  ├─ docker-compose.yml
 │  │  └─ init.sql
 │  └─ LivinParis
+│     ├─ Controllers
 │     ├─ data
 │     │  ├─ metro
 │     │  │  └─ MetroParis.xlsx
+│     │  ├─ output
 │     │  └─ Repositories
-│     │     ├─ Implementations
-│     │     │  ├─ AccountRepository.cs
-│     │     │  ├─ AdressRepository.cs
-│     │     │  ├─ ChefRepository.cs
-│     │     │  ├─ CompanyRepository.cs
-│     │     │  ├─ ContainsRepository.cs
-│     │     │  ├─ CustomerRepository.cs
-│     │     │  ├─ DishRepository.cs
-│     │     │  ├─ IndividualRepository.cs
-│     │     │  ├─ IngredientRepository.cs
-│     │     │  ├─ MenuProposalRepository.cs
-│     │     │  ├─ OrderLineRepository.cs
-│     │     │  ├─ ReviewRepository.cs
-│     │     │  └─ TransactionRepository.cs
-│     │     └─ Interfaces
-│     │        ├─ IAccountRepository.cs
-│     │        ├─ IAdressRepository.cs
-│     │        ├─ IChefRepository.cs
-│     │        ├─ ICompanyRepository.cs
-│     │        ├─ IContainsRepository.cs
-│     │        ├─ ICustomerRepository.cs
-│     │        ├─ IDishRepository.cs
-│     │        ├─ IIndividualRepository.cs
-│     │        ├─ IIngredientRepository.cs
-│     │        ├─ IMenuProposalRepository.cs
-│     │        ├─ IOrderLineRepository.cs
-│     │        ├─ IReviewRepository.cs
-│     │        └─ ITransactionRepository.cs
+│     │     ├─ IRepository.cs
+│     │     └─ Repository.cs
 │     ├─ LivinParis.csproj
 │     ├─ Models
 │     │  ├─ Maps
