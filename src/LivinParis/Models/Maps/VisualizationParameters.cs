@@ -53,7 +53,7 @@ public struct VisualizationParameters
     /// <param name="label">The name of the node.</param>
     public VisualizationParameters(double longitude, double latitude, string color, string label)
     {
-        _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 25; //FIXME: c'est le zbeul
+        _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 25;
         _y = (latitude * 10E9 - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
         _color = color;
         _label = label;
@@ -88,7 +88,6 @@ public struct VisualizationParameters
     public string Label
     {
         get { return _label; }
-        set { _label = value; }
     }
 
     #endregion Properties
@@ -97,7 +96,7 @@ public struct VisualizationParameters
 
     public override string ToString()
     {
-        return $"[label=\"{_label}\", pos=\"{_x:F4},{_y:F4}!\", style=filled, fillcolor=\"{_color}\"]";
+        return $"pos=\"{_x:F4},{_y:F4}!\", style=filled, fillcolor=\"{_color}\"";
     }
 
     #endregion Methods

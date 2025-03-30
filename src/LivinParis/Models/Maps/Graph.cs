@@ -694,8 +694,8 @@ public class Graph<T>
     /// <param name="shape">The shape of the nodes (e.g. "circle", "square", "triangle", ...).</param>
     public void DisplayGraph(
         string outputImageName = "graph",
-        string layout = "fdp",
-        string shape = "ellipse"
+        string layout = "neato",
+        string shape = "point"
     )
     {
         string dotFilePath = $"{outputImageName}.dot";
@@ -1081,23 +1081,34 @@ public class Graph<T>
     private void ExportToDot(string filePath, string layout, string shape)
     {
         var dotBuilder = new StringBuilder();
-        // var clusters = new Dictionary<string, List<Node<T>>>();
+        var clusters = new List<string>();
 
         dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
-        //dotBuilder.AppendLine("    ratio=0.4288758139;");
         dotBuilder.AppendLine("    ratio=0.6438356164;");
-        //FIXME: ratio
+        //dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"10\"];");
         dotBuilder.AppendLine($"    node [shape={shape}];");
-        //TODO: flèches correspondances plus discrètes et en arc de cercle
+
         foreach (var node in _nodes)
         {
-            dotBuilder.AppendLine($"    \"{node.Data}\" {node.VisualizationParameters};");
-            // if (!clusters.ContainsKey(node.VisualizationParameters.Cluster))
-            // {
-            //     clusters[node.VisualizationParameters.Cluster] = new List<Node<T>>();
-            // }
-            // clusters[node.VisualizationParameters.Cluster].Add(node);
+            dotBuilder.Append($"    \"{node.Data}\" [{node.VisualizationParameters}");
+            if (clusters.Contains(node.VisualizationParameters.Label))
+            {
+                dotBuilder.AppendLine(", penwidth=4];");
+            }
+            else
+            {
+                dotBuilder.AppendLine("];");
+                //dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
+                clusters.Add(node.VisualizationParameters.Label);
+                dotBuilder.AppendLine(
+                    $"    \"{node.VisualizationParameters.Label}_label\" [shape=plaintext, label=\"{node.VisualizationParameters.Label}\"];"
+                );
+                dotBuilder.AppendLine(
+                    $"    \"{node.Data}\" -> \"{node.VisualizationParameters.Label}_label\" [style=dashed, arrowhead=none];"
+                );
+                //TODO: is directed or not
+            }
         }
 
         dotBuilder.AppendLine();
@@ -1140,7 +1151,6 @@ public class Graph<T>
         dotBuilder.AppendLine("}");
         File.WriteAllText(filePath, dotBuilder.ToString());
     }
-    //TODO: correspondance en un seul point
     #endregion Private Helpers - GraphViz
 
     #region Private Helpers - Node Resolution

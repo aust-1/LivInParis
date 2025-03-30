@@ -71,7 +71,7 @@ namespace LivinParis
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
 
-            graph.DisplayGraph("graph_neatopoint", "neato", "point");
+            graph.DisplayGraph();
         }
 
         private static SortedDictionary<
