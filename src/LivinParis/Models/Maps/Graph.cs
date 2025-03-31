@@ -53,6 +53,9 @@ public class Graph<T>
 
     #region Fields
 
+    //TODO: rajouter poids et diamètre du graphe
+    //QUESTION: Gestion des propriétés
+
     /// <summary>
     /// The sorted set of all nodes in this graph.
     /// </summary>
