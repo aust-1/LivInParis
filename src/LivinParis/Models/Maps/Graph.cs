@@ -78,6 +78,11 @@ public class Graph<T>
     private readonly double[,] _adjacencyMatrix;
 
     /// <summary>
+    /// A mapping from nodes to their corresponding coordinates in the adjacency matrix.
+    /// </summary>
+    private readonly SortedDictionary<Node<T>, int> _correspondingCoordinates;
+
+    /// <summary>
     /// The distance matrix computed via the Roy-Floyd-Warshall algorithm.
     /// </summary>
     private readonly double[,] _distanceMatrix;
@@ -148,10 +153,18 @@ public class Graph<T>
         _edges = new List<Edge<T>>();
         _adjacencyList = adjacencyList;
 
-        _adjacencyMatrix = new double[_nodes.Count, _nodes.Count];
-        for (int i = 0; i < _nodes.Count; i++)
+        var _correspondingCoordinates = new SortedDictionary<Node<T>, int>();
+        int counter = 0;
+        foreach (var node in adjacencyList.Keys)
         {
-            for (int j = 0; j < _nodes.Count; j++)
+            _correspondingCoordinates[node] = counter;
+            counter++;
+        }
+
+        _adjacencyMatrix = new double[_nodes.Count, _nodes.Count];
+        foreach (var i in _correspondingCoordinates.Values)
+        {
+            foreach (var j in _correspondingCoordinates.Values)
             {
                 _adjacencyMatrix[i, j] = double.MaxValue;
             }
@@ -162,15 +175,18 @@ public class Graph<T>
         {
             foreach (var neighbor in kvp.Value)
             {
-                _adjacencyMatrix[kvp.Key.Id, neighbor.Key.Id] = neighbor.Value;
+                _adjacencyMatrix[
+                    _correspondingCoordinates[kvp.Key],
+                    _correspondingCoordinates[neighbor.Key]
+                ] = neighbor.Value;
             }
         }
 
         _isDirected = !CheckIfSymmetric(_adjacencyMatrix);
 
-        for (int i = 0; i < _nodes.Count; i++)
+        foreach (var i in _correspondingCoordinates.Values)
         {
-            for (int j = 0; j < _nodes.Count; j++)
+            foreach (var j in _correspondingCoordinates.Values)
             {
                 double weight = _adjacencyMatrix[i, j];
                 if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
@@ -180,8 +196,8 @@ public class Graph<T>
                     if (isDirected || i < j)
                     {
                         var color = "#000000";
-                        var source = Node<T>.GetNode(i);
-                        var target = Node<T>.GetNode(j);
+                        var source = _correspondingCoordinates.First(kvp => kvp.Value == i).Key;
+                        var target = _correspondingCoordinates.First(kvp => kvp.Value == j).Key;
 
                         if (
                             source.VisualizationParameters.Color
@@ -230,6 +246,7 @@ public class Graph<T>
         _edges = new List<Edge<T>>();
         _adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
         _adjacencyMatrix = adjacencyMatrix;
+        _correspondingCoordinates = new SortedDictionary<Node<T>, int>();
 
         int n = _adjacencyMatrix.GetLength(0);
 
@@ -277,6 +294,11 @@ public class Graph<T>
                     }
                 }
             }
+        }
+
+        foreach (var node in _nodes)
+        {
+            _correspondingCoordinates.Add(node, node.Id);
         }
 
         //_pathMatrix = RoyFloydWarshall();
@@ -394,8 +416,6 @@ public class Graph<T>
 
     #region Public Methods - Cycle Detection
 
-    //TODO: Méthode fortement connexe ? ctc
-
     /// <summary>
     /// Searches for any cycle in the graph.
     /// Works for both directed and undirected graphs.
@@ -457,13 +477,57 @@ public class Graph<T>
 
     #endregion Public Methods - Cycle Detection
 
+    #region Public Methods - SCC Detection
+
+    public List<Graph<T>> GetStronglyConnectedComponents()
+    {
+        var result = new List<Graph<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        while (visited.Count < _order)
+        {
+            var startNode = _nodes.Where(n => !visited.Contains(n)).First();
+            var adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
+            var successors = DFS(startNode, false);
+            var predecessor = DFS(startNode, true);
+
+            foreach (var node in successors.Where(n => predecessor.Contains(n)))
+            {
+                visited.Add(node);
+                adjacencyList[node] = new SortedDictionary<Node<T>, double>();
+            }
+
+            foreach (var edge in _edges)
+            {
+                if (
+                    adjacencyList.Keys.Contains(edge.SourceNode)
+                    && adjacencyList.Keys.Contains(edge.TargetNode)
+                )
+                {
+                    adjacencyList[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
+                    if (!edge.IsDirected)
+                    {
+                        adjacencyList[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
+                    }
+                }
+            }
+
+            var scc = new Graph<T>(adjacencyList);
+            result.Add(scc);
+        }
+
+        return result;
+    }
+
+    #endregion Public Methods - SCC Detection
+
     #region Public Methods - Traversals
 
     /// <summary>
     /// Performs a Breadth-First Search (BFS) starting from the specified node,
     /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="U">
+    /// <typeparam name="TU">
     /// The type of <paramref name="start"/>;
     /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
@@ -472,8 +536,8 @@ public class Graph<T>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
     /// </exception>
-    public List<Node<T>> BFS<U>(U start)
-        where U : notnull
+    public List<Node<T>> BFS<TU>(TU start)
+        where TU : notnull
     {
         var startNode = ResolveNode(start);
 
@@ -514,17 +578,18 @@ public class Graph<T>
     /// Performs a recursive Depth-First Search (DFS) from the specified node,
     /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="U">
+    /// <typeparam name="TU">
     /// The type of <paramref name="start"/>;
     /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="start">The starting node or identifier.</param>
+    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
     /// <returns>A list of visited nodes in the order they are discovered.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
     /// </exception>
-    public List<Node<T>> DFS<U>(U start)
-        where U : notnull
+    public List<Node<T>> DFS<TU>(TU start, bool inverted = false)
+        where TU : notnull
     {
         var startNode = ResolveNode(start);
 
@@ -536,7 +601,7 @@ public class Graph<T>
         var visited = new HashSet<Node<T>>();
         var result = new List<Node<T>>();
 
-        DFSUtil(startNode, visited, result);
+        DFSUtil(startNode, visited, result, inverted);
         return result;
     }
 
@@ -552,7 +617,7 @@ public class Graph<T>
     /// Performs Dijkstra's algorithm from the specified start node,
     /// returning the set of paths to each reachable node.
     /// </summary>
-    /// <typeparam name="U">
+    /// <typeparam name="TU">
     /// The type of <paramref name="start"/>;
     /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
@@ -564,8 +629,8 @@ public class Graph<T>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or if the node is not in the graph.
     /// </exception>
-    public SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<U>(U start)
-        where U : notnull
+    public SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<TU>(TU start)
+        where TU : notnull
     {
         var startNode = ResolveNode(start);
 
@@ -622,7 +687,7 @@ public class Graph<T>
     /// returning the set of paths to each reachable node.
     /// Detects negative-weight cycles.
     /// </summary>
-    /// <typeparam name="U">
+    /// <typeparam name="TU">
     /// The type of <paramref name="start"/>;
     /// can be <c>int</c>, <see cref="Node{T}"/>, or <typeparamref name="T"/>.
     /// </typeparam>
@@ -637,8 +702,8 @@ public class Graph<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<U>(U start)
-        where U : notnull
+    public SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<TU>(TU start)
+        where TU : notnull
     {
         var startNode = ResolveNode(start);
 
@@ -693,38 +758,6 @@ public class Graph<T>
         return BuildPaths(result);
     }
 
-    #endregion Public Methods - Pathfinding
-
-    #region Public Methods - Drawing
-
-    /// <summary>
-    /// Exports the graph to a DOT file, then calls GraphViz to generate a PNG image,
-    /// finally deleting the DOT file.
-    /// </summary>
-    /// <param name="outputImageName">
-    /// The base file name (without extension) for the output. A timestamp is appended to avoid overwrites.
-    /// </param>
-    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "fdp", "neato", ...).</param>
-    /// <param name="shape">The shape of the nodes (e.g. "circle", "square", "triangle", ...).</param>
-    public void DisplayGraph(
-        string outputImageName = "graph",
-        string layout = "neato",
-        string shape = "point"
-    )
-    {
-        string dotFilePath = $"{outputImageName}.dot";
-        string outputImagePath =
-            $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
-
-        ExportToDot(dotFilePath, layout, shape);
-        RenderDotFile(dotFilePath, outputImagePath);
-        File.Delete(dotFilePath);
-    }
-
-    #endregion Public Methods - Drawing
-
-    #region Private Helpers - Roy-Floyd-Warshall
-
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
@@ -773,7 +806,35 @@ public class Graph<T>
         return pathMatrix;
     }
 
-    #endregion Private Helpers - Roy-Floyd-Warshall
+    #endregion Public Methods - Pathfinding
+
+    #region Public Methods - Drawing
+
+    /// <summary>
+    /// Exports the graph to a DOT file, then calls GraphViz to generate a PNG image,
+    /// finally deleting the DOT file.
+    /// </summary>
+    /// <param name="outputImageName">
+    /// The base file name (without extension) for the output. A timestamp is appended to avoid overwrites.
+    /// </param>
+    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "fdp", "neato", ...).</param>
+    /// <param name="shape">The shape of the nodes (e.g. "circle", "square", "triangle", ...).</param>
+    public void DisplayGraph(
+        string outputImageName = "graph",
+        string layout = "neato",
+        string shape = "point"
+    )
+    {
+        string dotFilePath = $"{outputImageName}.dot";
+        string outputImagePath =
+            $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+
+        ExportToDot(dotFilePath, layout, shape);
+        RenderDotFile(dotFilePath, outputImagePath);
+        File.Delete(dotFilePath);
+    }
+
+    #endregion Public Methods - Drawing
 
     #region Private Helpers - Cycle Detection
 
@@ -960,18 +1021,41 @@ public class Graph<T>
     /// <param name="node">The node where DFS is currently happening.</param>
     /// <param name="visited">A set of nodes that have been visited already.</param>
     /// <param name="result">The list where visited nodes are accumulated.</param>
-    private void DFSUtil(Node<T> node, HashSet<Node<T>> visited, List<Node<T>> result)
+    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
+    private void DFSUtil(
+        Node<T> node,
+        HashSet<Node<T>> visited,
+        List<Node<T>> result,
+        bool inverted
+    )
     {
         visited.Add(node);
         result.Add(node);
 
-        if (_adjacencyList.TryGetValue(node, out var neighbors))
+        if (inverted)
         {
-            foreach (var neighbor in neighbors.Keys)
+            foreach (
+                var predecessor in _adjacencyList
+                    .Where(kvp => kvp.Value.ContainsKey(node))
+                    .Select(kvp => kvp.Key)
+            )
             {
-                if (!visited.Contains(neighbor))
+                if (!visited.Contains(predecessor))
                 {
-                    DFSUtil(neighbor, visited, result);
+                    DFSUtil(predecessor, visited, result, inverted);
+                }
+            }
+        }
+        else
+        {
+            if (_adjacencyList.TryGetValue(node, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        DFSUtil(neighbor, visited, result, inverted);
+                    }
                 }
             }
         }
@@ -1160,14 +1244,14 @@ public class Graph<T>
     /// - <c>int</c> (node ID),
     /// - <typeparamref name="T"/> (node data).
     /// </summary>
-    /// <typeparam name="U">The type of the <paramref name="start"/> parameter.</typeparam>
+    /// <typeparam name="TU">The type of the <paramref name="start"/> parameter.</typeparam>
     /// <param name="start">An integer ID, a node, or a data value.</param>
     /// <returns>The corresponding node object in this graph.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is an unsupported type or the resulting node is invalid.
     /// </exception>
-    private static Node<T> ResolveNode<U>(U start)
-        where U : notnull
+    private static Node<T> ResolveNode<TU>(TU start)
+        where TU : notnull
     {
         return start switch
         {

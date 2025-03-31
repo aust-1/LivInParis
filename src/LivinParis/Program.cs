@@ -71,7 +71,14 @@ namespace LivinParis
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
 
-            graph.DisplayGraph();
+            var scc = graph.GetStronglyConnectedComponents();
+            Console.WriteLine("=== Composantes Connexes Fortement ===");
+            int i = 0;
+            foreach (var component in scc)
+            {
+                component.DisplayGraph($"scc{i}");
+                i++;
+            }
         }
 
         private static SortedDictionary<
