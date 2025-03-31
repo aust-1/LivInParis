@@ -71,13 +71,30 @@ namespace LivinParis
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
 
-            var scc = graph.GetStronglyConnectedComponents();
-            Console.WriteLine("=== Composantes Connexes Fortement ===");
-            int i = 0;
-            foreach (var component in scc)
+            var result = graph.RoyFloydWarshall();
+
+            var result1 = graph.BellmanFord(0);
+            // for (int i = 0; i < 20; i++)
+            // {
+            //     for (int j = 0; j < 20; j++)
+            //     {
+            //         foreach (var node in result[i, j])
+            //         {
+            //             Console.Write($"{node.Data} -> ");
+            //         }
+            //         Console.WriteLine();
+            //         Console.WriteLine("===================================");
+            //     }
+            // }
+
+            foreach (var node in result1)
             {
-                component.DisplayGraph($"scc{i}");
-                i++;
+                Console.Write($"{node.Key.Data} : ");
+
+                foreach (var node2 in node.Value)
+                {
+                    Console.Write($"{node2.Data} -> ");
+                }
             }
         }
 

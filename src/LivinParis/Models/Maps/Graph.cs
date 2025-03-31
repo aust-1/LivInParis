@@ -189,7 +189,7 @@ public class Graph<T>
             foreach (var j in _correspondingCoordinates.Values)
             {
                 double weight = _adjacencyMatrix[i, j];
-                if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
+                if (Math.Abs(weight - double.MaxValue) > 1e-9 && i != j)
                 {
                     bool isDirected = Math.Abs(weight - _adjacencyMatrix[j, i]) > 1e-9;
 
@@ -255,6 +255,7 @@ public class Graph<T>
             var node = Node<T>.GetNode(i);
             _nodes.Add(node);
             _adjacencyList[node] = new SortedDictionary<Node<T>, double>();
+            _correspondingCoordinates.Add(node, i);
         }
 
         foreach (var source in _nodes)
@@ -267,7 +268,7 @@ public class Graph<T>
                 }
 
                 double weight = _adjacencyMatrix[source.Id, target.Id];
-                if (Math.Abs(weight - double.MaxValue) > 1e-9 && Math.Abs(weight) > 1e-9)
+                if (Math.Abs(weight - double.MaxValue) > 1e-9 && source != target)
                 {
                     bool isDirected =
                         Math.Abs(weight - _adjacencyMatrix[target.Id, source.Id]) > 1e-9;
@@ -294,11 +295,6 @@ public class Graph<T>
                     }
                 }
             }
-        }
-
-        foreach (var node in _nodes)
-        {
-            _correspondingCoordinates.Add(node, node.Id);
         }
 
         //_pathMatrix = RoyFloydWarshall();
@@ -668,7 +664,11 @@ public class Graph<T>
                 foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
                 {
                     var newDistance =
-                        result[current].Distance + _adjacencyMatrix[current.Id, neighbor.Id];
+                        result[current].Distance
+                        + _adjacencyMatrix[
+                            _correspondingCoordinates[current],
+                            _correspondingCoordinates[neighbor]
+                        ];
 
                     if (newDistance < result[neighbor].Distance)
                     {
@@ -768,7 +768,7 @@ public class Graph<T>
     /// </returns>
     public List<Node<T>>[,] RoyFloydWarshall()
     {
-        int n = _nodes.Count;
+        int n = _order;
         var distanceMatrix = new double[n, n];
         var pathMatrix = new List<Node<T>>[n, n];
         for (int i = 0; i < n; i++)
@@ -777,10 +777,17 @@ public class Graph<T>
             {
                 distanceMatrix[i, j] = _adjacencyMatrix[i, j];
                 pathMatrix[i, j] = new List<Node<T>>();
-                if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9 && i != j)
+                if (i == j)
                 {
-                    pathMatrix[i, j].Add(Node<T>.GetNode(i));
-                    pathMatrix[i, j].Add(Node<T>.GetNode(j));
+                    pathMatrix[i, j]
+                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == i).Key);
+                }
+                else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
+                {
+                    pathMatrix[i, j]
+                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == i).Key);
+                    pathMatrix[i, j]
+                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == j).Key);
                 }
             }
         }
@@ -791,13 +798,27 @@ public class Graph<T>
             {
                 for (int j = 0; j < n; j++)
                 {
-                    double pathViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
-                    if (pathViaK < distanceMatrix[i, j])
+                    if (
+                        i == j
+                        || i == k
+                        || j == k
+                        || Math.Abs(distanceMatrix[i, k] - double.MaxValue) < 1e-9
+                        || Math.Abs(distanceMatrix[k, j] - double.MaxValue) < 1e-9
+                    )
                     {
-                        distanceMatrix[i, j] = pathViaK;
-                        pathMatrix[i, j] = new List<Node<T>>(pathMatrix[i, k]);
-                        pathMatrix[i, j].AddRange(pathMatrix[k, j]);
-                        pathMatrix[i, j].Add(Node<T>.GetNode(j));
+                        continue;
+                    }
+
+                    double distanceViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
+                    if (distanceViaK < distanceMatrix[i, j])
+                    {
+                        distanceMatrix[i, j] = distanceViaK;
+
+                        var pathViaK = new List<Node<T>>(pathMatrix[i, k]);
+                        pathViaK.RemoveAt(pathViaK.Count - 1);
+                        pathViaK.AddRange(pathMatrix[k, j]);
+
+                        pathMatrix[i, j] = pathViaK;
                     }
                 }
             }
