@@ -70,32 +70,6 @@ namespace LivinParis
             Thread.CurrentThread.CurrentUICulture = culture;
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
-
-            var result = graph.RoyFloydWarshall();
-
-            var result1 = graph.BellmanFord(0);
-            // for (int i = 0; i < 20; i++)
-            // {
-            //     for (int j = 0; j < 20; j++)
-            //     {
-            //         foreach (var node in result[i, j])
-            //         {
-            //             Console.Write($"{node.Data} -> ");
-            //         }
-            //         Console.WriteLine();
-            //         Console.WriteLine("===================================");
-            //     }
-            // }
-
-            foreach (var node in result1)
-            {
-                Console.Write($"{node.Key.Data} : ");
-
-                foreach (var node2 in node.Value)
-                {
-                    Console.Write($"{node2.Data} -> ");
-                }
-            }
         }
 
         private static SortedDictionary<
@@ -211,6 +185,15 @@ namespace LivinParis
             }
 
             var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
+
+            for (int i = 0; i < Node<Station>.Count; i++)
+            {
+                for (int j = 0; j < Node<Station>.Count; j++)
+                {
+                    adjacencyMatrix[i, j] = double.MaxValue;
+                }
+                adjacencyMatrix[i, i] = 0;
+            }
 
             for (int i = 1; i <= lines.MaxDataRow; i++)
             {

@@ -118,6 +118,15 @@ public class GraphOptimisation
 
         var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
 
+        for (int i = 0; i < Node<Station>.Count; i++)
+        {
+            for (int j = 0; j < Node<Station>.Count; j++)
+            {
+                adjacencyMatrix[i, j] = double.MaxValue;
+            }
+            adjacencyMatrix[i, i] = 0;
+        }
+
         for (int i = 1; i <= lines.MaxDataRow; i++)
         {
             var stationId = lines[i, 0].IntValue;
