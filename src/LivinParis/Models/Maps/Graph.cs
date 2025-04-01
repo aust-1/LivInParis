@@ -137,7 +137,7 @@ public class Graph<T>
             : (2.0 * _size) / (_order * (_order - 1));
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
-        _isConnected = GetStronglyConnectedComponents().Count == 1;
+        _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
     }
 
     /// <summary>
@@ -404,10 +404,53 @@ public class Graph<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFordPaths<TU>(TU start)
+    public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFord<TU>(TU start)
         where TU : notnull
     {
         return GraphAlgorithms<T>.BellmanFord(this, start);
+    }
+
+    /// <summary>
+    /// Executes Dijkstra's algorithm from the specified node or identifier,
+    /// returning the shortest path to each reachable node.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier for the Dijkstra's algorithm.</param>
+    /// <returns>
+    /// A graph representing the shortest paths from <paramref name="start"/> to each reachable node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    public Graph<T> GetPartialGraphByDijkstra<TU>(TU start)
+        where TU : notnull
+    {
+        return GraphAlgorithms<T>.GetPartialGraphByDijkstra(this, start);
+    }
+
+    /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier,
+    /// returning the paths to each reachable node and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <returns>
+    /// A graph representing the shortest paths from <paramref name="start"/> to each reachable node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public Graph<T> GetPartialGraphByBellmanFord<TU>(TU start)
+        where TU : notnull
+    {
+        return GraphAlgorithms<T>.GetPartialGraphByBellmanFord(this, start);
     }
 
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??

@@ -70,6 +70,12 @@ namespace LivinParis
             var st = await metro.GetNearestStation("6 Rue de Castellane, Paris, France");
 
             Console.WriteLine($"La station la plus proche est : {st}");
+
+            var djresult = metro.Graph.GetPartialGraphByDijkstra(168);
+            var bellmanresult = metro.Graph.GetPartialGraphByBellmanFord(168);
+
+            djresult.DisplayGraph("dijkstraresult");
+            bellmanresult.DisplayGraph("bellmanfordresult");
         }
     }
 }

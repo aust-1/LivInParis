@@ -100,8 +100,6 @@ public static class GraphAlgorithms<T>
 
     //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
 
-    //TODO: Méthode de visualisation des chemins, sous graphe. Renvoi un sous graphe
-
     /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
@@ -253,6 +251,157 @@ public static class GraphAlgorithms<T>
         }
 
         return BuildPaths(result);
+    }
+
+    /// <summary>
+    /// Executes Dijkstra's algorithm from the specified node or identifier,
+    /// returning the shortest path to each reachable node.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Dijkstra's algorithm.</param>
+    /// <returns>
+    /// A graph representing the shortest paths from <paramref name="start"/> to each reachable node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    public static Graph<T> GetPartialGraphByDijkstra<TU>(Graph<T> graph, TU start)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        while (visited.Count < graph.Order)
+        {
+            var current = result
+                .Where(kvp => !visited.Contains(kvp.Key))
+                .OrderBy(kvp => kvp.Value.Distance)
+                .FirstOrDefault()
+                .Key;
+
+            if (current == null || double.IsPositiveInfinity(result[current].Distance))
+            {
+                break;
+            }
+
+            visited.Add(current);
+
+            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
+                {
+                    var altDistance =
+                        result[current].Distance
+                        + graph.AdjacencyMatrix[
+                            graph.NodeIndexMap[current],
+                            graph.NodeIndexMap[neighbor]
+                        ];
+
+                    if (altDistance < result[neighbor].Distance)
+                    {
+                        result[neighbor].Distance = altDistance;
+                        result[neighbor].Predecessor = current;
+                    }
+                }
+            }
+        }
+
+        return BuildGraph(graph, result);
+    }
+
+    /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier,
+    /// returning the paths to each reachable node and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <returns>
+    /// A graph representing the shortest paths from <paramref name="start"/> to each reachable node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public static Graph<T> GetPartialGraphByBellmanFord<TU>(Graph<T> graph, TU start)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        bool relaxed = false;
+        for (int i = 0; i < graph.Order; i++)
+        {
+            relaxed = false;
+            foreach (var edge in graph.Edges)
+            {
+                var source = edge.SourceNode;
+                var target = edge.TargetNode;
+                var weight = edge.Weight;
+
+                double altDist = result[source].Distance + weight;
+                if (altDist < result[target].Distance)
+                {
+                    result[target].Distance = altDist;
+                    result[target].Predecessor = source;
+                    relaxed = true;
+                }
+
+                if (!edge.IsDirected)
+                {
+                    double altDistReverse = result[target].Distance + weight;
+                    if (altDistReverse < result[source].Distance)
+                    {
+                        result[source].Distance = altDistReverse;
+                        result[source].Predecessor = target;
+                        relaxed = true;
+                    }
+                }
+            }
+
+            if (!relaxed)
+            {
+                break;
+            }
+        }
+
+        if (relaxed)
+        {
+            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
+        }
+
+        return BuildGraph(graph, result);
     }
 
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
@@ -410,11 +559,54 @@ public static class GraphAlgorithms<T>
                 path.Add(current);
                 current = results[current].Predecessor;
             }
-            path.Reverse();
-            paths[node] = path;
         }
 
         return paths;
+    }
+
+    /// <summary>
+    /// Builds the resulting path list for each node, given a dictionary
+    /// of <see cref="PathfindingResult{T}"/>.
+    /// </summary>
+    /// <param name="graph">The original graph.</param>
+    /// <param name="results">
+    /// A dictionary from each node to its <see cref="PathfindingResult{T}"/>,
+    /// which includes distance and predecessor data.
+    /// </param>
+    /// <returns>
+    /// A new graph representing the shortest paths from the start node to each reachable node.
+    /// </returns>
+    private static Graph<T> BuildGraph(
+        Graph<T> graph,
+        SortedDictionary<Node<T>, PathfindingResult<T>> results
+    )
+    {
+        var localAdjacency = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
+
+        foreach (var node in graph.Nodes)
+        {
+            localAdjacency[node] = new SortedDictionary<Node<T>, double>();
+        }
+
+        foreach (var kvp in results)
+        {
+            var node = kvp.Key;
+            var predecessor = kvp.Value.Predecessor;
+
+            if (predecessor != null)
+            {
+                localAdjacency[predecessor]
+                    .Add(
+                        node,
+                        graph.AdjacencyMatrix[
+                            graph.NodeIndexMap[predecessor],
+                            graph.NodeIndexMap[node]
+                        ]
+                    );
+            }
+        }
+
+        return new Graph<T>(localAdjacency);
     }
 
     /// <summary>
