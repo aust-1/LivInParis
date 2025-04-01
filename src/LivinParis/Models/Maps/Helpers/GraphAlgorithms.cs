@@ -10,6 +10,7 @@ namespace LivinParis.Models.Maps.Helpers;
 public static class GraphAlgorithms<T>
     where T : notnull
 {
+    //FIXME: nearest station avec correspondances
     #region Public Methods - Traversals
 
     /// <summary>

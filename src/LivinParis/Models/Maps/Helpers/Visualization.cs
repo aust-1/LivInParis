@@ -133,7 +133,7 @@ public static class Visualization<T>
 
             if (processedLabels.Contains(node.VisualizationParameters.Label))
             {
-                dotBuilder.AppendLine(", penwidth=4");
+                dotBuilder.Append(", penwidth=4");
             }
             else
             {
