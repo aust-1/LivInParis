@@ -1,14 +1,13 @@
 using LivinParis.Models.Maps.Helpers;
 
-//HACK: refactor
-
 namespace LivinParis.Models.Maps;
 
 /// <summary>
-/// Represents a simple graph containing a set of nodes (vertices) and edges.
+/// Represents a generic graph containing nodes and edges,
+/// supporting directed or undirected structures with optional weights.
 /// </summary>
 /// <typeparam name="T">
-/// The type of data stored in each node.
+/// The type of data stored in each node. Must be non-null.
 /// </typeparam>
 public class Graph<T>
     where T : notnull
@@ -19,7 +18,7 @@ public class Graph<T>
     //QUESTION: Gestion des propriétés
 
     /// <summary>
-    /// The sorted set of all nodes in this graph.
+    /// The set of nodes in this graph, sorted by their IDs.
     /// </summary>
     private readonly SortedSet<Node<T>> _nodes;
 
@@ -29,33 +28,34 @@ public class Graph<T>
     private readonly List<Edge<T>> _edges;
 
     /// <summary>
-    /// The adjacency list that maps each node to its reachable neighbors and the weights of the edges.
+    /// The adjacency list mapping each node to its reachable neighbors and the corresponding edge weights.
     /// </summary>
     private readonly SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> _adjacencyList;
 
     /// <summary>
-    /// The adjacency matrix: a 2D array where <c>_adjacencyMatrix[i, j]</c> indicates
-    /// the weight of the edge from <c>i</c> to <c>j</c>.
+    /// The adjacency matrix, where <c>_adjacencyMatrix[i, j]</c> indicates the weight of the edge from <c>i</c> to <c>j</c>.
     /// </summary>
     private readonly double[,] _adjacencyMatrix;
 
     /// <summary>
-    /// Maps each node to its corresponding index in the adjacency matrix.
+    /// A mapping from each node to its index in the adjacency matrix.
     /// </summary>
     private readonly SortedDictionary<Node<T>, int> _nodeIndexMap;
 
     /// <summary>
-    /// Indicates if the graph is directed (<c>true</c>) or undirected (<c>false</c>).
+    /// Indicates whether this graph is directed (<c>true</c>) or undirected (<c>false</c>).
     /// </summary>
     private readonly bool _isDirected;
 
     /// <summary>
-    /// Indicates if the graph is weighted (<c>true</c>) or unweighted (<c>false</c>).
+    /// Indicates whether this graph is weighted (<c>true</c>) or unweighted (<c>false</c>).
+    /// If any edge has a weight other than 1.0, the graph is considered weighted.
     /// </summary>
     private readonly bool _isWeighted;
 
     /// <summary>
-    /// Indicates whether the graph is connected based on a single DFS from the first node.
+    /// Indicates whether the graph is connected, based on a single DFS from the first node
+    /// or a check of strongly connected components (for directed graphs).
     /// </summary>
     private readonly bool _isConnected;
 
@@ -71,15 +71,9 @@ public class Graph<T>
 
     /// <summary>
     /// The density of the graph.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
-    /// </para>
-    /// <para>
     /// For a directed graph, density = E / (V * (V - 1)).
-    /// </para>
-    /// </remarks>
+    /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
+    /// </summary>
     private readonly double _density;
 
     #endregion Fields
@@ -87,11 +81,12 @@ public class Graph<T>
     #region Constructors
 
     /// <summary>
-    /// Constructs a new instance of the <see cref="Graph{T}"/> class from an adjacency list, automatically inferring directedness by checking matrix symmetry.
-    /// Treats all edges as having the weights specified in the dictionary. If no weight is provided, assumes weight = 1.0.
+    /// Initializes a new instance of the <see cref="Graph{T}"/> class from an adjacency list,
+    /// automatically determining directedness by checking matrix symmetry.
     /// </summary>
     /// <param name="adjacencyList">
-    /// A dictionary mapping each node to a nested dictionary of adjacent nodes and their edge weights.
+    /// A dictionary mapping each node to a dictionary of its neighbors and the corresponding edge weights.
+    /// If no weight is specified, the default assumption is 1.0 (applied in your dictionary).
     /// </param>
     public Graph(SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> adjacencyList)
     {
@@ -99,13 +94,11 @@ public class Graph<T>
         _edges = new List<Edge<T>>();
         _adjacencyList = adjacencyList;
         _order = _nodes.Count;
-
         _nodeIndexMap = new SortedDictionary<Node<T>, int>();
         int counter = 0;
         foreach (var node in _adjacencyList.Keys)
         {
-            _nodeIndexMap[node] = counter;
-            counter++;
+            _nodeIndexMap[node] = counter++;
         }
 
         _adjacencyMatrix = new double[_order, _order];
@@ -120,38 +113,37 @@ public class Graph<T>
 
         foreach (var kvp in _adjacencyList)
         {
+            var source = kvp.Key;
             foreach (var neighbor in kvp.Value)
             {
-                _adjacencyMatrix[_nodeIndexMap[kvp.Key], _nodeIndexMap[neighbor.Key]] =
+                _adjacencyMatrix[_nodeIndexMap[source], _nodeIndexMap[neighbor.Key]] =
                     neighbor.Value;
             }
         }
 
         _isDirected = !IsMatrixSymmetric(_adjacencyMatrix);
 
-        BuildEdgeFromList();
+        BuildEdgesFromList();
 
         _size = _edges.Count + _edges.Count(e => !e.IsDirected);
 
         _density = _isDirected
             ? (double)_size / (_order * (_order - 1))
-            : 2.0 * _size / (_order * (_order - 1));
+            : (2.0 * _size) / (_order * (_order - 1));
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = GetStronglyConnectedComponents().Count == 1;
     }
 
     /// <summary>
-    /// Constructs a new instance of the <see cref="Graph{T}"/> class
-    // from an adjacency matrix, automatically inferring directedness by checking matrix symmetry.
+    /// Initializes a new instance of the <see cref="Graph{T}"/> class from an adjacency matrix,
+    /// automatically determining directedness by checking matrix symmetry.
     /// </summary>
     /// <param name="adjacencyMatrix">
     /// A square 2D array representing adjacency weights from i to j.
-    /// <see cref="double.MaxValue"/> indicates no edge.
+    /// Use <see cref="double.MaxValue"/> to indicate no edge.
     /// </param>
-    /// <exception cref="ArgumentException">
-    /// Thrown if the provided matrix is not square.
-    /// </exception>
+    /// <exception cref="ArgumentException">Thrown if the provided matrix is not square.</exception>
     public Graph(double[,] adjacencyMatrix)
     {
         if (adjacencyMatrix.GetLength(0) != adjacencyMatrix.GetLength(1))
@@ -192,7 +184,7 @@ public class Graph<T>
     #region Properties
 
     /// <summary>
-    /// Gets the set of all nodes in the graph.
+    /// Gets the set of nodes in this graph.
     /// </summary>
     public SortedSet<Node<T>> Nodes
     {
@@ -200,7 +192,7 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Gets the list of all edges in the graph.
+    /// Gets the list of edges in the graph.
     /// </summary>
     public List<Edge<T>> Edges
     {
@@ -208,7 +200,7 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Gets the adjacency list representing the graph.
+    /// Gets the adjacency list, mapping each node to a dictionary of its neighbors and their weights.
     /// </summary>
     public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
     {
@@ -216,7 +208,8 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Gets the adjacency matrix for the graph, where <see cref="double.MaxValue"/> indicates no edge.
+    /// Gets the adjacency matrix for the graph,
+    /// where <see cref="double.MaxValue"/> indicates no edge.
     /// </summary>
     public double[,] AdjacencyMatrix
     {
@@ -224,7 +217,7 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Gets the mapping of each node to its index in the adjacency matrix.
+    /// Gets the mapping of each node to its row/column index in <see cref="AdjacencyMatrix"/>.
     /// </summary>
     public SortedDictionary<Node<T>, int> NodeIndexMap
     {
@@ -274,12 +267,7 @@ public class Graph<T>
     // }
 
     // /// <summary>
-    // /// Indicates whether the graph is connected based on a single DFS from the first vertex.
-
-    // /// <remarks>
-    // /// For directed graphs, checks if the graph is strongly connected
-    // /// (i.e., checks if all nodes are reachable in both directions from the first node in <see cref="_nodes"/>).
-    // /// </remarks>
+    // /// Indicates whether the graph is connected based on its strongly connected components.
     // /// </summary>
     // public bool IsConnected
     // {
@@ -288,19 +276,31 @@ public class Graph<T>
 
     #endregion Properties
 
+    #region Public Methods - SCC (Strongly Connected Components)
+
+    /// <summary>
+    /// Computes and returns the strongly connected components (SCCs) of the graph.
+    /// </summary>
+    /// <returns>A list of subgraphs, each representing a strongly connected component.</returns>
+    public List<Graph<T>> GetStronglyConnectedComponents()
+    {
+        return CycleDetector<T>.GetStronglyConnectedComponents(this);
+    }
+
+    #endregion Public Methods - SCC
+
     #region Public Methods - Cycle Detection
 
     /// <summary>
-    /// Searches for any cycle in the graph.
-    /// Works for both directed and undirected graphs.
-    /// Optionally ignores the immediate parent for undirected simple cycles.
+    /// Searches for any cycle in the graph, for either directed or undirected structures.
+    /// Optionally ignores the immediate parent edge for a simple cycle in an undirected graph.
     /// </summary>
     /// <param name="simpleCycle">
-    /// If <c>true</c> and the graph is undirected, the method will ignore
-    /// an edge back to the immediate parent. Defaults to <c>false</c>.
+    /// If <c>true</c> and the graph is undirected, edges to the immediate parent are ignored
+    /// to detect only "simple" cycles.
     /// </param>
     /// <returns>
-    /// A list of nodes forming the detected cycle if found; otherwise an empty list.
+    /// A list of nodes forming the first cycle found, or an empty list if no cycle is found.
     /// </returns>
     public List<Node<T>> DetectAnyCycle(bool simpleCycle = false)
     {
@@ -309,33 +309,18 @@ public class Graph<T>
 
     #endregion Public Methods - Cycle Detection
 
-    #region Public Methods - Strongly Connected Components
-
-    /// <summary>
-    /// Computes the strongly connected components (SCCs) of the graph.
-    /// </summary>
-    /// <returns>
-    /// A list of smaller or equal graphs, each representing a strongly connected component.
-    /// </returns>
-    public List<Graph<T>> GetStronglyConnectedComponents()
-    {
-        return CycleDetector<T>.GetStronglyConnectedComponents(this);
-    }
-
-    #endregion Public Methods - Strongly Connected Components
-
     #region Public Methods - Traversals
 
     /// <summary>
     /// Performs a Breadth-First Search (BFS) starting from the specified node or identifier.
     /// </summary>
     /// <typeparam name="TU">
-    /// Can be int (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/> (the data in a node).
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="start">The starting point for the BFS.</param>
-    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// <param name="start">The node or identifier from which to begin BFS.</param>
+    /// <returns>A list of nodes in the order they were discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the corresponding node is not found.
+    /// Thrown if the <paramref name="start"/> is invalid or not found in the graph.
     /// </exception>
     public List<Node<T>> PerformBreadthFirstSearch<TU>(TU start)
         where TU : notnull
@@ -344,16 +329,17 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Performs a recursive Depth-First Search (DFS) starting from the specified node or identifier.
+    /// Performs a Depth-First Search (DFS) starting from the specified node or identifier.
+    /// If <paramref name="inverted"/> is <c>true</c>, traverses in reverse order.
     /// </summary>
     /// <typeparam name="TU">
-    /// Can be int (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/> (the data in a node).
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="start">The starting point for the DFS.</param>
+    /// <param name="start">The node or identifier from which to begin DFS.</param>
     /// <param name="inverted">If <c>true</c>, the graph traversal order is reversed.</param>
-    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// <returns>A list of visited nodes in the order they were discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the corresponding node is not found.
+    /// Thrown if <paramref name="start"/> is invalid or not found in the graph.
     /// </exception>
     public List<Node<T>> PerformDepthFirstSearch<TU>(TU start, bool inverted = false)
         where TU : notnull
@@ -365,24 +351,19 @@ public class Graph<T>
 
     #region Public Methods - Pathfinding
 
-    //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
-
-    //TODO: Méthode de visualisation des chemins, sous graphe. Renvoi un sous graphe
-
     /// <summary>
-    /// Runs Dijkstra's algorithm from a specified node or identifier,
-    /// returning the shortest path to each reachable node.
+    /// Executes Dijkstra's algorithm from the specified node or identifier.
     /// </summary>
     /// <typeparam name="TU">
-    /// Can be int (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/> (the data in a node).
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="start">The starting point for Dijkstra's algorithm.</param>
+    /// <param name="start">The starting node or identifier for the Dijkstra's algorithm.</param>
     /// <returns>
     /// A dictionary mapping each reachable node to a list of nodes representing the path taken
-    // from <paramref name="start"/>.
+    /// from <paramref name="start"/>.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the corresponding node is not found.
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeDijkstra<TU>(TU start)
         where TU : notnull
@@ -391,22 +372,22 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Runs the Bellman-Ford algorithm from a specified node or identifier.
-    /// Detects negative-weight cycles if they exist.
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier,
+    /// detecting negative-weight cycles if present.
     /// </summary>
     /// <typeparam name="TU">
-    /// Can be int (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/> (the data in a node).
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="start">The starting point for Bellman-Ford's algorithm.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
     /// <returns>
     /// A dictionary mapping each reachable node to a list of nodes representing the path taken
-    // from <paramref name="start"/>.
+    /// from <paramref name="start"/>.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the corresponding node is not found.
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if a negative-weight cycle is detected.
+    /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFordPaths<TU>(TU start)
         where TU : notnull
@@ -417,12 +398,13 @@ public class Graph<T>
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
-    /// Computes the shortest paths between all pairs of nodes using the Floyd-Warshall algorithm.
+    /// Executes the Roy-Floyd-Warshall algorithm to compute shortest paths
+    /// between all pairs of nodes in the graph.
     /// </summary>
     /// <returns>
-    /// A 2D array of paths where each element contains the sequence of nodes from i to j.
+    /// A 2D array of lists, where each element is the path from node i to j.
     /// </returns>
-    public List<Node<T>>[,] ComputeFloydWarshall()
+    public List<Node<T>>[,] ComputeRoyFloydWarshall()
     {
         return GraphAlgorithms<T>.RoyFloydWarshall(this);
     }
@@ -432,13 +414,12 @@ public class Graph<T>
     #region Public Methods - Rendering
 
     /// <summary>
-    /// Exports the graph to a DOT file, invokes GraphViz to create a PNG image, and then removes the DOT file.
+    /// Exports the graph to a DOT file, invokes GraphViz to generate a PNG image,
+    /// then removes the DOT file. The node shape and layout algorithm can be specified.
     /// </summary>
-    /// <param name="outputImageName">
-    /// The base file name for the generated image (without extension). A timestamp is appended to avoid overwriting.
-    /// </param>
-    /// <param name="layout">The GraphViz layout to use (e.g. "dot", "fdp", "neato", ...).</param>
-    /// <param name="shape">The shape of the nodes (e.g. "circle", "square", "triangle", ...).</param>
+    /// <param name="outputImageName">The base name of the output image file (no extension). A timestamp is appended to avoid overwriting.</param>
+    /// <param name="layout">The GraphViz layout algorithm (e.g. "dot", "neato", "fdp"). Default is "neato".</param>
+    /// <param name="nodeShape">The shape to use for the nodes (e.g. "point", "circle"). Default is "point".</param>
     public void DisplayGraph(
         string outputImageName = "graph",
         string layout = "neato",
@@ -453,12 +434,11 @@ public class Graph<T>
     #region Private Methods
 
     /// <summary>
-    /// Checks if a given matrix is symmetric (within a small epsilon), implying an undirected graph.
+    /// Determines whether the given adjacency matrix is symmetric,
+    /// implying an undirected graph if <c>true</c>.
     /// </summary>
-    /// <param name="matrix">The matrix to verify for symmetry.</param>
-    /// <returns>
-    /// <c>true</c> if <paramref name="matrix"/> is symmetric; otherwise <c>false</c>.
-    /// </returns>
+    /// <param name="matrix">A square matrix of edge weights.</param>
+    /// <returns><c>true</c> if the matrix is symmetric; otherwise <c>false</c>.</returns>
     private static bool IsMatrixSymmetric(double[,] matrix)
     {
         int n = matrix.GetLength(0);
@@ -475,10 +455,14 @@ public class Graph<T>
         return true;
     }
 
+    #endregion Private Helpers - Matrix Symmetry
+
+    #region Private Helpers - Edge Building
+
     /// <summary>
-    /// Builds edges from the adjacency list and populates the _edge list.
+    /// Builds edges from the adjacency list into <see cref="_edges"/>.
     /// </summary>
-    private void BuildEdgeFromList()
+    private void BuildEdgesFromList()
     {
         foreach (var i in _nodeIndexMap.Values)
         {
@@ -496,7 +480,6 @@ public class Graph<T>
                 if (directed || i < j)
                 {
                     string color = "#000000";
-
                     if (
                         source.VisualizationParameters.Color == target.VisualizationParameters.Color
                         && !Equals(
@@ -515,8 +498,8 @@ public class Graph<T>
     }
 
     /// <summary>
-    /// Builds edges from the adjacency matrix and populates the _edgeList.
-    /// Also populates the adjacency dictionary for convenience.
+    /// Builds edges from the adjacency matrix into <see cref="_edges"/>,
+    /// also updates the adjacency dictionary <see cref="_adjacencyList"/>.
     /// </summary>
     private void BuildEdgesFromMatrix()
     {
@@ -528,7 +511,7 @@ public class Graph<T>
                 if (
                     (!_isDirected && source.Id > target.Id)
                     || Math.Abs(weight - double.MaxValue) < 1e-9
-                    || source == target
+                    || source.Equals(target)
                 )
                 {
                     continue;
@@ -562,5 +545,5 @@ public class Graph<T>
         }
     }
 
-    #endregion Private Methods
+    #endregion Private Helpers - Edge Building
 }
