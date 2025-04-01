@@ -1,4 +1,6 @@
-﻿namespace LivinParis.Models.Maps;
+﻿using LivinParis.Models.Maps.Helpers;
+
+namespace LivinParis.Models.Maps;
 
 //HACK: refactor
 
@@ -115,6 +117,84 @@ public class Node<T> : IComparable<Node<T>>
         _id = nextId;
         _data = data;
         _visualizationParameters = visualizationParameters;
+        _existingNodes.Add(_id, this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
+    /// </summary>
+    /// <param name="id">
+    /// The unique integer ID for this node. Must be greater than 0.
+    /// </param>
+    /// <param name="data">
+    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
+    /// </param>
+    /// <param name="x">The longitude of the node in degree.</param>
+    /// <param name="y">The latitude of the node in degree.</param>
+    /// <param name="color">The fill color to use for visualization.</param>
+    /// <param name="label">The name of the node.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="id"/> is less than 0.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="data"/> is <c>null</c>.
+    /// </exception>
+    public Node(int id, T data, double x, double y, string color, string label)
+    {
+        if (id < 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
+        if (_existingNodes.ContainsKey(id))
+        {
+            throw new ArgumentException($"A node with the id '{id}' already exists.");
+        }
+
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
+        }
+
+        _id = id;
+        _data = data;
+        _visualizationParameters = new VisualizationParameters(x, y, color, label);
+        _existingNodes.Add(_id, this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node{T}"/> class with the specified data.
+    /// </summary>
+    /// <param name="data">
+    /// The data to store in this node.
+    /// </param>
+    /// <param name="x">The longitude of the node in degree.</param>
+    /// <param name="y">The latitude of the node in degree.</param>
+    /// <param name="color">The fill color to use for visualization.</param>
+    /// <param name="label">The name of the node.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="data"/> is <c>null</c>.
+    /// </exception>
+    public Node(T data, double x, double y, string color, string label)
+    {
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data), "Node data cannot be null.");
+        }
+
+        int nextId;
+        if (_existingNodes.Count == 0)
+        {
+            nextId = 0;
+        }
+        else
+        {
+            nextId = _existingNodes.Last().Key + 1;
+        }
+
+        _id = nextId;
+        _data = data;
+        _visualizationParameters = new VisualizationParameters(x, y, color, label);
         _existingNodes.Add(_id, this);
     }
 

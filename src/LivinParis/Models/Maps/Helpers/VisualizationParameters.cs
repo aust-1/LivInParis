@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace LivinParis.Models.Maps;
+namespace LivinParis.Models.Maps.Helpers;
 
 //HACK: refactor
 

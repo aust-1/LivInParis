@@ -9,8 +9,20 @@ public struct Station
 {
     #region Constants
 
+    /// <summary>
+    /// The radius of the Earth in kilometers.
+    /// </summary>
     private const int R = 6371;
+
+    /// <summary>
+    /// The conversion factor from degrees to radians.
+    /// </summary>
     private const double DEGRE_TO_RAD = Math.PI / 180;
+
+    /// <summary>
+    /// The conversion factor from hours to minutes.
+    /// </summary>
+    private const double HOURS_TO_MINUTES = 60;
 
     #endregion Constants
     //QUESTION: Should this be a class instead of a struct?
@@ -105,9 +117,14 @@ public struct Station
 
     #region Methods
 
+    /// <summary>
+    /// Gets the time to the given station in minutes.
+    /// </summary>
+    /// <param name="station"></param>
+    /// <returns></returns>
     public double GetTimeTo(Station station)
     {
-        return GetDistanceTo(station) / GetSpeedByLine(_line);
+        return GetDistanceTo(station) / GetSpeedByLine(_line) * HOURS_TO_MINUTES;
     }
 
     private double GetDistanceTo(Station station)
@@ -170,6 +187,12 @@ public struct Station
         }
     }
 
+    /// <summary>
+    /// Gets the commercial's speed of the line in km/h.
+    /// </summary>
+    /// <param name="line"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private static double GetSpeedByLine(string line)
     {
         switch (line)

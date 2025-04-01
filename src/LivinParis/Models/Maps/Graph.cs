@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Text;
+using LivinParis.Models.Maps.Helpers;
 
 //HACK: refactor
 
@@ -14,43 +13,6 @@ namespace LivinParis.Models.Maps;
 public class Graph<T>
     where T : notnull
 {
-    #region Nested Types
-
-    /// <summary>
-    /// Encapsulates pathfinding results for a particular node,
-    /// including the distance (cost) and its predecessor.
-    /// </summary>
-    /// <typeparam name="TU">
-    /// The type of data stored in the node, mirroring <see cref="Graph{T}"/>.
-    /// </typeparam>
-    public class PathfindingResult<TU>
-        where TU : notnull
-    {
-        /// <summary>
-        /// Gets or sets the distance (cost) to reach this node from the source.
-        /// </summary>
-        public double Distance { get; set; }
-
-        /// <summary>
-        /// Gets or sets the predecessor node on the path to this node.
-        /// </summary>
-        public Node<TU>? Predecessor { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathfindingResult{TU}"/> class,
-        /// specifying the distance and predecessor.
-        /// </summary>
-        /// <param name="distance">The initial distance to this node.</param>
-        /// <param name="predecessor">The node's predecessor in the shortest path tree.</param>
-        public PathfindingResult(double distance, Node<TU>? predecessor)
-        {
-            Distance = distance;
-            Predecessor = predecessor;
-        }
-    }
-
-    #endregion Nested Types
-
     #region Fields
 
     //TODO: rajouter poids et diamètre du graphe
@@ -310,38 +272,46 @@ public class Graph<T>
 
     #region Properties
 
-    // /// <summary>
-    // /// Gets the set of all nodes in this graph.
-    // /// </summary>
-    // public SortedSet<Node<T>> Nodes
-    // {
-    //     get { return _nodes; }
-    // }
+    /// <summary>
+    /// Gets the set of all nodes in this graph.
+    /// </summary>
+    public SortedSet<Node<T>> Nodes
+    {
+        get { return _nodes; }
+    }
 
-    // /// <summary>
-    // /// Gets the collection of edges in this graph.
-    // /// </summary>
-    // public List<Edge<T>> Edges
-    // {
-    //     get { return _edges; }
-    // }
+    /// <summary>
+    /// Gets the collection of edges in this graph.
+    /// </summary>
+    public List<Edge<T>> Edges
+    {
+        get { return _edges; }
+    }
 
-    // /// <summary>
-    // /// Gets the adjacency list representing this graph.
-    // /// </summary>
-    // public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
-    // {
-    //     get { return _adjacencyList; }
-    // }
+    /// <summary>
+    /// Gets the adjacency list representing this graph.
+    /// </summary>
+    public SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> AdjacencyList
+    {
+        get { return _adjacencyList; }
+    }
 
-    // /// <summary>
-    // /// Gets the adjacency matrix for this graph,
-    // /// where <see cref="double.MaxValue"/> indicates no edge.
-    // /// </summary>
-    // public double[,] AdjacencyMatrix
-    // {
-    //     get { return _adjacencyMatrix; }
-    // }
+    /// <summary>
+    /// Gets the adjacency matrix for this graph,
+    /// where <see cref="double.MaxValue"/> indicates no edge.
+    /// </summary>
+    public double[,] AdjacencyMatrix
+    {
+        get { return _adjacencyMatrix; }
+    }
+
+    /// <summary>
+    /// Gets the mapping of nodes to their corresponding coordinates in the adjacency matrix.
+    /// </summary>
+    public SortedDictionary<Node<T>, int> CorrespondingCoordinates
+    {
+        get { return _correspondingCoordinates; }
+    }
 
     // /// <summary>
     // /// Gets the distance matrix for all pairs of nodes,
@@ -352,13 +322,13 @@ public class Graph<T>
     //     get { return _distanceMatrix; }
     // }
 
-    // /// <summary>
-    // /// Gets the number of nodes (the order of the graph).
-    // /// </summary>
-    // public int Order
-    // {
-    //     get { return _order; }
-    // }
+    /// <summary>
+    /// Gets the number of nodes (the order of the graph).
+    /// </summary>
+    public int Order
+    {
+        get { return _order; }
+    }
 
     // /// <summary>
     // /// Gets the number of edges (the size of the graph).
@@ -378,13 +348,13 @@ public class Graph<T>
     //     get { return _density; }
     // }
 
-    // /// <summary>
-    // /// Indicates whether this graph is directed.
-    // /// </summary>
-    // public bool IsDirected
-    // {
-    //     get { return _isDirected; }
-    // }
+    /// <summary>
+    /// Indicates whether this graph is directed.
+    /// </summary>
+    public bool IsDirected
+    {
+        get { return _isDirected; }
+    }
 
     // /// <summary>
     // /// Indicates whether this graph is weighted,
@@ -424,51 +394,9 @@ public class Graph<T>
     /// <returns>
     /// A string describing the detected cycle (IDs and data) if found; otherwise <c>null</c>.
     /// </returns>
-    public string? FindAnyCycle(bool simpleCycle = false)
+    public List<Node<T>> FindAnyCycle(bool simpleCycle = false)
     {
-        var visited = new HashSet<Node<T>>();
-        var recStack = new HashSet<Node<T>>();
-        var parentMap = new Dictionary<Node<T>, Node<T>>();
-
-        foreach (var node in _nodes)
-        {
-            if (!visited.Contains(node))
-            {
-                if (_isDirected)
-                {
-                    if (
-                        TryFindCycleDirected(
-                            node,
-                            visited,
-                            recStack,
-                            parentMap,
-                            out var cycle,
-                            simpleCycle
-                        )
-                    )
-                    {
-                        return CycleToString(cycle);
-                    }
-                }
-                else
-                {
-                    if (
-                        TryFindCycleUndirected(
-                            node,
-                            visited,
-                            parentMap,
-                            null,
-                            out var cycle,
-                            simpleCycle
-                        )
-                    )
-                    {
-                        return CycleToString(cycle);
-                    }
-                }
-            }
-        }
-        return null;
+        return CycleDetector<T>.FindAnyCycle(this, simpleCycle);
     }
 
     #endregion Public Methods - Cycle Detection
@@ -477,42 +405,7 @@ public class Graph<T>
 
     public List<Graph<T>> GetStronglyConnectedComponents()
     {
-        var result = new List<Graph<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        while (visited.Count < _order)
-        {
-            var startNode = _nodes.Where(n => !visited.Contains(n)).First();
-            var adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
-            var successors = DFS(startNode, false);
-            var predecessor = DFS(startNode, true);
-
-            foreach (var node in successors.Where(n => predecessor.Contains(n)))
-            {
-                visited.Add(node);
-                adjacencyList[node] = new SortedDictionary<Node<T>, double>();
-            }
-
-            foreach (var edge in _edges)
-            {
-                if (
-                    adjacencyList.Keys.Contains(edge.SourceNode)
-                    && adjacencyList.Keys.Contains(edge.TargetNode)
-                )
-                {
-                    adjacencyList[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
-                    if (!edge.IsDirected)
-                    {
-                        adjacencyList[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
-                    }
-                }
-            }
-
-            var scc = new Graph<T>(adjacencyList);
-            result.Add(scc);
-        }
-
-        return result;
+        return CycleDetector<T>.GetStronglyConnectedComponents(this);
     }
 
     #endregion Public Methods - SCC Detection
@@ -535,39 +428,7 @@ public class Graph<T>
     public List<Node<T>> BFS<TU>(TU start)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!_adjacencyList.ContainsKey(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new List<Node<T>>();
-        var queue = new Queue<Node<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        queue.Enqueue(startNode);
-        visited.Add(startNode);
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            result.Add(current);
-
-            if (_adjacencyList.TryGetValue(current, out var neighbors))
-            {
-                foreach (var neighbor in neighbors.Keys)
-                {
-                    if (!visited.Contains(neighbor))
-                    {
-                        visited.Add(neighbor);
-                        queue.Enqueue(neighbor);
-                    }
-                }
-            }
-        }
-
-        return result;
+        return GraphAlgorithms<T>.BFS(this, start);
     }
 
     /// <summary>
@@ -587,18 +448,7 @@ public class Graph<T>
     public List<Node<T>> DFS<TU>(TU start, bool inverted = false)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!_adjacencyList.ContainsKey(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var visited = new HashSet<Node<T>>();
-        var result = new List<Node<T>>();
-
-        DFSUtil(startNode, visited, result, inverted);
-        return result;
+        return GraphAlgorithms<T>.DFS(this, start, inverted);
     }
 
     #endregion Public Methods - Traversals
@@ -628,58 +478,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<TU>(TU start)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!_nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        foreach (var node in _nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        while (visited.Count < _nodes.Count)
-        {
-            var current = result
-                .Where(kvp => !visited.Contains(kvp.Key))
-                .OrderBy(kvp => kvp.Value.Distance)
-                .FirstOrDefault()
-                .Key;
-
-            if (current == null || double.IsPositiveInfinity(result[current].Distance))
-            {
-                break;
-            }
-
-            visited.Add(current);
-
-            if (_adjacencyList.TryGetValue(current, out var neighbors))
-            {
-                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
-                {
-                    var newDistance =
-                        result[current].Distance
-                        + _adjacencyMatrix[
-                            _correspondingCoordinates[current],
-                            _correspondingCoordinates[neighbor]
-                        ];
-
-                    if (newDistance < result[neighbor].Distance)
-                    {
-                        result[neighbor].Distance = newDistance;
-                        result[neighbor].Predecessor = current;
-                    }
-                }
-            }
-        }
-
-        return BuildPaths(result);
+        return GraphAlgorithms<T>.Dijkstra(this, start);
     }
 
     /// <summary>
@@ -705,57 +504,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<TU>(TU start)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!_nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        foreach (var node in _nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        bool relaxed = false;
-        for (int i = 0; i < _nodes.Count; i++)
-        {
-            relaxed = false;
-            foreach (var edge in _edges)
-            {
-                var source = edge.SourceNode;
-                var target = edge.TargetNode;
-                var weight = edge.Weight;
-
-                if (result[source].Distance + weight < result[target].Distance)
-                {
-                    result[target].Distance = result[source].Distance + weight;
-                    result[target].Predecessor = source;
-                    relaxed = true;
-                }
-
-                if (!edge.IsDirected && result[target].Distance + weight < result[source].Distance)
-                {
-                    result[source].Distance = result[target].Distance + weight;
-                    result[source].Predecessor = target;
-                    relaxed = true;
-                }
-            }
-
-            if (!relaxed)
-            {
-                break;
-            }
-        }
-
-        if (relaxed)
-        {
-            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
-        }
-
-        return BuildPaths(result);
+        return GraphAlgorithms<T>.BellmanFord(this, start);
     }
 
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
@@ -768,63 +517,7 @@ public class Graph<T>
     /// </returns>
     public List<Node<T>>[,] RoyFloydWarshall()
     {
-        int n = _order;
-        var distanceMatrix = new double[n, n];
-        var pathMatrix = new List<Node<T>>[n, n];
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                distanceMatrix[i, j] = _adjacencyMatrix[i, j];
-                pathMatrix[i, j] = new List<Node<T>>();
-                if (i == j)
-                {
-                    pathMatrix[i, j]
-                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == i).Key);
-                }
-                else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
-                {
-                    pathMatrix[i, j]
-                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == i).Key);
-                    pathMatrix[i, j]
-                        .Add(_correspondingCoordinates.First(kvp => kvp.Value == j).Key);
-                }
-            }
-        }
-
-        for (int k = 0; k < n; k++)
-        {
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (
-                        i == j
-                        || i == k
-                        || j == k
-                        || Math.Abs(distanceMatrix[i, k] - double.MaxValue) < 1e-9
-                        || Math.Abs(distanceMatrix[k, j] - double.MaxValue) < 1e-9
-                    )
-                    {
-                        continue;
-                    }
-
-                    double distanceViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
-                    if (distanceViaK < distanceMatrix[i, j])
-                    {
-                        distanceMatrix[i, j] = distanceViaK;
-
-                        var pathViaK = new List<Node<T>>(pathMatrix[i, k]);
-                        pathViaK.RemoveAt(pathViaK.Count - 1);
-                        pathViaK.AddRange(pathMatrix[k, j]);
-
-                        pathMatrix[i, j] = pathViaK;
-                    }
-                }
-            }
-        }
-
-        return pathMatrix;
+        return GraphAlgorithms<T>.RoyFloydWarshall(this);
     }
 
     #endregion Public Methods - Pathfinding
@@ -846,446 +539,10 @@ public class Graph<T>
         string shape = "point"
     )
     {
-        string dotFilePath = $"{outputImageName}.dot";
-        string outputImagePath =
-            $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
-
-        ExportToDot(dotFilePath, layout, shape);
-        RenderDotFile(dotFilePath, outputImagePath);
-        File.Delete(dotFilePath);
+        Visualization<T>.DisplayGraph(this, outputImageName, layout, shape);
     }
 
     #endregion Public Methods - Drawing
-
-    #region Private Helpers - Cycle Detection
-
-    /// <summary>
-    /// Attempts to find a cycle in a directed graph using DFS and a recursion stack.
-    /// </summary>
-    /// <param name="current">The current node being explored.</param>
-    /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="recStack">A recursion stack storing the current path.</param>
-    /// <param name="parentMap">A map to reconstruct the cycle path if found.</param>
-    /// <param name="cycle">
-    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
-    /// </param>
-    /// <param name="simpleCycle">
-    /// <c>true</c> in undirected graphs to ignore edges back to the immediate parent.
-    /// Not strictly relevant for directed graphs.
-    /// </param>
-    /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
-    private bool TryFindCycleDirected(
-        Node<T> current,
-        HashSet<Node<T>> visited,
-        HashSet<Node<T>> recStack,
-        Dictionary<Node<T>, Node<T>> parentMap,
-        out List<Node<T>> cycle,
-        bool simpleCycle = false
-    )
-    {
-        visited.Add(current);
-        recStack.Add(current);
-
-        if (_adjacencyList.TryGetValue(current, out var neighbors))
-        {
-            foreach (var neighbor in neighbors.Keys)
-            {
-                if (!visited.Contains(neighbor))
-                {
-                    parentMap[neighbor] = current;
-                    if (
-                        TryFindCycleDirected(
-                            neighbor,
-                            visited,
-                            recStack,
-                            parentMap,
-                            out cycle,
-                            simpleCycle
-                        )
-                    )
-                    {
-                        return true;
-                    }
-                }
-                else if (recStack.Contains(neighbor))
-                {
-                    cycle = ReconstructCycle(current, neighbor, parentMap);
-                    return true;
-                }
-            }
-        }
-
-        recStack.Remove(current);
-        cycle = null!;
-        return false;
-    }
-
-    /// <summary>
-    /// Attempts to find a cycle in an undirected graph using DFS.
-    /// </summary>
-    /// <param name="current">The current node being explored.</param>
-    /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="parentMap">A map to reconstruct the cycle if found.</param>
-    /// <param name="parent">The node's parent in the DFS tree (if any).</param>
-    /// <param name="cycle">
-    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
-    /// </param>
-    /// <param name="simpleCycle">
-    /// If <c>true</c>, ignore edges back to the immediate parent to detect only "simple" cycles.
-    /// </param>
-    /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
-    private bool TryFindCycleUndirected(
-        Node<T> current,
-        HashSet<Node<T>> visited,
-        Dictionary<Node<T>, Node<T>> parentMap,
-        Node<T>? parent,
-        out List<Node<T>> cycle,
-        bool simpleCycle = false
-    )
-    {
-        visited.Add(current);
-
-        if (_adjacencyList.TryGetValue(current, out var neighbors))
-        {
-            foreach (var neighbor in neighbors.Keys)
-            {
-                if (neighbor.Equals(parent) && simpleCycle)
-                {
-                    continue;
-                }
-                else if (!visited.Contains(neighbor))
-                {
-                    parentMap[neighbor] = current;
-                    if (
-                        TryFindCycleUndirected(
-                            neighbor,
-                            visited,
-                            parentMap,
-                            current,
-                            out cycle,
-                            simpleCycle
-                        )
-                    )
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    cycle = ReconstructCycle(current, neighbor, parentMap);
-                    return true;
-                }
-            }
-        }
-
-        cycle = null!;
-        return false;
-    }
-
-    /// <summary>
-    /// Reconstructs a cycle path from two meeting nodes in a DFS recursion stack.
-    /// </summary>
-    /// <param name="current">The node that discovered the cycle.</param>
-    /// <param name="neighbor">The previously visited node in the cycle.</param>
-    /// <param name="parentMap">A dictionary linking each node to its parent.</param>
-    /// <returns>A list of nodes forming the cycle.</returns>
-    private static List<Node<T>> ReconstructCycle(
-        Node<T> current,
-        Node<T> neighbor,
-        Dictionary<Node<T>, Node<T>> parentMap
-    )
-    {
-        var cycle = new List<Node<T>>();
-        var temp = current;
-        while (!temp.Equals(neighbor))
-        {
-            cycle.Add(temp);
-            temp = parentMap[temp];
-        }
-        cycle.Add(neighbor);
-        cycle.Reverse();
-        return cycle;
-    }
-
-    /// <summary>
-    /// Builds a string representation of a cycle, listing node IDs and data.
-    /// </summary>
-    /// <param name="cycle">The nodes forming the cycle.</param>
-    /// <returns>A string describing the cycle's IDs and data.</returns>
-    private static string CycleToString(List<Node<T>> cycle)
-    {
-        var sbId = new StringBuilder();
-        var sbData = new StringBuilder();
-
-        sbId.Append("Cycle by Id: <");
-        sbData.Append("\nCycle by Data: ");
-
-        foreach (var node in cycle)
-        {
-            sbId.Append(node.Id).Append(", ");
-            sbData.Append(node.Data).Append(" -> ");
-        }
-
-        sbId.Append(cycle[0].Id).Append('>');
-        sbData.Append(cycle[0].Data);
-
-        return sbId.Append(sbData).ToString();
-    }
-
-    #endregion Private Helpers - Cycle Detection
-
-    #region Private Helpers - DFS
-
-    /// <summary>
-    /// A helper method for performing a recursive DFS from a specified node.
-    /// </summary>
-    /// <param name="node">The node where DFS is currently happening.</param>
-    /// <param name="visited">A set of nodes that have been visited already.</param>
-    /// <param name="result">The list where visited nodes are accumulated.</param>
-    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
-    private void DFSUtil(
-        Node<T> node,
-        HashSet<Node<T>> visited,
-        List<Node<T>> result,
-        bool inverted
-    )
-    {
-        visited.Add(node);
-        result.Add(node);
-
-        if (inverted)
-        {
-            foreach (
-                var predecessor in _adjacencyList
-                    .Where(kvp => kvp.Value.ContainsKey(node))
-                    .Select(kvp => kvp.Key)
-            )
-            {
-                if (!visited.Contains(predecessor))
-                {
-                    DFSUtil(predecessor, visited, result, inverted);
-                }
-            }
-        }
-        else
-        {
-            if (_adjacencyList.TryGetValue(node, out var neighbors))
-            {
-                foreach (var neighbor in neighbors.Keys)
-                {
-                    if (!visited.Contains(neighbor))
-                    {
-                        DFSUtil(neighbor, visited, result, inverted);
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion Private Helpers - DFS
-
-    #region Private Helpers - Pathfinding
-
-    /// <summary>
-    /// Builds the resulting path list for each node given a dictionary
-    /// of <see cref="PathfindingResult{T}"/>.
-    /// </summary>
-    /// <param name="results">
-    /// A dictionary from each node to its pathfinding result
-    /// (distance and predecessor).
-    /// </param>
-    /// <returns>
-    /// A dictionary mapping each node to a list representing its path
-    /// from the start node to that node.
-    /// </returns>
-    private static SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
-        SortedDictionary<Node<T>, PathfindingResult<T>> results
-    )
-    {
-        var paths = new SortedDictionary<Node<T>, List<Node<T>>>();
-
-        foreach (var node in results.Keys)
-        {
-            var path = new List<Node<T>>();
-            var current = node;
-
-            while (current != null)
-            {
-                path.Add(current);
-                current = results[current].Predecessor;
-            }
-            path.Reverse();
-            paths[node] = path;
-        }
-
-        return paths;
-    }
-
-    #endregion Private Helpers - Pathfinding
-
-    #region Private Helpers - GraphViz
-
-    /// <summary>
-    /// Renders a DOT file into a PNG image using GraphViz,
-    /// installing GraphViz via winget if not found.
-    /// </summary>
-    /// <param name="dotFilePath">The path to the DOT file.</param>
-    /// <param name="outputImagePath">The path of the resulting PNG image.</param>
-    /// <exception cref="FileNotFoundException">Thrown if the DOT file is missing.</exception>
-    private static void RenderDotFile(string dotFilePath, string outputImagePath)
-    {
-        if (!File.Exists(dotFilePath))
-        {
-            throw new FileNotFoundException("DOT file not found.", dotFilePath);
-        }
-
-        const string graphVizPath = @"C:\Program Files\Graphviz\bin\dot.exe";
-        if (!File.Exists(graphVizPath))
-        {
-            Console.WriteLine(
-                "GraphViz is not installed on this machine. Please install it or use another method.\n"
-                    + "GraphViz can be installed via winget:\n"
-                    + "  winget install -e --id Graphviz.Graphviz"
-            );
-            Console.WriteLine(
-                "Install now? (y/n) ('y' will attempt a silent installation via winget.)"
-            );
-
-            string? response = Console.ReadLine();
-            if (response?.ToLower() == "y")
-            {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "powershell",
-                    Arguments =
-                        "-NoProfile -ExecutionPolicy Bypass -Command \"winget install -e --id Graphviz.Graphviz\"",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                };
-
-                using var installProcess = new Process { StartInfo = psi };
-                installProcess.Start();
-                string output = installProcess.StandardOutput.ReadToEnd();
-                string error = installProcess.StandardError.ReadToEnd();
-                installProcess.WaitForExit();
-
-                Console.WriteLine("Output:\n" + output);
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Console.WriteLine("Error:\n" + error);
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
-
-        using var process = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = graphVizPath,
-                Arguments = $"-Tpng \"{dotFilePath}\" -o \"{outputImagePath}\"",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            },
-        };
-
-        process.Start();
-        process.WaitForExit();
-    }
-
-    /// <summary>
-    /// Exports the current graph to a DOT file for visualization with GraphViz.
-    /// </summary>
-    /// <param name="filePath">The path to the DOT file.</param>
-    /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato", ...).</param>
-    /// <param name="shape">The shape of the nodes (e.g., "circle", "rectangle", "diamond", ...).</param>
-    private void ExportToDot(string filePath, string layout, string shape)
-    {
-        var dotBuilder = new StringBuilder();
-        var clusters = new List<string>();
-
-        dotBuilder.AppendLine(_isDirected ? "digraph G {" : "graph G {");
-        dotBuilder.AppendLine($"    layout={layout};");
-        dotBuilder.AppendLine("    ratio=0.6438356164;");
-        dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"10\"];");
-
-        foreach (var node in _nodes)
-        {
-            dotBuilder.Append($"    \"{node.Data}\" [{node.VisualizationParameters}");
-            if (clusters.Contains(node.VisualizationParameters.Label))
-            {
-                dotBuilder.AppendLine(", penwidth=4");
-            }
-            else
-            {
-                dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
-                clusters.Add(node.VisualizationParameters.Label);
-            }
-            dotBuilder.AppendLine("];");
-        }
-
-        dotBuilder.AppendLine();
-
-        foreach (var edge in _edges.Where(e => e.RGBColor != "#000000"))
-        {
-            if (!_isDirected && edge.SourceNode.Id > edge.TargetNode.Id)
-            {
-                dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -- \"{edge.TargetNode.Data}\"");
-            }
-            else if (_isDirected)
-            {
-                dotBuilder.Append($"    \"{edge.SourceNode.Data}\" -> \"{edge.TargetNode.Data}\"");
-                if (!edge.IsDirected)
-                {
-                    dotBuilder.Append(" [dir=both]");
-                }
-            }
-
-            dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
-        }
-
-        dotBuilder.AppendLine("}");
-        File.WriteAllText(filePath, dotBuilder.ToString());
-    }
-    #endregion Private Helpers - GraphViz
-
-    #region Private Helpers - Node Resolution
-
-    /// <summary>
-    /// Converts the given <paramref name="start"/> object into a <see cref="Node{T}"/>.
-    /// Supported types are:
-    /// - <see cref="Node{T}"/> (node object),
-    /// - <c>int</c> (node ID),
-    /// - <typeparamref name="T"/> (node data).
-    /// </summary>
-    /// <typeparam name="TU">The type of the <paramref name="start"/> parameter.</typeparam>
-    /// <param name="start">An integer ID, a node, or a data value.</param>
-    /// <returns>The corresponding node object in this graph.</returns>
-    /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is an unsupported type or the resulting node is invalid.
-    /// </exception>
-    private static Node<T> ResolveNode<TU>(TU start)
-        where TU : notnull
-    {
-        return start switch
-        {
-            Node<T> nodeObj => nodeObj,
-            int id => Node<T>.GetNode(id),
-            T data => Node<T>.GetOrCreateNode(data),
-            _ => throw new ArgumentException(
-                "Unsupported type for node resolution. Must be Node<T>, int, or T."
-            ),
-        };
-    }
-
-    #endregion Private Helpers - Node Resolution
 
     #region Private Helpers - Symmetry Check
 

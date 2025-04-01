@@ -1,0 +1,436 @@
+namespace LivinParis.Models.Maps.Helpers;
+
+public static class GraphAlgorithms<T>
+    where T : notnull
+{
+    #region Public Methods - Traversals
+
+    /// <summary>
+    /// Performs a Breadth-First Search (BFS) starting from the specified node,
+    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
+    /// </exception>
+    public static List<Node<T>> BFS<TU>(Graph<T> graph, TU start)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.AdjacencyList.ContainsKey(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new List<Node<T>>();
+        var queue = new Queue<Node<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        queue.Enqueue(startNode);
+        visited.Add(startNode);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            result.Add(current);
+
+            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Performs a recursive Depth-First Search (DFS) from the specified node,
+    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
+    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
+    /// </exception>
+    public static List<Node<T>> DFS<TU>(Graph<T> graph, TU start, bool inverted = false)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.AdjacencyList.ContainsKey(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var visited = new HashSet<Node<T>>();
+        var result = new List<Node<T>>();
+
+        DFSUtil(graph, startNode, visited, result, inverted);
+        return result;
+    }
+
+    #endregion Public Methods - Traversals
+
+    #region Public Methods - Pathfinding
+
+    //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
+
+    //TODO: Méthode de visualisation des chemins, sous graphe. Renvoi un sous graphe
+
+    /// <summary>
+    /// Performs Dijkstra's algorithm from the specified start node,
+    /// returning the set of paths to each reachable node.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <returns>
+    /// A dictionary mapping each node to a list of nodes representing the path
+    /// from <paramref name="start"/> to that node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or if the node is not in the graph.
+    /// </exception>
+    public static SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<TU>(Graph<T> graph, TU start)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        while (visited.Count < graph.Order)
+        {
+            var current = result
+                .Where(kvp => !visited.Contains(kvp.Key))
+                .OrderBy(kvp => kvp.Value.Distance)
+                .FirstOrDefault()
+                .Key;
+
+            if (current == null || double.IsPositiveInfinity(result[current].Distance))
+            {
+                break;
+            }
+
+            visited.Add(current);
+
+            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
+                {
+                    var newDistance =
+                        result[current].Distance
+                        + graph.AdjacencyMatrix[
+                            graph.CorrespondingCoordinates[current],
+                            graph.CorrespondingCoordinates[neighbor]
+                        ];
+
+                    if (newDistance < result[neighbor].Distance)
+                    {
+                        result[neighbor].Distance = newDistance;
+                        result[neighbor].Predecessor = current;
+                    }
+                }
+            }
+        }
+
+        return BuildPaths(result);
+    }
+
+    /// <summary>
+    /// Performs the Bellman-Ford algorithm from the specified start node,
+    /// returning the set of paths to each reachable node.
+    /// Detects negative-weight cycles.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/>;
+    /// can be <c>int</c>, <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <returns>
+    /// A dictionary mapping each node to a list of nodes representing the path
+    /// from <paramref name="start"/> to that node.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or not present in the graph.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public static SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<TU>(Graph<T> graph, TU start)
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        bool relaxed = false;
+        for (int i = 0; i < graph.Order; i++)
+        {
+            relaxed = false;
+            foreach (var edge in graph.Edges)
+            {
+                var source = edge.SourceNode;
+                var target = edge.TargetNode;
+                var weight = edge.Weight;
+
+                if (result[source].Distance + weight < result[target].Distance)
+                {
+                    result[target].Distance = result[source].Distance + weight;
+                    result[target].Predecessor = source;
+                    relaxed = true;
+                }
+
+                if (!edge.IsDirected && result[target].Distance + weight < result[source].Distance)
+                {
+                    result[source].Distance = result[target].Distance + weight;
+                    result[source].Predecessor = target;
+                    relaxed = true;
+                }
+            }
+
+            if (!relaxed)
+            {
+                break;
+            }
+        }
+
+        if (relaxed)
+        {
+            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
+        }
+
+        return BuildPaths(result);
+    }
+
+    //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
+
+    /// <summary>
+    /// Computes the all-pairs shortest path distances using the Roy-Floyd-Warshall algorithm.
+    /// </summary>
+    /// <param name="graph">The graph to analyze.</param>
+    /// <returns>
+    /// A 2D array of distances, where <c>distance[i, j]</c> is the shortest path cost from i to j.
+    /// </returns>
+    public static List<Node<T>>[,] RoyFloydWarshall(Graph<T> graph)
+    {
+        int n = graph.Order;
+        var distanceMatrix = new double[n, n];
+        var pathMatrix = new List<Node<T>>[n, n];
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                distanceMatrix[i, j] = graph.AdjacencyMatrix[i, j];
+                pathMatrix[i, j] = new List<Node<T>>();
+                if (i == j)
+                {
+                    pathMatrix[i, j]
+                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == i).Key);
+                }
+                else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
+                {
+                    pathMatrix[i, j]
+                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == i).Key);
+                    pathMatrix[i, j]
+                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == j).Key);
+                }
+            }
+        }
+
+        for (int k = 0; k < n; k++)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (
+                        i == j
+                        || i == k
+                        || j == k
+                        || Math.Abs(distanceMatrix[i, k] - double.MaxValue) < 1e-9
+                        || Math.Abs(distanceMatrix[k, j] - double.MaxValue) < 1e-9
+                    )
+                    {
+                        continue;
+                    }
+
+                    double distanceViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
+                    if (distanceViaK < distanceMatrix[i, j])
+                    {
+                        distanceMatrix[i, j] = distanceViaK;
+
+                        var pathViaK = new List<Node<T>>(pathMatrix[i, k]);
+                        pathViaK.RemoveAt(pathViaK.Count - 1);
+                        pathViaK.AddRange(pathMatrix[k, j]);
+
+                        pathMatrix[i, j] = pathViaK;
+                    }
+                }
+            }
+        }
+
+        return pathMatrix;
+    }
+
+    #endregion Public Methods - Pathfinding
+
+    #region Private Helpers
+
+    /// <summary>
+    /// A helper method for performing a recursive DFS from a specified node.
+    /// </summary>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="node">The node where DFS is currently happening.</param>
+    /// <param name="visited">A set of nodes that have been visited already.</param>
+    /// <param name="result">The list where visited nodes are accumulated.</param>
+    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
+    private static void DFSUtil(
+        Graph<T> graph,
+        Node<T> node,
+        HashSet<Node<T>> visited,
+        List<Node<T>> result,
+        bool inverted
+    )
+    {
+        visited.Add(node);
+        result.Add(node);
+
+        if (inverted)
+        {
+            foreach (
+                var predecessor in graph
+                    .AdjacencyList.Where(kvp => kvp.Value.ContainsKey(node))
+                    .Select(kvp => kvp.Key)
+            )
+            {
+                if (!visited.Contains(predecessor))
+                {
+                    DFSUtil(graph, predecessor, visited, result, inverted);
+                }
+            }
+        }
+        else
+        {
+            if (graph.AdjacencyList.TryGetValue(node, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        DFSUtil(graph, neighbor, visited, result, inverted);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Builds the resulting path list for each node given a dictionary
+    /// of <see cref="PathfindingResult{T}"/>.
+    /// </summary>
+    /// <param name="results">
+    /// A dictionary from each node to its pathfinding result
+    /// (distance and predecessor).
+    /// </param>
+    /// <returns>
+    /// A dictionary mapping each node to a list representing its path
+    /// from the start node to that node.
+    /// </returns>
+    private static SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
+        SortedDictionary<Node<T>, PathfindingResult<T>> results
+    )
+    {
+        var paths = new SortedDictionary<Node<T>, List<Node<T>>>();
+
+        foreach (var node in results.Keys)
+        {
+            var path = new List<Node<T>>();
+            var current = node;
+
+            while (current != null)
+            {
+                path.Add(current);
+                current = results[current].Predecessor;
+            }
+            path.Reverse();
+            paths[node] = path;
+        }
+
+        return paths;
+    }
+
+    /// <summary>
+    /// Converts the given <paramref name="start"/> object into a <see cref="Node{T}"/>.
+    /// Supported types are:
+    /// - <see cref="Node{T}"/> (node object),
+    /// - <c>int</c> (node ID),
+    /// - <typeparamref name="T"/> (node data).
+    /// </summary>
+    /// <typeparam name="TU">The type of the <paramref name="start"/> parameter.</typeparam>
+    /// <param name="start">An integer ID, a node, or a data value.</param>
+    /// <returns>The corresponding node object in this graph.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is an unsupported type or the resulting node is invalid.
+    /// </exception>
+    private static Node<T> ResolveNode<TU>(TU start)
+        where TU : notnull
+    {
+        return start switch
+        {
+            Node<T> nodeObj => nodeObj,
+            int id => Node<T>.GetNode(id),
+            T data => Node<T>.GetOrCreateNode(data),
+            _ => throw new ArgumentException(
+                "Unsupported type for node resolution. Must be Node<T>, int, or T."
+            ),
+        };
+    }
+
+    #endregion Private Helpers
+}

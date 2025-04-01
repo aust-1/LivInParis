@@ -107,7 +107,10 @@ namespace LivinParis
                 var node = new Node<Station>(
                     stationId,
                     station,
-                    new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
+                    longitude,
+                    latitude,
+                    station.ColorLine,
+                    stationName
                 );
                 adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
             }
@@ -180,7 +183,10 @@ namespace LivinParis
                 new Node<Station>(
                     stationId,
                     station,
-                    new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
+                    longitude,
+                    latitude,
+                    station.ColorLine,
+                    stationName
                 );
             }
 

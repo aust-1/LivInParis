@@ -1,7 +1,6 @@
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using Aspose.Cells;
 
 namespace LivinParis.Tests;
@@ -43,7 +42,10 @@ public class GraphOptimisation
             var node = new Node<Station>(
                 stationId,
                 station,
-                new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
+                longitude,
+                latitude,
+                station.ColorLine,
+                stationName
             );
             adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
         }
@@ -112,7 +114,10 @@ public class GraphOptimisation
             new Node<Station>(
                 stationId,
                 station,
-                new VisualizationParameters(longitude, latitude, station.ColorLine, stationName)
+                longitude,
+                latitude,
+                station.ColorLine,
+                stationName
             );
         }
 
