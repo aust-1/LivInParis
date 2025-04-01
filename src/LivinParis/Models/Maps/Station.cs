@@ -97,21 +97,21 @@ public struct Station
 
     #region Properties
 
-    // /// <summary>
-    // /// Gets the latitude of the station in radians.
-    // /// </summary>
-    // public double LatitudeRadians
-    // {
-    //     get { return _latitudeRadians; }
-    // }
+    /// <summary>
+    /// Gets the latitude of the station in radians.
+    /// </summary>
+    public double LatitudeRadians
+    {
+        get { return _latitudeRadians; }
+    }
 
-    // /// <summary>
-    // /// Gets the longitude of the station in radians.
-    // /// </summary>
-    // public double LongitudeRadians
-    // {
-    //     get { return _longitudeRadians; }
-    // }
+    /// <summary>
+    /// Gets the longitude of the station in radians.
+    /// </summary>
+    public double LongitudeRadians
+    {
+        get { return _longitudeRadians; }
+    }
 
     /// <summary>
     /// Gets the color associated with the station's metro line.
@@ -154,6 +154,32 @@ public struct Station
                             * Math.Cos(other._latitudeRadians)
                             * Math.Pow(
                                 Math.Sin((_longitudeRadians - other._longitudeRadians) / 2.0),
+                                2.0
+                            )
+                )
+            );
+    }
+
+    /// <summary>
+    /// Calculates the great-circle distance (in kilometers) to another station
+    /// using the Haversine formula.
+    /// </summary>
+    /// <param name="longitude">The longitude of the target point in degrees.</param>
+    /// <param name="latitude">The latitude of the target point in degrees.</param>
+    /// <returns>The distance in kilometers.</returns>
+    public double GetDistanceTo(double longitude, double latitude)
+    {
+        double otherLongitudeRadians = longitude * DEGREES_TO_RADIANS;
+        double otherLatitudeRadians = latitude * DEGREES_TO_RADIANS;
+        return 2.0
+            * EARTH_RADIUS_KM
+            * Math.Asin(
+                Math.Sqrt(
+                    Math.Pow(Math.Sin((_latitudeRadians - otherLatitudeRadians) / 2.0), 2.0)
+                        + Math.Cos(_latitudeRadians)
+                            * Math.Cos(otherLatitudeRadians)
+                            * Math.Pow(
+                                Math.Sin((_longitudeRadians - otherLongitudeRadians) / 2.0),
                                 2.0
                             )
                 )
@@ -230,45 +256,3 @@ public struct Station
 
     #endregion Methods
 }
-
-//TODO: Provides a method to convert an address to coordinates using the Nominatim API and then find the nearest station to those coordinates.
-
-// using Newtonsoft.Json.Linq;
-//
-// public async Task InitialiserAsync()
-// {
-//     (double lon, double lat)? coordonnees = await ConvertirAdresseEnCoordonnees(adresse);
-//     RechercherStationProche(coordonnees);
-// }
-
-// public static async Task<(double lon, double lat)?> ConvertirAdresseEnCoordonnees(string adresse)
-// {
-//     string url =
-//         $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(adresse)}";
-
-//     using HttpClient client = new HttpClient();
-//     client.DefaultRequestHeaders.Add("User-Agent", "C# App");
-
-//     try
-//     {
-//         HttpResponseMessage response = await client.GetAsync(url);
-//         if (response.IsSuccessStatusCode)
-//         {
-//             string json = await response.Content.ReadAsStringAsync();
-//             JArray data = JArray.Parse(json);
-
-//             if (data.Count > 0)
-//             {
-//                 double lat = Convert.ToDouble(data[0]["lat"]);
-//                 double lon = Convert.ToDouble(data[0]["lon"]);
-//                 Console.WriteLine($"Coordonnées trouvées : {lat}, {lon}");
-//                 return (lon, lat);
-//             }
-//         }
-//     }
-//     catch (Exception ex)
-//     {
-//         Console.WriteLine($"Erreur lors de la conversion de l'adresse : {ex.Message}");
-//     }
-//     return null;
-// }

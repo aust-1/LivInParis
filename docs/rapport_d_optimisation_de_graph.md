@@ -11,8 +11,8 @@ Pour chosir entre ces deux structures, nous avons testé les deux en chargeant l
 
 |       Méthode       | Temps (ms) |
 |---------------------|------------|
-| Matrice d'adjacence | 11        |
-| Liste d'adjacence   | 23        |
+| Matrice d'adjacence | 11         |
+| Liste d'adjacence   | 23         |
 
 Nous avons donc choisi d'utiliser la matrice d'adjacence pour sa rapidité d'initialisation.
 

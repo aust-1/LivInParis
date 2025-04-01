@@ -54,8 +54,8 @@ public struct VisualizationParameters
     /// </remarks>
     public VisualizationParameters(double longitude, double latitude, string color, string label)
     {
-        _x = ((longitude * 1e9) - X_MIN) / (X_MAX - X_MIN) * 25;
-        _y = ((latitude * 1e9) - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
+        _x = ((longitude * 10e9) - X_MIN) / (X_MAX - X_MIN) * 25;
+        _y = ((latitude * 10e9) - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
         _color = color;
         _label = label;
     }

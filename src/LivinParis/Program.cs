@@ -1,4 +1,4 @@
-﻿using Aspose.Cells;
+﻿using System.Threading.Tasks;
 
 namespace LivinParis
 {
@@ -6,7 +6,7 @@ namespace LivinParis
     {
         private const string dataDirectory = "data/";
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // string fileName = "soc-karate";
 
@@ -65,171 +65,11 @@ namespace LivinParis
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
-        }
+            var metro = new Metro("metro/MetroParis");
 
-        private static SortedDictionary<
-            Node<Station>,
-            SortedDictionary<Node<Station>, double>
-        > XlsxToAdjacencyList(string fileName)
-        {
-            var adjacencyList =
-                new SortedDictionary<Node<Station>, SortedDictionary<Node<Station>, double>>();
+            var st = await metro.GetNearestStation("6 Rue de Castellane, Paris, France");
 
-            var file = dataDirectory + fileName + ".xlsx";
-            var wb = new Workbook(file);
-            var stations = wb.Worksheets[0].Cells;
-            var lines = wb.Worksheets[1].Cells;
-            var correspondences = wb.Worksheets[2].Cells;
-
-            for (int i = 1; i <= stations.MaxDataRow; i++)
-            {
-                var stationId = stations[i, 0].IntValue;
-                var lineName = stations[i, 1].StringValue;
-                var stationName = stations[i, 2].StringValue;
-                var longitude = stations[i, 3].DoubleValue;
-                var latitude = stations[i, 4].DoubleValue;
-                var commune = stations[i, 5].StringValue;
-                var insee = stations[i, 6].IntValue;
-
-                var station = new Station(
-                    lineName,
-                    stationName,
-                    longitude,
-                    latitude,
-                    commune,
-                    insee
-                );
-                var node = new Node<Station>(
-                    stationId,
-                    station,
-                    longitude,
-                    latitude,
-                    station.LineColor,
-                    stationName
-                );
-                adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
-            }
-
-            for (int i = 1; i <= lines.MaxDataRow; i++)
-            {
-                var stationId = lines[i, 0].IntValue;
-                var station = Node<Station>.GetNode(stationId);
-
-                try
-                {
-                    var preStationId = lines[i, 3].IntValue;
-                    var preStation = Node<Station>.GetNode(preStationId);
-                    adjacencyList[station].Add(preStation, station.Data.GetTimeTo(preStation.Data));
-                }
-                catch (Exception) { }
-
-                try
-                {
-                    var nextStationId = lines[i, 4].IntValue;
-                    var nextStation = Node<Station>.GetNode(nextStationId);
-                    adjacencyList[station]
-                        .Add(nextStation, station.Data.GetTimeTo(nextStation.Data));
-                }
-                catch (Exception) { }
-            }
-
-            for (int i = 1; i <= correspondences.MaxDataRow; i++)
-            {
-                var stationId = correspondences[i, 1].IntValue;
-                var correspondenceId = correspondences[i, 2].IntValue;
-                var correspondenceTime = correspondences[i, 3].DoubleValue;
-
-                var node = Node<Station>.GetNode(stationId);
-                var correspondence = Node<Station>.GetNode(correspondenceId);
-
-                adjacencyList[node].Add(correspondence, correspondenceTime);
-                adjacencyList[correspondence].Add(node, correspondenceTime);
-            }
-
-            return adjacencyList;
-        }
-
-        private static double[,] XlsxToAdjacencyMatrix(string fileName)
-        {
-            var file = dataDirectory + fileName + ".xlsx";
-            var wb = new Workbook(file);
-            var stations = wb.Worksheets[0].Cells;
-            var lines = wb.Worksheets[1].Cells;
-            var correspondences = wb.Worksheets[2].Cells;
-
-            for (int i = 1; i <= stations.MaxDataRow; i++)
-            {
-                var stationId = stations[i, 0].IntValue;
-                var lineName = stations[i, 1].StringValue;
-                var stationName = stations[i, 2].StringValue;
-                var longitude = stations[i, 3].DoubleValue;
-                var latitude = stations[i, 4].DoubleValue;
-                var commune = stations[i, 5].StringValue;
-                var insee = stations[i, 6].IntValue;
-
-                var station = new Station(
-                    lineName,
-                    stationName,
-                    longitude,
-                    latitude,
-                    commune,
-                    insee
-                );
-                new Node<Station>(
-                    stationId,
-                    station,
-                    longitude,
-                    latitude,
-                    station.LineColor,
-                    stationName
-                );
-            }
-
-            var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
-
-            for (int i = 0; i < Node<Station>.Count; i++)
-            {
-                for (int j = 0; j < Node<Station>.Count; j++)
-                {
-                    adjacencyMatrix[i, j] = double.MaxValue;
-                }
-                adjacencyMatrix[i, i] = 0;
-            }
-
-            for (int i = 1; i <= lines.MaxDataRow; i++)
-            {
-                var stationId = lines[i, 0].IntValue;
-                var station = Node<Station>.GetNode(stationId).Data;
-
-                try
-                {
-                    var preStationId = lines[i, 3].IntValue;
-                    var preStation = Node<Station>.GetNode(preStationId).Data;
-                    adjacencyMatrix[stationId, preStationId] = station.GetTimeTo(preStation);
-                }
-                catch (Exception) { }
-
-                try
-                {
-                    var nextStationId = lines[i, 4].IntValue;
-                    var nextStation = Node<Station>.GetNode(nextStationId).Data;
-                    adjacencyMatrix[stationId, nextStationId] = station.GetTimeTo(nextStation);
-                }
-                catch (Exception) { }
-            }
-
-            for (int i = 1; i <= correspondences.MaxDataRow; i++)
-            {
-                var stationId1 = correspondences[i, 1].IntValue;
-                var stationId2 = correspondences[i, 2].IntValue;
-                var correspondenceTime = correspondences[i, 3].DoubleValue;
-
-                adjacencyMatrix[stationId1, stationId2] = correspondenceTime;
-                adjacencyMatrix[stationId2, stationId1] = correspondenceTime;
-            }
-
-            return adjacencyMatrix;
+            Console.WriteLine($"La station la plus proche est : {st}");
         }
     }
 }

@@ -14,7 +14,7 @@ public class Graph<T>
 {
     #region Fields
 
-    //TODO: rajouter poids et diamètre du graphe
+    //TODO: rajouter diamètre du graphe
     //QUESTION: Gestion des propriétés
 
     /// <summary>
@@ -68,6 +68,11 @@ public class Graph<T>
     /// The size of the graph (number of edges).
     /// </summary>
     private readonly int _size;
+
+    /// <summary>
+    /// The weight of the graph, which is the sum of all edge weights.
+    /// </summary>
+    private readonly double _weight;
 
     /// <summary>
     /// The density of the graph.
@@ -167,16 +172,17 @@ public class Graph<T>
             _nodeIndexMap[node] = i;
         }
 
-        BuildEdgesFromMatrix();
+        BuildEdges();
 
         _size = _edges.Count + _edges.Count(e => !e.IsDirected);
+        _weight = _edges.Sum(e => e.Weight) + _edges.Where(e => !e.IsDirected).Sum(e => e.Weight);
 
         _density = _isDirected
             ? (double)_size / (_order * (_order - 1))
             : (2.0 * _size) / (_order * (_order - 1));
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
-        _isConnected = GetStronglyConnectedComponents().Count == 1;
+        _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
     }
 
     #endregion Constructors
@@ -248,6 +254,14 @@ public class Graph<T>
     // public double Density
     // {
     //     get { return _density; }
+    // }
+
+    // /// <summary>
+    // /// Gets the total weight of the graph,
+    // /// </summary>
+    // public double Weight
+    // {
+    //     get { return _weight; }
     // }
 
     /// <summary>
@@ -502,7 +516,7 @@ public class Graph<T>
     /// Builds edges from the adjacency matrix into <see cref="_edges"/>,
     /// also updates the adjacency dictionary <see cref="_adjacencyList"/>.
     /// </summary>
-    private void BuildEdgesFromMatrix()
+    private void BuildEdges()
     {
         foreach (var source in _nodes)
         {
