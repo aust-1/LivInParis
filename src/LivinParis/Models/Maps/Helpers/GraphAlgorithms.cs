@@ -155,8 +155,8 @@ public static class GraphAlgorithms<T>
                     var newDistance =
                         result[current].Distance
                         + graph.AdjacencyMatrix[
-                            graph.CorrespondingCoordinates[current],
-                            graph.CorrespondingCoordinates[neighbor]
+                            graph.NodeIndexMap[current],
+                            graph.NodeIndexMap[neighbor]
                         ];
 
                     if (newDistance < result[neighbor].Distance)
@@ -270,15 +270,12 @@ public static class GraphAlgorithms<T>
                 pathMatrix[i, j] = new List<Node<T>>();
                 if (i == j)
                 {
-                    pathMatrix[i, j]
-                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == i).Key);
+                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == i).Key);
                 }
                 else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
                 {
-                    pathMatrix[i, j]
-                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == i).Key);
-                    pathMatrix[i, j]
-                        .Add(graph.CorrespondingCoordinates.First(kvp => kvp.Value == j).Key);
+                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == i).Key);
+                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == j).Key);
                 }
             }
         }
