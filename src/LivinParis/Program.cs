@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Aspose.Cells;
+﻿using Aspose.Cells;
 
 namespace LivinParis
 {
@@ -65,9 +64,6 @@ namespace LivinParis
             // graph.DisplayGraph("circo_graph", "circo");
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
-            CultureInfo culture = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = culture;
 
             Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("metro/MetroParis"));
         }

@@ -3,6 +3,50 @@ namespace LivinParis.Models.Maps.Helpers;
 public static class CycleDetector<T>
     where T : notnull
 {
+    #region Public Methods - SCC Detection
+
+    public static List<Graph<T>> GetStronglyConnectedComponents(Graph<T> graph)
+    {
+        var result = new List<Graph<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        while (visited.Count < graph.Order)
+        {
+            var startNode = graph.Nodes.Where(n => !visited.Contains(n)).First();
+            var adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
+            var successors = GraphAlgorithms<T>.DFS(graph, startNode, false);
+            var predecessor = GraphAlgorithms<T>.DFS(graph, startNode, true);
+
+            foreach (var node in successors.Where(n => predecessor.Contains(n)))
+            {
+                visited.Add(node);
+                adjacencyList[node] = new SortedDictionary<Node<T>, double>();
+            }
+
+            foreach (var edge in graph.Edges)
+            {
+                if (
+                    adjacencyList.Keys.Contains(edge.SourceNode)
+                    && adjacencyList.Keys.Contains(edge.TargetNode)
+                )
+                {
+                    adjacencyList[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
+                    if (!edge.IsDirected)
+                    {
+                        adjacencyList[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
+                    }
+                }
+            }
+
+            var scc = new Graph<T>(adjacencyList);
+            result.Add(scc);
+        }
+
+        return result;
+    }
+
+    #endregion Public Methods - SCC Detection
+
     #region Public Methods - Cycle Detection
 
     /// <summary>
@@ -68,51 +112,6 @@ public static class CycleDetector<T>
     }
 
     #endregion Public Methods - Cycle Detection
-
-    #region Public Methods - SCC Detection
-
-    public static List<Graph<T>> GetStronglyConnectedComponents(Graph<T> graph)
-    {
-        var result = new List<Graph<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        while (visited.Count < graph.Order)
-        {
-            var startNode = graph.Nodes.Where(n => !visited.Contains(n)).First();
-            var adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
-            var successors = GraphAlgorithms<T>.DFS(graph, startNode, false);
-            var predecessor = GraphAlgorithms<T>.DFS(graph, startNode, true);
-
-            foreach (var node in successors.Where(n => predecessor.Contains(n)))
-            {
-                visited.Add(node);
-                adjacencyList[node] = new SortedDictionary<Node<T>, double>();
-            }
-
-            foreach (var edge in graph.Edges)
-            {
-                if (
-                    adjacencyList.Keys.Contains(edge.SourceNode)
-                    && adjacencyList.Keys.Contains(edge.TargetNode)
-                )
-                {
-                    adjacencyList[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
-                    if (!edge.IsDirected)
-                    {
-                        adjacencyList[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
-                    }
-                }
-            }
-
-            var scc = new Graph<T>(adjacencyList);
-            result.Add(scc);
-        }
-
-        return result;
-    }
-
-    #endregion Public Methods - SCC Detection
-
 
     #region Private Helpers - Cycle Detection
 

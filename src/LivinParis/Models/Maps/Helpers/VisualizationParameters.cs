@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace LivinParis.Models.Maps.Helpers;
 
 //HACK: refactor
@@ -38,7 +36,7 @@ public struct VisualizationParameters
     private readonly double? _x;
     private readonly double? _y;
     private readonly string _color;
-    private string _label;
+    private readonly string _label;
 
     #endregion Fields
 

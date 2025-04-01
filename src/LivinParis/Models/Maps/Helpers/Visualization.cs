@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace LivinParis.Models.Maps.Helpers;
@@ -23,6 +24,10 @@ public static class Visualization<T>
         string shape = "point"
     )
     {
+        CultureInfo culture = new CultureInfo("en-US");
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
+
         string dotFilePath = $"{outputImageName}.dot";
         string outputImagePath =
             $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
