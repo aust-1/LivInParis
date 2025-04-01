@@ -100,12 +100,9 @@ public class Metro
     /// <returns>The nearest station.</returns>
     public async Task<Station> GetNearestStation(string adress)
     {
-        double longitude = 0;
-        double latitude = 0;
-
         (double Lon, double Lat)? coordonnees = await GetCoordinatesFromAdress(adress);
 
-        return GetNearestStation(longitude, latitude);
+        return GetNearestStation(coordonnees.Value.Lon, coordonnees.Value.Lat);
     }
 
     /// <summary>
@@ -128,14 +125,12 @@ public class Metro
                 minDistance = distance;
                 nearestStation = station;
             }
-
-            Console.WriteLine($"{station}: {distance}");
         }
 
         return nearestStation;
     }
 
-    public static async Task<(double lon, double lat)?> GetCoordinatesFromAdress(string adresse)
+    public static async Task<(double, double)?> GetCoordinatesFromAdress(string adresse)
     {
         adresse = adresse.Replace(" ", "+");
         adresse = adresse.Replace("'", "%27");
@@ -160,7 +155,6 @@ public class Metro
             {
                 double lon = Convert.ToDouble(results[0]["lon"]);
                 double lat = Convert.ToDouble(results[0]["lat"]);
-                Console.WriteLine($"Coordonnées trouvées : {lat}, {lon}");
                 return (lon, lat);
             }
         }
