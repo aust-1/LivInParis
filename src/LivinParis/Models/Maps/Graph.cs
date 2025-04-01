@@ -352,7 +352,8 @@ public class Graph<T>
     #region Public Methods - Pathfinding
 
     /// <summary>
-    /// Executes Dijkstra's algorithm from the specified node or identifier.
+    /// Executes Dijkstra's algorithm from the specified node or identifier,
+    /// returning the shortest path to each reachable node.
     /// </summary>
     /// <typeparam name="TU">
     /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
@@ -373,7 +374,7 @@ public class Graph<T>
 
     /// <summary>
     /// Executes the Bellman-Ford algorithm from the specified node or identifier,
-    /// detecting negative-weight cycles if present.
+    /// returning the paths to each reachable node and detecting negative-weight cycles if present.
     /// </summary>
     /// <typeparam name="TU">
     /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).

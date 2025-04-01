@@ -1,7 +1,5 @@
 namespace LivinParis.Models.Maps.Helpers;
 
-//HACK: refactor
-
 /// <summary>
 /// Defines the visual parameters for positioning and styling nodes on a map.
 /// </summary>
@@ -10,22 +8,22 @@ public struct VisualizationParameters
     #region Constants
 
     /// <summary>
-    /// Minimum longitude value within the map bounds.
+    /// The minimum longitude value within the map bounds (scaled by 1e-9).
     /// </summary>
     public const double X_MIN = 22570461929;
 
     /// <summary>
-    /// Maximum longitude value within the map bounds.
+    /// The maximum longitude value within the map bounds (scaled by 1e-9).
     /// </summary>
     public const double X_MAX = 24405400954;
 
     /// <summary>
-    /// Minimum latitude value within the map bounds.
+    /// The minimum latitude value within the map bounds (scaled by 1e-9).
     /// </summary>
     public const double Y_MIN = 488191065956;
 
     /// <summary>
-    /// Maximum latitude value within the map bounds.
+    /// The maximum latitude value within the map bounds (scaled by 1e-9).
     /// </summary>
     public const double Y_MAX = 488978026914;
 
@@ -43,29 +41,34 @@ public struct VisualizationParameters
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct.
+    /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct
+    /// with the specified longitude, latitude, color, and label.
     /// </summary>
-    /// <param name="longitude">The longitude of the node in degree.</param>
-    /// <param name="latitude">The latitude of the node in degree.</param>
-    /// <param name="color">The fill color to use for visualization.</param>
-    /// <param name="label">The name of the node.</param>
+    /// <param name="longitude">The longitude of the node in degrees.</param>
+    /// <param name="latitude">The latitude of the node in degrees.</param>
+    /// <param name="color">The fill color to use for visualization (e.g., "#000000").</param>
+    /// <param name="label">A label or name for the node.</param>
+    /// <remarks>
+    /// The <paramref name="longitude"/> and <paramref name="latitude"/> values
+    /// are scaled by 1e9 to map them into a [X_MIN, X_MAX] or [Y_MIN, Y_MAX] range, respectively.
+    /// </remarks>
     public VisualizationParameters(double longitude, double latitude, string color, string label)
     {
-        _x = (longitude * 10E9 - X_MIN) / (X_MAX - X_MIN) * 25;
-        _y = (latitude * 10E9 - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
+        _x = ((longitude * 1e9) - X_MIN) / (X_MAX - X_MIN) * 25;
+        _y = ((latitude * 1e9) - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
         _color = color;
         _label = label;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct.
+    /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct with default values.
     /// </summary>
     public VisualizationParameters()
     {
         _x = null;
         _y = null;
         _color = "#000000";
-        _label = "";
+        _label = string.Empty;
     }
 
     #endregion Constructors
@@ -73,7 +76,7 @@ public struct VisualizationParameters
     #region Properties
 
     /// <summary>
-    /// Gets the color of the node.
+    /// Gets the fill color of the node.
     /// </summary>
     public string Color
     {
@@ -81,7 +84,7 @@ public struct VisualizationParameters
     }
 
     /// <summary>
-    /// Gets the label of the node.
+    /// Gets the label or name of the node.
     /// </summary>
     public string Label
     {
@@ -92,6 +95,11 @@ public struct VisualizationParameters
 
     #region Methods
 
+    /// <summary>
+    /// Returns a string that represents this <see cref="VisualizationParameters"/>,
+    /// including position (x,y) and color information for DOT/GraphViz usage.
+    /// </summary>
+    /// <returns>A string describing node position and style.</returns>
     public override string ToString()
     {
         return $"pos=\"{_x:F4},{_y:F4}!\", style=filled, fillcolor=\"{_color}\"";

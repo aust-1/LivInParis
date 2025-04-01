@@ -1,7 +1,5 @@
 ﻿namespace LivinParis.Models.Maps;
 
-//HACK: refactor
-
 /// <summary>
 /// Represents an edge (or arc) connecting two nodes in a graph.
 /// </summary>

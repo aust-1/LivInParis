@@ -1,10 +1,23 @@
 namespace LivinParis.Models.Maps.Helpers;
 
+/// <summary>
+/// Provides functionality for detecting cycles and extracting strongly connected components
+/// (SCCs) within a generic <see cref="Graph{T}"/>.
+/// </summary>
+/// <typeparam name="T">
+/// The type of data stored in each node (must be non-null).
+/// </typeparam>
 public static class CycleDetector<T>
     where T : notnull
 {
-    #region Public Methods - SCC Detection
+    #region Public Methods - Strongly Connected Components
 
+    /// <summary>
+    /// Computes the strongly connected components (SCCs) of the specified graph.
+    /// Each SCC is returned as a separate subgraph.
+    /// </summary>
+    /// <param name="graph">The graph from which to extract strongly connected components.</param>
+    /// <returns>A list of <see cref="Graph{T}"/> objects, each representing one SCC.</returns>
     public static List<Graph<T>> GetStronglyConnectedComponents(Graph<T> graph)
     {
         var result = new List<Graph<T>>();
@@ -12,60 +25,60 @@ public static class CycleDetector<T>
 
         while (visited.Count < graph.Order)
         {
-            var startNode = graph.Nodes.Where(n => !visited.Contains(n)).First();
-            var adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
-            var successors = GraphAlgorithms<T>.DFS(graph, startNode, false);
-            var predecessor = GraphAlgorithms<T>.DFS(graph, startNode, true);
+            var startNode = graph.Nodes.First(n => !visited.Contains(n));
+            var localAdjacency = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
 
-            foreach (var node in successors.Where(n => predecessor.Contains(n)))
+            var successors = GraphAlgorithms<T>.DFS(graph, startNode, inverted: false);
+            var predecessors = GraphAlgorithms<T>.DFS(graph, startNode, inverted: true);
+
+            foreach (var node in successors.Where(n => predecessors.Contains(n)))
             {
                 visited.Add(node);
-                adjacencyList[node] = new SortedDictionary<Node<T>, double>();
+                localAdjacency[node] = new SortedDictionary<Node<T>, double>();
             }
 
             foreach (var edge in graph.Edges)
             {
                 if (
-                    adjacencyList.Keys.Contains(edge.SourceNode)
-                    && adjacencyList.Keys.Contains(edge.TargetNode)
+                    localAdjacency.ContainsKey(edge.SourceNode)
+                    && localAdjacency.ContainsKey(edge.TargetNode)
                 )
                 {
-                    adjacencyList[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
+                    localAdjacency[edge.SourceNode].Add(edge.TargetNode, edge.Weight);
                     if (!edge.IsDirected)
                     {
-                        adjacencyList[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
+                        localAdjacency[edge.TargetNode].Add(edge.SourceNode, edge.Weight);
                     }
                 }
             }
 
-            var scc = new Graph<T>(adjacencyList);
+            var scc = new Graph<T>(localAdjacency);
             result.Add(scc);
         }
 
         return result;
     }
 
-    #endregion Public Methods - SCC Detection
+    #endregion Public Methods - Strongly Connected Components
 
     #region Public Methods - Cycle Detection
 
     /// <summary>
-    /// Searches for any cycle in the graph.
-    /// Works for both directed and undirected graphs.
-    /// Optionally ignores the immediate parent for undirected simple cycles.
+    /// Searches for any cycle in the specified graph, working for both directed and undirected graphs.
+    /// In an undirected graph, if <paramref name="simpleCycle"/> is <c>true</c>, it ignores
+    /// immediate back edges to the parent node, detecting only "simple" cycles.
     /// </summary>
-    /// <param name="graph">The graph to search for cycles.</param>
+    /// <param name="graph">The graph in which to search for cycles.</param>
     /// <param name="simpleCycle">
-    /// If <c>true</c> and the graph is undirected, the method will ignore
-    /// an edge back to the immediate parent. Defaults to <c>false</c>.
+    /// <c>true</c> if parent-to-child edges should be ignored in an undirected scenario; otherwise <c>false</c>.
     /// </param>
     /// <returns>
-    /// A string describing the detected cycle (IDs and data) if found; otherwise <c>null</c>.
+    /// A list of <see cref="Node{T}"/> representing the first cycle found, or an empty list if no cycle is discovered.
     /// </returns>
     public static List<Node<T>> FindAnyCycle(Graph<T> graph, bool simpleCycle = false)
     {
         var visited = new HashSet<Node<T>>();
-        var recStack = new HashSet<Node<T>>();
+        var recursionStack = new HashSet<Node<T>>();
         var parentMap = new Dictionary<Node<T>, Node<T>>();
 
         foreach (var node in graph.Nodes)
@@ -79,7 +92,7 @@ public static class CycleDetector<T>
                             graph,
                             node,
                             visited,
-                            recStack,
+                            recursionStack,
                             parentMap,
                             out var cycle,
                             simpleCycle
@@ -113,36 +126,36 @@ public static class CycleDetector<T>
 
     #endregion Public Methods - Cycle Detection
 
-    #region Private Helpers - Cycle Detection
+    #region Private Methods - Cycle Detection Helpers
 
     /// <summary>
-    /// Attempts to find a cycle in a directed graph using DFS and a recursion stack.
+    /// Attempts to detect a cycle in a directed graph using DFS and a recursion stack.
     /// </summary>
-    /// <param name="graph">The graph to search for cycles.</param>
+    /// <param name="graph">The directed graph to search.</param>
     /// <param name="current">The current node being explored.</param>
     /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="recStack">A recursion stack storing the current path.</param>
-    /// <param name="parentMap">A map to reconstruct the cycle path if found.</param>
+    /// <param name="recursionStack">Tracks the current path in the DFS recursion.</param>
+    /// <param name="parentMap">A map to reconstruct the cycle if found.</param>
     /// <param name="cycle">
-    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
+    /// Outputs a list of nodes forming the cycle, or <c>null</c> if no cycle is found.
     /// </param>
     /// <param name="simpleCycle">
-    /// <c>true</c> in undirected graphs to ignore edges back to the immediate parent.
-    /// Not strictly relevant for directed graphs.
+    /// <c>true</c> in undirected scenarios for ignoring back edges to the immediate parent;
+    /// not typically used in directed scenarios.
     /// </param>
     /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
     private static bool TryFindCycleDirected(
         Graph<T> graph,
         Node<T> current,
         HashSet<Node<T>> visited,
-        HashSet<Node<T>> recStack,
+        HashSet<Node<T>> recursionStack,
         Dictionary<Node<T>, Node<T>> parentMap,
         out List<Node<T>> cycle,
         bool simpleCycle = false
     )
     {
         visited.Add(current);
-        recStack.Add(current);
+        recursionStack.Add(current);
 
         if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
         {
@@ -156,7 +169,7 @@ public static class CycleDetector<T>
                             graph,
                             neighbor,
                             visited,
-                            recStack,
+                            recursionStack,
                             parentMap,
                             out cycle,
                             simpleCycle
@@ -166,34 +179,34 @@ public static class CycleDetector<T>
                         return true;
                     }
                 }
-                else if (recStack.Contains(neighbor))
+                else if (recursionStack.Contains(neighbor))
                 {
-                    cycle = ReconstructCycle(current, neighbor, parentMap);
+                    cycle = ReconstructCyclePath(current, neighbor, parentMap);
                     return true;
                 }
             }
         }
 
-        recStack.Remove(current);
+        recursionStack.Remove(current);
         cycle = null!;
         return false;
     }
 
     /// <summary>
-    /// Attempts to find a cycle in an undirected graph using DFS.
+    /// Attempts to detect a cycle in an undirected graph via DFS.
     /// </summary>
-    /// <param name="graph">The graph to search for cycles.</param>
-    /// <param name="current">The current node being explored.</param>
+    /// <param name="graph">The undirected graph to search.</param>
+    /// <param name="current">The current node being visited.</param>
     /// <param name="visited">A set of visited nodes.</param>
-    /// <param name="parentMap">A map to reconstruct the cycle if found.</param>
-    /// <param name="parent">The node's parent in the DFS tree (if any).</param>
+    /// <param name="parentMap">A map to reconstruct the cycle, if found.</param>
+    /// <param name="parent">The node's parent in the DFS tree.</param>
     /// <param name="cycle">
-    /// Outputs the list of nodes forming a cycle, or <c>null</c> if no cycle is found.
+    /// Outputs the cycle as a list of <see cref="Node{T}"/>, or <c>null</c> if none is found.
     /// </param>
     /// <param name="simpleCycle">
-    /// If <c>true</c>, ignore edges back to the immediate parent to detect only "simple" cycles.
+    /// <c>true</c> to ignore immediate back edges to the parent, finding only "simple" cycles.
     /// </param>
-    /// <returns><c>true</c> if a cycle is detected; otherwise <c>false</c>.</returns>
+    /// <returns><c>true</c> if a cycle is found; otherwise <c>false</c>.</returns>
     private static bool TryFindCycleUndirected(
         Graph<T> graph,
         Node<T> current,
@@ -234,7 +247,7 @@ public static class CycleDetector<T>
                 }
                 else
                 {
-                    cycle = ReconstructCycle(current, neighbor, parentMap);
+                    cycle = ReconstructCyclePath(current, neighbor, parentMap);
                     return true;
                 }
             }
@@ -245,13 +258,13 @@ public static class CycleDetector<T>
     }
 
     /// <summary>
-    /// Reconstructs a cycle path from two meeting nodes in a DFS recursion stack.
+    /// Reconstructs a cycle path once two nodes in the DFS recursion stack meet.
     /// </summary>
     /// <param name="current">The node that discovered the cycle.</param>
-    /// <param name="neighbor">The previously visited node in the cycle.</param>
-    /// <param name="parentMap">A dictionary linking each node to its parent.</param>
-    /// <returns>A list of nodes forming the cycle.</returns>
-    private static List<Node<T>> ReconstructCycle(
+    /// <param name="neighbor">The previously visited node forming the loop.</param>
+    /// <param name="parentMap">Tracks the parent of each node in the DFS tree.</param>
+    /// <returns>A list of nodes forming the detected cycle.</returns>
+    private static List<Node<T>> ReconstructCyclePath(
         Node<T> current,
         Node<T> neighbor,
         Dictionary<Node<T>, Node<T>> parentMap
@@ -269,5 +282,5 @@ public static class CycleDetector<T>
         return cycle;
     }
 
-    #endregion Private Helpers - Cycle Detection
+    #endregion Private Methods - Cycle Detection Helpers
 }

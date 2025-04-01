@@ -2,8 +2,6 @@
 
 namespace LivinParis.Models.Maps;
 
-//HACK: refactor
-
 /// <summary>
 /// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.
 /// </summary>
@@ -450,9 +448,4 @@ public class Node<T> : IComparable<Node<T>>
     }
 
     #endregion IComparable<Node<T>> Implementation
-
-    public static void Clean()
-    {
-        _existingNodes.Clear();
-    }
 }

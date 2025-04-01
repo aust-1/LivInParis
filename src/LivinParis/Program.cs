@@ -105,7 +105,7 @@ namespace LivinParis
                     station,
                     longitude,
                     latitude,
-                    station.ColorLine,
+                    station.LineColor,
                     stationName
                 );
                 adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
@@ -181,7 +181,7 @@ namespace LivinParis
                     station,
                     longitude,
                     latitude,
-                    station.ColorLine,
+                    station.LineColor,
                     stationName
                 );
             }

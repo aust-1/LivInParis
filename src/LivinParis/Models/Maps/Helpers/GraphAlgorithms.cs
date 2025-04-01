@@ -1,23 +1,28 @@
 namespace LivinParis.Models.Maps.Helpers;
 
+/// <summary>
+/// Provides various graph algorithms, including BFS, DFS,
+/// shortest-path algorithms (Dijkstra, Bellman-Ford), and Roy-Floyd-Warshall.
+/// </summary>
+/// <typeparam name="T">
+/// The type of data stored in each node of the graph (must be non-null).
+/// </typeparam>
 public static class GraphAlgorithms<T>
     where T : notnull
 {
     #region Public Methods - Traversals
 
     /// <summary>
-    /// Performs a Breadth-First Search (BFS) starting from the specified node,
-    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
+    /// Performs a Breadth-First Search (BFS) starting from the specified node or identifier.
     /// </summary>
     /// <typeparam name="TU">
-    /// The type of <paramref name="start"/>;
-    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
     /// <param name="graph">The graph to traverse.</param>
-    /// <param name="start">The starting node or identifier.</param>
-    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// <param name="start">The node or identifier from which to begin BFS.</param>
+    /// <returns>A list of nodes in the order they were discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
+    /// Thrown if the <paramref name="start"/> is invalid or not found in the graph.
     /// </exception>
     public static List<Node<T>> BFS<TU>(Graph<T> graph, TU start)
         where TU : notnull
@@ -58,19 +63,18 @@ public static class GraphAlgorithms<T>
     }
 
     /// <summary>
-    /// Performs a recursive Depth-First Search (DFS) from the specified node,
-    /// which can be an ID (<c>int</c>), a <see cref="Node{T}"/>, or data of type <typeparamref name="T"/>.
+    /// Performs a Depth-First Search (DFS) starting from the specified node or identifier.
+    /// If <paramref name="inverted"/> is <c>true</c>, traverses in reverse order.
     /// </summary>
     /// <typeparam name="TU">
-    /// The type of <paramref name="start"/>;
-    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="graph">The graph to traverse.</param>
-    /// <param name="start">The starting node or identifier.</param>
-    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
-    /// <returns>A list of visited nodes in the order they are discovered.</returns>
+    /// /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The node or identifier from which to begin DFS.</param>
+    /// <param name="inverted">If <c>true</c>, the graph traversal order is reversed.</param>
+    /// <returns>A list of visited nodes in the order they were discovered.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the node is not found in the adjacency list.
+    /// Thrown if <paramref name="start"/> is invalid or not found in the graph.
     /// </exception>
     public static List<Node<T>> DFS<TU>(Graph<T> graph, TU start, bool inverted = false)
         where TU : notnull
@@ -98,21 +102,20 @@ public static class GraphAlgorithms<T>
     //TODO: Méthode de visualisation des chemins, sous graphe. Renvoi un sous graphe
 
     /// <summary>
-    /// Performs Dijkstra's algorithm from the specified start node,
-    /// returning the set of paths to each reachable node.
+    /// Executes Dijkstra's algorithm from the specified node or identifier,
+    /// returning the shortest path to each reachable node.
     /// </summary>
     /// <typeparam name="TU">
-    /// The type of <paramref name="start"/>;
-    /// can be <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
-    /// <param name="graph">The graph to traverse.</param>
-    /// <param name="start">The starting node or identifier.</param>
+    /// /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Dijkstra's algorithm.</param>
     /// <returns>
-    /// A dictionary mapping each node to a list of nodes representing the path
-    /// from <paramref name="start"/> to that node.
+    /// A dictionary mapping each reachable node to a list of nodes representing the path taken
+    /// from <paramref name="start"/>.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or if the node is not in the graph.
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
     public static SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<TU>(Graph<T> graph, TU start)
         where TU : notnull
@@ -152,16 +155,16 @@ public static class GraphAlgorithms<T>
             {
                 foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
                 {
-                    var newDistance =
+                    var altDistance =
                         result[current].Distance
                         + graph.AdjacencyMatrix[
                             graph.NodeIndexMap[current],
                             graph.NodeIndexMap[neighbor]
                         ];
 
-                    if (newDistance < result[neighbor].Distance)
+                    if (altDistance < result[neighbor].Distance)
                     {
-                        result[neighbor].Distance = newDistance;
+                        result[neighbor].Distance = altDistance;
                         result[neighbor].Predecessor = current;
                     }
                 }
@@ -172,22 +175,20 @@ public static class GraphAlgorithms<T>
     }
 
     /// <summary>
-    /// Performs the Bellman-Ford algorithm from the specified start node,
-    /// returning the set of paths to each reachable node.
-    /// Detects negative-weight cycles.
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier,
+    /// returning the paths to each reachable node and detecting negative-weight cycles if present.
     /// </summary>
     /// <typeparam name="TU">
-    /// The type of <paramref name="start"/>;
-    /// can be <c>int</c>, <see cref="Node{T}"/>, or <typeparamref name="T"/>.
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
     /// </typeparam>
     /// <param name="graph">The graph to traverse.</param>
-    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
     /// <returns>
-    /// A dictionary mapping each node to a list of nodes representing the path
-    /// from <paramref name="start"/> to that node.
+    /// A dictionary mapping each reachable node to a list of nodes representing the path taken
+    /// from <paramref name="start"/>.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if <paramref name="start"/> is invalid or not present in the graph.
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
@@ -219,18 +220,23 @@ public static class GraphAlgorithms<T>
                 var target = edge.TargetNode;
                 var weight = edge.Weight;
 
-                if (result[source].Distance + weight < result[target].Distance)
+                double altDist = result[source].Distance + weight;
+                if (altDist < result[target].Distance)
                 {
-                    result[target].Distance = result[source].Distance + weight;
+                    result[target].Distance = altDist;
                     result[target].Predecessor = source;
                     relaxed = true;
                 }
 
-                if (!edge.IsDirected && result[target].Distance + weight < result[source].Distance)
+                if (!edge.IsDirected)
                 {
-                    result[source].Distance = result[target].Distance + weight;
-                    result[source].Predecessor = target;
-                    relaxed = true;
+                    double altDistReverse = result[target].Distance + weight;
+                    if (altDistReverse < result[source].Distance)
+                    {
+                        result[source].Distance = altDistReverse;
+                        result[source].Predecessor = target;
+                        relaxed = true;
+                    }
                 }
             }
 
@@ -251,31 +257,38 @@ public static class GraphAlgorithms<T>
     //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
-    /// Computes the all-pairs shortest path distances using the Roy-Floyd-Warshall algorithm.
+    /// Uses the Roy-Floyd-Warshall algorithm to compute shortest paths
+    /// between all pairs of nodes in the graph.
     /// </summary>
     /// <param name="graph">The graph to analyze.</param>
     /// <returns>
-    /// A 2D array of distances, where <c>distance[i, j]</c> is the shortest path cost from i to j.
+    /// A 2D array of lists, where each element <c>pathMatrix[i, j]</c>
+    /// represents the path from node i to node j.
     /// </returns>
     public static List<Node<T>>[,] RoyFloydWarshall(Graph<T> graph)
     {
         int n = graph.Order;
         var distanceMatrix = new double[n, n];
         var pathMatrix = new List<Node<T>>[n, n];
+
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
             {
                 distanceMatrix[i, j] = graph.AdjacencyMatrix[i, j];
                 pathMatrix[i, j] = new List<Node<T>>();
+
                 if (i == j)
                 {
-                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == i).Key);
+                    var nodeI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
+                    pathMatrix[i, j].Add(nodeI);
                 }
                 else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
                 {
-                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == i).Key);
-                    pathMatrix[i, j].Add(graph.NodeIndexMap.First(kvp => kvp.Value == j).Key);
+                    var sourceI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
+                    var targetJ = graph.NodeIndexMap.First(kvp => kvp.Value == j).Key;
+                    pathMatrix[i, j].Add(sourceI);
+                    pathMatrix[i, j].Add(targetJ);
                 }
             }
         }
@@ -317,16 +330,17 @@ public static class GraphAlgorithms<T>
 
     #endregion Public Methods - Pathfinding
 
-    #region Private Helpers
+    #region Private Methods
 
     /// <summary>
-    /// A helper method for performing a recursive DFS from a specified node.
+    /// Recursively performs DFS from the specified node, adding
+    /// each visited node to <paramref name="result"/>.
     /// </summary>
-    /// <param name="graph">The graph to traverse.</param>
-    /// <param name="node">The node where DFS is currently happening.</param>
-    /// <param name="visited">A set of nodes that have been visited already.</param>
-    /// <param name="result">The list where visited nodes are accumulated.</param>
-    /// <param name="inverted">If <c>true</c>, traverses the graph in reverse order.</param>
+    /// <param name="graph">The graph being traversed.</param>
+    /// <param name="node">The current node in DFS.</param>
+    /// <param name="visited">A set of nodes already visited.</param>
+    /// <param name="result">The list storing discovered nodes.</param>
+    /// <param name="inverted">If <c>true</c>, the graph traversal order is reversed.</param>
     private static void DFSUtil(
         Graph<T> graph,
         Node<T> node,
@@ -368,16 +382,16 @@ public static class GraphAlgorithms<T>
     }
 
     /// <summary>
-    /// Builds the resulting path list for each node given a dictionary
+    /// Builds the resulting path list for each node, given a dictionary
     /// of <see cref="PathfindingResult{T}"/>.
     /// </summary>
     /// <param name="results">
-    /// A dictionary from each node to its pathfinding result
-    /// (distance and predecessor).
+    /// A dictionary from each node to its <see cref="PathfindingResult{T}"/>,
+    /// which includes distance and predecessor data.
     /// </param>
     /// <returns>
-    /// A dictionary mapping each node to a list representing its path
-    /// from the start node to that node.
+    /// A dictionary mapping each node to a list of nodes describing
+    /// the path from the start node to that node.
     /// </returns>
     private static SortedDictionary<Node<T>, List<Node<T>>> BuildPaths(
         SortedDictionary<Node<T>, PathfindingResult<T>> results
@@ -403,15 +417,12 @@ public static class GraphAlgorithms<T>
     }
 
     /// <summary>
-    /// Converts the given <paramref name="start"/> object into a <see cref="Node{T}"/>.
-    /// Supported types are:
-    /// - <see cref="Node{T}"/> (node object),
-    /// - <c>int</c> (node ID),
-    /// - <typeparamref name="T"/> (node data).
+    /// Converts the given <paramref name="start"/> object to a <see cref="Node{T}"/>.
+    /// Acceptable types: <c>int</c> (node ID), <see cref="Node{T}"/>, or <typeparamref name="T"/> (node data).
     /// </summary>
-    /// <typeparam name="TU">The type of the <paramref name="start"/> parameter.</typeparam>
-    /// <param name="start">An integer ID, a node, or a data value.</param>
-    /// <returns>The corresponding node object in this graph.</returns>
+    /// <typeparam name="TU">The type of <paramref name="start"/>.</typeparam>
+    /// <param name="start">An integer ID, a node, or a data object.</param>
+    /// <returns>A corresponding <see cref="Node{T}"/> in this graph.</returns>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is an unsupported type or the resulting node is invalid.
     /// </exception>
@@ -429,5 +440,5 @@ public static class GraphAlgorithms<T>
         };
     }
 
-    #endregion Private Helpers
+    #endregion Private Methods
 }

@@ -1,31 +1,29 @@
 namespace LivinParis.Models.Maps;
 
-//HACK: refactor
-
 /// <summary>
-/// Represents a station on Paris intra-muros metro network.
+/// Represents a station in the Paris intra-muros metro network.
 /// </summary>
 public struct Station
 {
     #region Constants
 
     /// <summary>
-    /// The radius of the Earth in kilometers.
+    /// The average radius of the Earth in kilometers.
     /// </summary>
-    private const int R = 6371;
+    private const int EARTH_RADIUS_KM = 6371;
 
     /// <summary>
-    /// The conversion factor from degrees to radians.
+    /// Converts degrees to radians by multiplying by this factor.
     /// </summary>
-    private const double DEGRE_TO_RAD = Math.PI / 180;
+    private const double DEGREES_TO_RADIANS = Math.PI / 180.0;
 
     /// <summary>
-    /// The conversion factor from hours to minutes.
+    /// Converts hours to minutes by multiplying by this factor.
     /// </summary>
-    private const double HOURS_TO_MINUTES = 60;
+    private const double HOURS_TO_MINUTES = 60.0;
 
     #endregion Constants
-    //QUESTION: Should this be a class instead of a struct?
+
     #region Fields
 
     /// <summary>
@@ -41,15 +39,15 @@ public struct Station
     /// <summary>
     /// The longitude of the station in radians.
     /// </summary>
-    private readonly double _longitude;
+    private readonly double _longitudeRadians;
 
     /// <summary>
     /// The latitude of the station in radians.
     /// </summary>
-    private readonly double _latitude;
+    private readonly double _latitudeRadians;
 
     /// <summary>
-    /// The commune the station is in.
+    /// The commune where the station is located.
     /// </summary>
     private readonly string _commune;
 
@@ -61,7 +59,7 @@ public struct Station
     /// <summary>
     /// The color of the line the station is on.
     /// </summary>
-    private readonly string _colorLine;
+    private readonly string _lineColor;
 
     #endregion Fields
 
@@ -69,13 +67,14 @@ public struct Station
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Station"/> struct.
+    /// Longitude and latitude are converted from degrees to radians internally.
     /// </summary>
-    /// <param name="line">The line the station is on.</param>
-    /// <param name="name">The name of the station.</param>
-    /// <param name="longitude">The longitude of the station in degrees.</param>
-    /// <param name="latitude">The latitude of the station in degrees.</param>
-    /// <param name="commune">The commune the station is in.</param>
-    /// <param name="insee">The INSEE code of the commune the station is in.</param>
+    /// <param name="line">The metro line on which this station is located (e.g., "1", "4").</param>
+    /// <param name="name">The name of the station (e.g., "Châtelet").</param>
+    /// <param name="longitude">The longitude in degrees.</param>
+    /// <param name="latitude">The latitude in degrees.</param>
+    /// <param name="commune">The commune where this station is located.</param>
+    /// <param name="insee">The INSEE code of the commune.</param>
     public Station(
         string line,
         string name,
@@ -87,30 +86,39 @@ public struct Station
     {
         _line = line;
         _name = name;
-        _longitude = longitude * DEGRE_TO_RAD;
-        _latitude = latitude * DEGRE_TO_RAD;
+        _longitudeRadians = longitude * DEGREES_TO_RADIANS;
+        _latitudeRadians = latitude * DEGREES_TO_RADIANS;
         _commune = commune;
         _insee = insee;
-        _colorLine = GetColorByLine(line);
+        _lineColor = GetLineColor(line);
     }
 
     #endregion Constructors
 
     #region Properties
 
-    public double Latitude
-    {
-        get { return _latitude; }
-    }
+    // /// <summary>
+    // /// Gets the latitude of the station in radians.
+    // /// </summary>
+    // public double LatitudeRadians
+    // {
+    //     get { return _latitudeRadians; }
+    // }
 
-    public double Longitude
-    {
-        get { return _longitude; }
-    }
+    // /// <summary>
+    // /// Gets the longitude of the station in radians.
+    // /// </summary>
+    // public double LongitudeRadians
+    // {
+    //     get { return _longitudeRadians; }
+    // }
 
-    public string ColorLine
+    /// <summary>
+    /// Gets the color associated with the station's metro line.
+    /// </summary>
+    public string LineColor
     {
-        get { return _colorLine; }
+        get { return _lineColor; }
     }
 
     #endregion Properties
@@ -118,120 +126,106 @@ public struct Station
     #region Methods
 
     /// <summary>
-    /// Gets the time to the given station in minutes.
+    /// Calculates the travel time (in minutes) from this station to another station.
     /// </summary>
-    /// <param name="station"></param>
-    /// <returns></returns>
-    public double GetTimeTo(Station station)
+    /// <param name="other">The target station.</param>
+    /// <returns>The travel time in minutes.</returns>
+    public double GetTimeTo(Station other)
     {
-        return GetDistanceTo(station) / GetSpeedByLine(_line) * HOURS_TO_MINUTES;
+        double distanceKm = GetDistanceTo(other);
+        double speedKmh = GetLineSpeed(_line);
+        return distanceKm / speedKmh * HOURS_TO_MINUTES;
     }
 
-    private double GetDistanceTo(Station station)
+    /// <summary>
+    /// Calculates the great-circle distance (in kilometers) to another station
+    /// using the Haversine formula.
+    /// </summary>
+    /// <param name="other">The target station.</param>
+    /// <returns>The distance in kilometers.</returns>
+    private double GetDistanceTo(Station other)
     {
-        return 2
-            * R
+        return 2.0
+            * EARTH_RADIUS_KM
             * Math.Asin(
                 Math.Sqrt(
-                    Math.Pow(Math.Sin((_latitude - station.Latitude) / 2), 2)
-                        + Math.Cos(_latitude)
-                            * Math.Cos(station.Latitude)
-                            * Math.Pow(Math.Sin((_longitude - station.Longitude) / 2), 2)
+                    Math.Pow(Math.Sin((_latitudeRadians - other._latitudeRadians) / 2.0), 2.0)
+                        + Math.Cos(_latitudeRadians)
+                            * Math.Cos(other._latitudeRadians)
+                            * Math.Pow(
+                                Math.Sin((_longitudeRadians - other._longitudeRadians) / 2.0),
+                                2.0
+                            )
                 )
             );
     }
 
+    /// <summary>
+    /// Returns a string representing this station, displaying the name and line.
+    /// </summary>
+    /// <returns>A formatted string with station name and line.</returns>
     public override string ToString()
     {
         return $"{_name} ({_line})";
     }
 
-    private static string GetColorByLine(string line)
+    /// <summary>
+    /// Gets the hex color code associated with a given metro line.
+    /// </summary>
+    /// <param name="line">The metro line (e.g., "1", "3bis").</param>
+    /// <returns>A string representing a hex color code (e.g., "#FFCE00").</returns>
+    private static string GetLineColor(string line)
     {
-        switch (line)
+        return line switch
         {
-            case "1":
-                return "#FFCE00";
-            case "2":
-                return "#0064B0";
-            case "3":
-                return "#9F9825";
-            case "3bis":
-                return "#98D4E2";
-            case "4":
-                return "#C04191";
-            case "5":
-                return "#F28E42";
-            case "6":
-                return "#83C491";
-            case "7":
-                return "#F3A4BA";
-            case "7bis":
-                return "#83C491";
-            case "8":
-                return "#CEADD2";
-            case "9":
-                return "#D5C900";
-            case "10":
-                return "#E3B32A";
-            case "11":
-                return "#8D5E2A";
-            case "12":
-                return "#00814F";
-            case "13":
-                return "#98D4E2";
-            case "14":
-                return "#662483";
-            default:
-                return "#000000";
-        }
+            "1" => "#FFCE00",
+            "2" => "#0064B0",
+            "3" => "#9F9825",
+            "3bis" => "#98D4E2",
+            "4" => "#C04191",
+            "5" => "#F28E42",
+            "6" => "#83C491",
+            "7" => "#F3A4BA",
+            "7bis" => "#83C491",
+            "8" => "#CEADD2",
+            "9" => "#D5C900",
+            "10" => "#E3B32A",
+            "11" => "#8D5E2A",
+            "12" => "#00814F",
+            "13" => "#98D4E2",
+            "14" => "#662483",
+            _ => "#000000",
+        };
     }
 
     /// <summary>
-    /// Gets the commercial's speed of the line in km/h.
+    /// Gets the commercial speed (km/h) of the specified line.
     /// </summary>
-    /// <param name="line"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    private static double GetSpeedByLine(string line)
+    /// <param name="line">The metro line identifier (e.g., "1", "14").</param>
+    /// <returns>The speed in kilometers per hour (km/h).</returns>
+    /// <exception cref="ArgumentException">Thrown if the provided line is invalid or unsupported.</exception>
+    private static double GetLineSpeed(string line)
     {
-        switch (line)
+        return line switch
         {
-            case "1":
-                return 30;
-            case "2":
-                return 21.6;
-            case "3":
-                return 22.5;
-            case "3bis":
-                return 19;
-            case "4":
-                return 21.6;
-            case "5":
-                return 25.9;
-            case "6":
-                return 26.3;
-            case "7":
-                return 28.1;
-            case "7bis":
-                return 23;
-            case "8":
-                return 26.9;
-            case "9":
-                return 22.6;
-            case "10":
-                return 25.1;
-            case "11":
-                return 28.1;
-            case "12":
-                return 27.2;
-            case "13":
-                return 39;
-            case "14":
-                return 40;
-            default:
-                throw new ArgumentException("Invalid line");
-        }
+            "1" => 30.0,
+            "2" => 21.6,
+            "3" => 22.5,
+            "3bis" => 19.0,
+            "4" => 21.6,
+            "5" => 25.9,
+            "6" => 26.3,
+            "7" => 28.1,
+            "7bis" => 23.0,
+            "8" => 26.9,
+            "9" => 22.6,
+            "10" => 25.1,
+            "11" => 28.1,
+            "12" => 27.2,
+            "13" => 39.0,
+            "14" => 40.0,
+            _ => throw new ArgumentException("Invalid line"),
+        };
     }
 
     #endregion Methods
