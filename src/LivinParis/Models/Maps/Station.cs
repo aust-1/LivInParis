@@ -230,3 +230,45 @@ public struct Station
 
     #endregion Methods
 }
+
+//TODO: Provides a method to convert an address to coordinates using the Nominatim API and then find the nearest station to those coordinates.
+
+// using Newtonsoft.Json.Linq;
+//
+// public async Task InitialiserAsync()
+// {
+//     (double lon, double lat)? coordonnees = await ConvertirAdresseEnCoordonnees(adresse);
+//     RechercherStationProche(coordonnees);
+// }
+
+// public static async Task<(double lon, double lat)?> ConvertirAdresseEnCoordonnees(string adresse)
+// {
+//     string url =
+//         $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(adresse)}";
+
+//     using HttpClient client = new HttpClient();
+//     client.DefaultRequestHeaders.Add("User-Agent", "C# App");
+
+//     try
+//     {
+//         HttpResponseMessage response = await client.GetAsync(url);
+//         if (response.IsSuccessStatusCode)
+//         {
+//             string json = await response.Content.ReadAsStringAsync();
+//             JArray data = JArray.Parse(json);
+
+//             if (data.Count > 0)
+//             {
+//                 double lat = Convert.ToDouble(data[0]["lat"]);
+//                 double lon = Convert.ToDouble(data[0]["lon"]);
+//                 Console.WriteLine($"Coordonnées trouvées : {lat}, {lon}");
+//                 return (lon, lat);
+//             }
+//         }
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.WriteLine($"Erreur lors de la conversion de l'adresse : {ex.Message}");
+//     }
+//     return null;
+// }
