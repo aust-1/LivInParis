@@ -83,7 +83,7 @@ public static class TransactionRepository : ITransaction
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "DELETE FROM account WHERE account_id = @t";
+        command.CommandText = "DELETE FROM account WHERE transaction_id = @t";
         command.Parameters.AddWithValue("@t", transactionId);
         command.ExecuteNonQuery();
         CloseConnection();

@@ -37,7 +37,7 @@ public static class AccountRepository : IAccount
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "INSERT INTO account VALUES (@a,@e, @p)";
+        command.CommandText = "INSERT INTO Account VALUES (@a,@e, @p)";
         command.Parameters.AddWithValue("@e", email);
         command.Parameters.AddWithValue("@a", accountId);
         command.Parameters.AddWithValue("@p", password);
@@ -49,7 +49,7 @@ public static class AccountRepository : IAccount
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "SELECT * FROM account LIMIT @l";
+        command.CommandText = "SELECT * FROM Account LIMIT @l";
         command.Parameters.AddWithValue("@l", limit);
         
         using var reader = command.ExecuteReader();
@@ -72,7 +72,7 @@ public static class AccountRepository : IAccount
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "UPDATE account SET email = @e WHERE account_id = @a";
+        command.CommandText = "UPDATE Account SET email = @e WHERE account_id = @a";
         command.Parameters.AddWithValue("@e", email);
         command.Parameters.AddWithValue("@a", accountId);
         command.ExecuteNonQuery();
@@ -83,7 +83,7 @@ public static class AccountRepository : IAccount
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "UPDATE account SET password = @p WHERE account_id = @a";
+        command.CommandText = "UPDATE Account SET password = @p WHERE account_id = @a";
         command.Parameters.AddWithValue("@e", password);
         command.Parameters.AddWithValue("@p", accountId);
         command.ExecuteNonQuery();
