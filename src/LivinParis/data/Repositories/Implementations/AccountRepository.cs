@@ -33,7 +33,7 @@ public static class AccountRepository : IAccount
 
     ///CRUD
 
-    public static void CreateAccount(string accountId, string email,string password)
+    public static void CreateAccount(int accountId, string email,string password)
     {
         OpenConnection();
         using var command = new MySqlCommand();
@@ -68,29 +68,29 @@ public static class AccountRepository : IAccount
 
     }
 
-    public static void UpdateEmail(string accountId, string email)
+    public static void UpdateEmail(int accountId, string email)
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "UPDATE account SET email = @e WHERE id = @a";
+        command.CommandText = "UPDATE account SET email = @e WHERE account_id = @a";
         command.Parameters.AddWithValue("@e", email);
         command.Parameters.AddWithValue("@a", accountId);
         command.ExecuteNonQuery();
         CloseConnection();
     }
 
-    public static void UpdatePassword(string accountId, string password)
+    public static void UpdatePassword(int accountId, string password)
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "UPDATE account SET password = @p WHERE id = @a";
+        command.CommandText = "UPDATE account SET password = @p WHERE account_id = @a";
         command.Parameters.AddWithValue("@e", password);
         command.Parameters.AddWithValue("@p", accountId);
         command.ExecuteNonQuery();
         CloseConnection();
     }
 
-    public static void DeleteAccount(string accountId)
+    public static void DeleteAccount(int accountId)
     {
         OpenConnection();
         using var command = new MySqlCommand();
