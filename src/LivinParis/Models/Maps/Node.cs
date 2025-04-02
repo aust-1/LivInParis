@@ -10,7 +10,7 @@ namespace LivinParis.Models.Maps;
 /// </typeparam>
 /// <remarks>
 /// <para>
-/// A static dictionary (<see cref="_existingNodes"/>) maps integer IDs to node instances.
+/// A static dictionary (<see cref="s_existingNodes"/>) maps integer IDs to node instances.
 /// </para>
 /// </remarks>
 public class Node<T> : IComparable<Node<T>>
@@ -21,7 +21,7 @@ public class Node<T> : IComparable<Node<T>>
     /// <summary>
     /// A static dictionary that associates each node's integer ID with the node instance.
     /// </summary>
-    private static readonly SortedDictionary<int, Node<T>> _existingNodes = new();
+    private static readonly SortedDictionary<int, Node<T>> s_existingNodes = new();
 
     /// <summary>
     /// The unique integer ID for this node.
@@ -49,7 +49,7 @@ public class Node<T> : IComparable<Node<T>>
     /// The unique integer ID for this node. Must be greater than 0.
     /// </param>
     /// <param name="data">
-    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
+    /// The data to store in this node. Must be unique among all nodes in <see cref="s_existingNodes"/>.
     /// </param>
     /// <param name="visualizationParameters">
     /// The visualization parameters for this node.
@@ -67,7 +67,7 @@ public class Node<T> : IComparable<Node<T>>
             throw new ArgumentException("Id must be greater than 0");
         }
 
-        if (_existingNodes.ContainsKey(id))
+        if (s_existingNodes.ContainsKey(id))
         {
             throw new ArgumentException($"A node with the id '{id}' already exists.");
         }
@@ -80,7 +80,7 @@ public class Node<T> : IComparable<Node<T>>
         _id = id;
         _data = data;
         _visualizationParameters = visualizationParameters;
-        _existingNodes.Add(_id, this);
+        s_existingNodes.Add(_id, this);
     }
 
     /// <summary>
@@ -103,19 +103,19 @@ public class Node<T> : IComparable<Node<T>>
         }
 
         int nextId;
-        if (_existingNodes.Count == 0)
+        if (s_existingNodes.Count == 0)
         {
             nextId = 0;
         }
         else
         {
-            nextId = _existingNodes.Last().Key + 1;
+            nextId = s_existingNodes.Last().Key + 1;
         }
 
         _id = nextId;
         _data = data;
         _visualizationParameters = visualizationParameters;
-        _existingNodes.Add(_id, this);
+        s_existingNodes.Add(_id, this);
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public class Node<T> : IComparable<Node<T>>
     /// The unique integer ID for this node. Must be greater than 0.
     /// </param>
     /// <param name="data">
-    /// The data to store in this node. Must be unique among all nodes in <see cref="_existingNodes"/>.
+    /// The data to store in this node. Must be unique among all nodes in <see cref="s_existingNodes"/>.
     /// </param>
     /// <param name="x">The longitude of the node in degree.</param>
     /// <param name="y">The latitude of the node in degree.</param>
@@ -144,7 +144,7 @@ public class Node<T> : IComparable<Node<T>>
             throw new ArgumentException("Id must be greater than 0");
         }
 
-        if (_existingNodes.ContainsKey(id))
+        if (s_existingNodes.ContainsKey(id))
         {
             throw new ArgumentException($"A node with the id '{id}' already exists.");
         }
@@ -157,7 +157,7 @@ public class Node<T> : IComparable<Node<T>>
         _id = id;
         _data = data;
         _visualizationParameters = new VisualizationParameters(x, y, color, label);
-        _existingNodes.Add(_id, this);
+        s_existingNodes.Add(_id, this);
     }
 
     /// <summary>
@@ -181,19 +181,19 @@ public class Node<T> : IComparable<Node<T>>
         }
 
         int nextId;
-        if (_existingNodes.Count == 0)
+        if (s_existingNodes.Count == 0)
         {
             nextId = 0;
         }
         else
         {
-            nextId = _existingNodes.Last().Key + 1;
+            nextId = s_existingNodes.Last().Key + 1;
         }
 
         _id = nextId;
         _data = data;
         _visualizationParameters = new VisualizationParameters(x, y, color, label);
-        _existingNodes.Add(_id, this);
+        s_existingNodes.Add(_id, this);
     }
 
     #endregion Constructors
@@ -228,11 +228,11 @@ public class Node<T> : IComparable<Node<T>>
     /// Gets the total number of nodes that have been created so far.
     /// </summary>
     /// <value>
-    /// The current count of all nodes in <see cref="_existingNodes"/>.
+    /// The current count of all nodes in <see cref="s_existingNodes"/>.
     /// </value>
     public static int Count
     {
-        get { return _existingNodes.Count; }
+        get { return s_existingNodes.Count; }
     }
 
     #endregion Properties
@@ -249,7 +249,7 @@ public class Node<T> : IComparable<Node<T>>
     /// </returns>
     public static Node<T> GetOrCreateNode(T dataToFind)
     {
-        foreach (var node in _existingNodes.Values)
+        foreach (var node in s_existingNodes.Values)
         {
             if (node.Data.Equals(dataToFind))
             {
@@ -265,11 +265,11 @@ public class Node<T> : IComparable<Node<T>>
     /// <param name="idToFind">The ID of the node to retrieve.</param>
     /// <returns>The <see cref="Node{T}"/> with the specified ID.</returns>
     /// <exception cref="KeyNotFoundException">
-    /// Thrown if no node with the specified ID is found in <see cref="_existingNodes"/>.
+    /// Thrown if no node with the specified ID is found in <see cref="s_existingNodes"/>.
     /// </exception>
     public static Node<T> GetNode(int idToFind)
     {
-        if (_existingNodes.TryGetValue(idToFind, out Node<T>? node))
+        if (s_existingNodes.TryGetValue(idToFind, out Node<T>? node))
         {
             return node;
         }

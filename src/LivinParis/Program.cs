@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace LivinParis
 {
@@ -65,16 +65,26 @@ namespace LivinParis
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            var metro = new Metro("metro/MetroParis");
 
-            var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
+            // var metro = new Metro("metro/MetroParis");
 
-            Console.WriteLine($"La station la plus proche est : {st}");
+            // var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
 
-            var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
+            // Console.WriteLine($"La station la plus proche est : {st}");
 
-            djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
-            metro.Graph.DisplayGraph();
+            // var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
+
+            // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
+            // metro.Graph.DisplayGraph();
+
+            // var generator = new ProxyGenerator();
+            // var interceptor = new ConnectionInterceptor();
+
+            // // Crée un proxy autour de MonService
+            // var service = generator.CreateClassProxy<AccountRepository>(interceptor);
+
+            // // Appels
+            // service.GetAccounts(9);
         }
     }
 }
