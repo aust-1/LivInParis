@@ -33,13 +33,14 @@ public static class TransactionRepository : ITransaction
 
     ///CRUD
 
-    public static void CreateTransaction(int transactionId, DateTime transactionDate)
+    public static void CreateTransaction(int transactionId, DateTime transactionDate, int accountId)
     {
         OpenConnection();
         using var command = new MySqlCommand();
-        command.CommandText = "INSERT INTO account VALUES (@t, @d)";
+        command.CommandText = "INSERT INTO account VALUES (@t, @d, @i)";
         command.Parameters.AddWithValue("@t", transactionId);
         command.Parameters.AddWithValue("@d", transactionDate);
+        command.Parameters.AddWithValue("@i", accountId);
         command.ExecuteNonQuery();
         CloseConnection();
     }
