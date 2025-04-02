@@ -119,7 +119,6 @@ public static class OrderLineRepository : IOrderLine
         command.Parameters.AddWithValue("@d", reviewDate);
         command.Parameters.AddWithValue("@i", reviewId);
         command.ExecuteNonQuery();
-        CloseConnection();
     }
 
     public static void DeleteOrderLine(int orderLineId)
