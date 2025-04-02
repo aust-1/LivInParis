@@ -67,15 +67,14 @@ namespace LivinParis
 
             var metro = new Metro("metro/MetroParis");
 
-            var st = await metro.GetNearestStation("6 Rue de Castellane, Paris, France");
+            var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
 
             Console.WriteLine($"La station la plus proche est : {st}");
 
-            var djresult = metro.Graph.GetPartialGraphByDijkstra(168);
-            var bellmanresult = metro.Graph.GetPartialGraphByBellmanFord(168);
+            var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
 
-            djresult.DisplayGraph("dijkstraresult");
-            bellmanresult.DisplayGraph("bellmanfordresult");
+            djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
+            metro.Graph.DisplayGraph();
         }
     }
 }

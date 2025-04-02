@@ -478,13 +478,15 @@ public class Graph<T>
     /// <param name="outputImageName">The base name of the output image file (no extension). A timestamp is appended to avoid overwriting.</param>
     /// <param name="layout">The GraphViz layout algorithm (e.g. "dot", "neato", "fdp"). Default is "neato".</param>
     /// <param name="nodeShape">The shape to use for the nodes (e.g. "point", "circle"). Default is "point".</param>
+    /// <param name="fontsize">The font size for node labels. Default is 10.0f.</param>
     public void DisplayGraph(
         string outputImageName = "graph",
         string layout = "neato",
-        string nodeShape = "point"
+        string nodeShape = "point",
+        float fontsize = 10.0f
     )
     {
-        Visualization<T>.DisplayGraph(this, outputImageName, layout, nodeShape);
+        Visualization<T>.DisplayGraph(this, outputImageName, layout, nodeShape, fontsize);
     }
 
     #endregion Public Methods - Rendering

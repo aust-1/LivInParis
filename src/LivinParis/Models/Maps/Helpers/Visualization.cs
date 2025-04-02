@@ -22,16 +22,18 @@ public static class Visualization<T>
     /// <param name="outputImageName">
     /// The base file name (without extension) for the output image. A timestamp is appended to avoid collisions.
     /// </param>
-    /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato"). Default is "neato".</param>
-    /// <param name="shape">The node shape (e.g., "circle", "point", "square"). Default is "point".</param>
+    /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato").</param>
+    /// <param name="shape">The node shape (e.g., "circle", "point", "square").</param>
+    /// <param name="fontsize">The font size for node labels.</param>
     /// <remarks>
     /// This method alters the current thread's culture to <c>en-US</c> to ensure consistent numeric formats.
     /// </remarks>
     public static void DisplayGraph(
         Graph<T> graph,
-        string outputImageName = "graph",
-        string layout = "neato",
-        string shape = "point"
+        string outputImageName,
+        string layout,
+        string shape,
+        float fontsize
     )
     {
         CultureInfo culture = new CultureInfo("en-US");
@@ -42,7 +44,7 @@ public static class Visualization<T>
         string outputImagePath =
             $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
-        GenerateDotFile(graph, dotFilePath, layout, shape);
+        GenerateDotFile(graph, dotFilePath, layout, shape, fontsize);
         RenderToPng(dotFilePath, outputImagePath);
         File.Delete(dotFilePath);
     }
@@ -112,11 +114,13 @@ public static class Visualization<T>
     /// <param name="filePath">The path to the DOT file to be created.</param>
     /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato").</param>
     /// <param name="shape">The shape of the nodes (e.g., "circle", "square", "point").</param>
+    /// <param name="fontsize">The font size for node labels.</param>
     private static void GenerateDotFile(
         Graph<T> graph,
         string filePath,
         string layout,
-        string shape
+        string shape,
+        float fontsize
     )
     {
         var dotBuilder = new StringBuilder();
@@ -125,19 +129,23 @@ public static class Visualization<T>
         dotBuilder.AppendLine(graph.IsDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
         dotBuilder.AppendLine("    ratio=0.6438356164;");
-        dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"10\"];");
+        dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"{fontsize}\"];");
 
         foreach (var node in graph.Nodes)
         {
             dotBuilder.Append($"    \"{node.Data}\" [{node.VisualizationParameters}");
 
-            if (processedLabels.Contains(node.VisualizationParameters.Label))
+            if (
+                processedLabels.Contains(node.VisualizationParameters.Label)
+                && (layout == "neato" || layout == "fdp")
+            )
             {
                 dotBuilder.Append(", penwidth=4");
             }
             else
             {
                 dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
+                //dotBuilder.Append($", fontcolor=\"{node.VisualizationParameters.Color}\"");
                 processedLabels.Add(node.VisualizationParameters.Label);
             }
 
@@ -146,7 +154,7 @@ public static class Visualization<T>
 
         dotBuilder.AppendLine();
 
-        foreach (var edge in graph.Edges.Where(e => e.RGBColor != "#000000"))
+        foreach (var edge in graph.Edges)
         {
             if (!graph.IsDirected && edge.SourceNode.Id > edge.TargetNode.Id)
             {
@@ -158,10 +166,9 @@ public static class Visualization<T>
 
                 if (!edge.IsDirected)
                 {
-                    dotBuilder.Append(" [dir=both]");
+                    dotBuilder.Append(" [dir=none]");
                 }
             }
-
             dotBuilder.AppendLine($" [color=\"{edge.RGBColor}\"];");
         }
 
