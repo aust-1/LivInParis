@@ -33,7 +33,7 @@ public interface IDish
         bool? isLactoseFree = null,
         bool? isHalal = null,
         bool? isKosher = null,
-        ProductionOrigin? productionOrigin = null,
+        ProductOrigin? productOrigin = null,
         MySqlCommand? command = null
     );
 

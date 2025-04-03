@@ -13,7 +13,7 @@ public interface IIngredient
         bool isLactoseFree,
         bool isHalal,
         bool isKosher,
-        ProductionOrigin productionOrigin,
+        ProductOrigin productOrigin,
         MySqlCommand? command = null
     );
 
@@ -26,7 +26,7 @@ public interface IIngredient
         bool? isLactoseFree = null,
         bool? isHalal = null,
         bool? isKosher = null,
-        ProductionOrigin? productionOrigin = null,
+        ProductOrigin? productOrigin = null,
         MySqlCommand? command = null
     );
 
