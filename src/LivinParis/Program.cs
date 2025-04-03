@@ -4,8 +4,6 @@ namespace LivinParisRoussilleTeynier
 {
     public static class Program
     {
-        private const string dataDirectory = "data/";
-
         static async Task Main(string[] args)
         {
             // string fileName = "soc-karate";
@@ -65,7 +63,7 @@ namespace LivinParisRoussilleTeynier
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            var metro = new Metro("../resources/MetroParis");
+            var metro = new Metro("MetroParis");
 
             var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
 
@@ -74,7 +72,7 @@ namespace LivinParisRoussilleTeynier
             // var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
 
             // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
-            // metro.Graph.DisplayGraph();
+            metro.Graph.DisplayGraph();
 
             // var generator = new ProxyGenerator();
             // var interceptor = new ConnectionInterceptor();

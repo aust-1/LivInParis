@@ -42,7 +42,7 @@ public static class Visualization<T>
 
         string dotFilePath = $"{outputImageName}.dot";
         string outputImagePath =
-            $"data/output/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
+            $"../output_graphs/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
         GenerateDotFile(graph, dotFilePath, layout, shape, fontsize);
         RenderToPng(dotFilePath, outputImagePath);

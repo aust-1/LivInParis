@@ -5,7 +5,7 @@ namespace LivinParisRoussilleTeynier.Models.Maps;
 
 public class Metro
 {
-    private const string dataDirectory = "data/";
+    private const string dataDirectory = "../resources/";
     private readonly Graph<Station> _graph;
 
     /// <summary>

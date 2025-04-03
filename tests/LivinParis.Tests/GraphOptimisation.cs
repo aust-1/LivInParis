@@ -8,7 +8,7 @@ namespace LivinParisRoussilleTeynier.Tests
     [TestClass]
     public class GraphOptimisation
     {
-        private const string dataDirectory = "data/";
+        private const string dataDirectory = "../../src/resources/";
 
         private static SortedDictionary<
             Node<Station>,
