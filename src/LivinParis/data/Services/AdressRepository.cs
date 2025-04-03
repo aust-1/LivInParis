@@ -1,9 +1,10 @@
+using LivinParisRoussilleTeynier.Data.Interfaces;
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Repositories.Implementations;
 
 [ConnectionControl]
-public class AdressRepository : IAdress
+public class AdressRepository : IAdressService
 {
     public virtual void CreateAdress(
         int idAdress,

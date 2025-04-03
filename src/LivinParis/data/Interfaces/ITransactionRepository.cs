@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface ITransaction
 {
@@ -11,7 +11,7 @@ public interface ITransaction
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetTransactions(
+    List<List<string>> GetTransactions(
         int limit,
         DateTime? transactionDate = null,
         int? customerAccountId = null,

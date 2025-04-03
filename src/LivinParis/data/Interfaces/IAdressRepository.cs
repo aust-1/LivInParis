@@ -1,8 +1,8 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IAdress
+public interface IAdressService
 {
     void CreateAdress(
         int addressId,
@@ -13,7 +13,7 @@ public interface IAdress
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetAdresses(
+    List<List<string>> GetAdresses(
         int limit,
         string? street = null,
         int? postalCode = null,
@@ -21,9 +21,9 @@ public interface IAdress
         MySqlCommand? command = null
     );
 
-    Dictionary<string, int> RetrieveCommandCountByStreet(int limit, MySqlCommand? command = null);
+    List<List<string>> RetrieveCommandCountByStreet(int limit, MySqlCommand? command = null);
 
-    Dictionary<int, int> RetrieveCommandCountByDistrict(int limit, MySqlCommand? command = null);
+    List<List<string>> RetrieveCommandCountByDistrict(int limit, MySqlCommand? command = null);
 
     void UpdateNearestMetro(int addressId, string nearestMetro, MySqlCommand? command = null);
 

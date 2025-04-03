@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Maps.Helpers;
+namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Encapsulates pathfinding results for a particular node,

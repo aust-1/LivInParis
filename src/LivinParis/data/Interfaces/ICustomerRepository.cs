@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface ICustomer
 {
@@ -12,7 +12,7 @@ public interface ICustomer
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetCustomers(
+    List<List<string>> GetCustomers(
         int limit,
         decimal? ratingHigherThan = null,
         decimal? ratingBelow = null,

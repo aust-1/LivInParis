@@ -1,4 +1,4 @@
-﻿namespace LivinParis.Tests
+﻿namespace LivinParisRoussilleTeynier.Tests
 {
     [TestClass]
     public class NodeTests

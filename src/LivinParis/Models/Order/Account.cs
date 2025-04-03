@@ -1,1 +1,1 @@
-namespace LivinParis.Models.Order;
+namespace LivinParisRoussilleTeynier.Models.Order { }

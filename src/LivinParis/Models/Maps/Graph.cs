@@ -1,6 +1,6 @@
-using LivinParis.Models.Maps.Helpers;
+using LivinParisRoussilleTeynier.Models.Maps.Helpers;
 
-namespace LivinParis.Models.Maps;
+namespace LivinParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a generic graph containing nodes and edges,

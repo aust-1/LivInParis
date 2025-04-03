@@ -1,11 +1,13 @@
+using LivinParisRoussilleTeynier.Data.Interfaces;
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Services;
 
 [ConnectionControl]
-public class AccountRepository : IAccount
+public class AccountService : IAccountService
 {
-    public virtual void CreateAccount(
+    /// <inheritdoc/>
+    public virtual void Create(
         int accountId,
         string email,
         string password,
@@ -19,7 +21,8 @@ public class AccountRepository : IAccount
         command.ExecuteNonQuery();
     }
 
-    public virtual List<List<string>> GetAccounts(int limit, MySqlCommand? command = null)
+    /// <inheritdoc/>
+    public virtual List<List<string>> Read(int limit, MySqlCommand? command = null)
     {
         command!.CommandText = "SELECT * FROM Account LIMIT @l";
         command.Parameters.AddWithValue("@l", limit);
@@ -39,6 +42,7 @@ public class AccountRepository : IAccount
         return accounts;
     }
 
+    /// <inheritdoc/>
     public virtual void UpdateEmail(int accountId, string email, MySqlCommand? command = null)
     {
         command!.CommandText = "UPDATE Account SET email = @e WHERE account_id = @a";
@@ -47,6 +51,7 @@ public class AccountRepository : IAccount
         command.ExecuteNonQuery();
     }
 
+    /// <inheritdoc/>
     public virtual void UpdatePassword(int accountId, string password, MySqlCommand? command = null)
     {
         command!.CommandText = "UPDATE Account SET password = @p WHERE account_id = @a";
@@ -55,7 +60,8 @@ public class AccountRepository : IAccount
         command.ExecuteNonQuery();
     }
 
-    public virtual void DeleteAccount(int accountId, MySqlCommand? command = null)
+    /// <inheritdoc/>
+    public virtual void Delete(int accountId, MySqlCommand? command = null)
     {
         command!.CommandText = "DELETE FROM account WHERE account_id = @a";
         command.Parameters.AddWithValue("@a", accountId);

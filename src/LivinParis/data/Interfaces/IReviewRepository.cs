@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IReview
 {
@@ -14,7 +14,7 @@ public interface IReview
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetReviews(
+    List<List<string>> GetReviews(
         int limit,
         int? reviewId = null,
         ReviewType? reviewType = null,

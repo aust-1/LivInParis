@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IContains
 {

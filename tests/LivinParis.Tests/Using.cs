@@ -1,2 +1,1 @@
-global using LivinParis.Data;
-global using LivinParis.Models.Maps;
+global using LivinParisRoussilleTeynier.Models.Maps;

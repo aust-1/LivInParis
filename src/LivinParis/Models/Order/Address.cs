@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Order
+namespace LivinParisRoussilleTeynier.Models.Order
 {
     public class Address
     {

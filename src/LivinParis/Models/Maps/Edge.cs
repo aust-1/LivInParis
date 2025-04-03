@@ -1,4 +1,4 @@
-﻿namespace LivinParis.Models.Maps;
+﻿namespace LivinParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents an edge (or arc) connecting two nodes in a graph.

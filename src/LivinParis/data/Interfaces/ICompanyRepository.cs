@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface ICompany
 {
@@ -12,7 +12,7 @@ public interface ICompany
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetCompanies(
+    List<List<string>> GetCompanies(
         int limit,
         bool? companyIsBanned = null,
         string? orderBy = null,

@@ -1,6 +1,7 @@
+using LivinParisRoussilleTeynier.Data.Interfaces;
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Services;
 
 [ConnectionControl]
 public class OrderLineRepository : IOrderLine

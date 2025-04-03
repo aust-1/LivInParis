@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IChef
 {
@@ -13,7 +13,7 @@ public interface IChef
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetChefs(
+    List<List<string>> GetChefs(
         int limit,
         decimal? ratingHigherThan = null,
         decimal? ratingBelow = null,

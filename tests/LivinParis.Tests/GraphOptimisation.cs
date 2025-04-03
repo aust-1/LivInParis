@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Aspose.Cells;
 
-namespace LivinParis.Tests;
+namespace LivinParisRoussilleTeynier.Tests;
 
 [TestClass]
 public class GraphOptimisation

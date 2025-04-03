@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Enums;
+namespace LivinParisRoussilleTeynier.Models.Enums;
 
 public enum LoyaltyRank
 {

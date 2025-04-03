@@ -1,9 +1,9 @@
-namespace LivinParis.Models.Maps;
+namespace LivinParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a station in the Paris intra-muros metro network.
 /// </summary>
-public struct Station
+public class Station
 {
     #region Constants
 

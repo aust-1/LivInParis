@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IIngredient
 {
@@ -17,7 +17,7 @@ public interface IIngredient
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetIngredients(
+    List<List<string>> GetIngredients(
         int limit,
         string? name = null,
         bool? isVegetarian = null,

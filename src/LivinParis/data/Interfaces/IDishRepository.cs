@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IDish
 {
@@ -16,7 +16,7 @@ public interface IDish
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetDishes(
+    List<List<string>> GetDishes(
         int limit,
         int? chefId = null,
         int? customerId = null,

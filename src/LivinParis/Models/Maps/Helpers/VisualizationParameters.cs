@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Maps.Helpers;
+namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Defines the visual parameters for positioning and styling nodes on a map.

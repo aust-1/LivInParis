@@ -1,2 +1,3 @@
-global using LivinParis.Data;
-global using LivinParis.Models.Maps;
+global using LivinParisRoussilleTeynier.Data.Attributes;
+global using LivinParisRoussilleTeynier.Models;
+global using LivinParisRoussilleTeynier.Models.Enums;

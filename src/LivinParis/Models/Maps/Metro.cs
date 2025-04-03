@@ -1,13 +1,12 @@
-using System.Text.Json;
 using Aspose.Cells;
 using Newtonsoft.Json.Linq;
 
-namespace LivinParis.Models.Maps;
+namespace LivinParisRoussilleTeynier.Models.Maps;
 
 public class Metro
 {
     private const string dataDirectory = "data/";
-    private Graph<Station> _graph;
+    private readonly Graph<Station> _graph;
 
     /// <summary>
     /// XlsxToAdjacencyMatrix

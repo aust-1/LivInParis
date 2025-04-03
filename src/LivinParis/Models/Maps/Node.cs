@@ -1,6 +1,6 @@
-﻿using LivinParis.Models.Maps.Helpers;
+﻿using LivinParisRoussilleTeynier.Models.Maps.Helpers;
 
-namespace LivinParis.Models.Maps;
+namespace LivinParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a node in a graph, identified by an integer ID and containing data of type <typeparamref name="T"/>.

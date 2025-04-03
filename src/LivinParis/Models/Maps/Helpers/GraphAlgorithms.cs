@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Maps.Helpers;
+namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Provides various graph algorithms, including BFS, DFS,

@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
 public interface IIndividual
 {
@@ -14,7 +14,7 @@ public interface IIndividual
         MySqlCommand? command = null
     );
 
-    Dictionary<int, List<string>> GetIndividuals(
+    List<List<string>> GetIndividuals(
         int limit,
         string? lastName = null,
         string? firstName = null,
