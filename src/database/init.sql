@@ -15,7 +15,7 @@ CREATE TABLE Ingredient(
    is_lactose_free BOOLEAN,
    is_halal BOOLEAN,
    is_kosher BOOLEAN,
-   production_origin ENUM('france', 'europe', 'other'),
+   product_origin ENUM('france', 'europe', 'other'),
    PRIMARY KEY(ingredient_id)
 );
 CREATE TABLE Address(
@@ -102,7 +102,7 @@ CREATE TABLE OrderLine(
 );
 CREATE TABLE Review(
    review_id INT,
-   review_type ENUM('client', 'cuisinier'),
+   review_type ENUM('customer', 'chef'),
    review_rating DECIMAL(2, 1),
    comment VARCHAR(500),
    review_date DATE,
