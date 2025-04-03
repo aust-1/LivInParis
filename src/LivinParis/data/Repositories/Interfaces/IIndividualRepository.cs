@@ -5,7 +5,7 @@ namespace LivinParis.Data;
 public interface IIndividual
 {
     void CreateIndividual(
-        int accountId,
+        int individualCustomerAccountId,
         string lastName,
         string firstName,
         string email,
@@ -26,7 +26,7 @@ public interface IIndividual
     );
 
     void UpdateIndividual(
-        int accountId,
+        int individualCustomerAccountId,
         string? lastName = null,
         string? firstName = null,
         string? email = null,
@@ -35,7 +35,7 @@ public interface IIndividual
         MySqlCommand? command = null
     );
 
-    void DeleteIndividual(int idIndividual, MySqlCommand? command = null);
+    void DeleteIndividual(int individualCustomerAccountId, MySqlCommand? command = null);
 }
 
 //HACK: stats par prenom, par nom

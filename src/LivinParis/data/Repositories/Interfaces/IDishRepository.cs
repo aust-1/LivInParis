@@ -55,3 +55,5 @@ public interface IDish
 
     void DeleteDish(int dishId, MySqlCommand? command = null);
 }
+
+//HACK: combien de fois un plat proposé

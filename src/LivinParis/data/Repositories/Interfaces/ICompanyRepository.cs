@@ -5,7 +5,7 @@ namespace LivinParis.Data;
 public interface ICompany
 {
     void CreateCompany(
-        int accountId,
+        int companyCustomerAccountId,
         string companyName,
         string contactFirstName,
         string contactLastName,
@@ -16,17 +16,22 @@ public interface ICompany
         int limit,
         bool? companyIsBanned = null,
         string? orderBy = null,
+        bool? orderDirection = null,
         MySqlCommand? command = null
     );
 
-    void UpdateCompanyName(int accountId, string companyName, MySqlCommand? command = null);
+    void UpdateCompanyName(
+        int companyCustomerAccountId,
+        string companyName,
+        MySqlCommand? command = null
+    );
 
     void UpdateCompanyContact(
-        int accountId,
+        int companyCustomerAccountId,
         string contactFirstName,
         string contactLastName,
         MySqlCommand? command = null
     );
 
-    void DeleteCompany(int accountId, MySqlCommand? command = null);
+    void DeleteCompany(int companyCustomerAccountId, MySqlCommand? command = null);
 }
