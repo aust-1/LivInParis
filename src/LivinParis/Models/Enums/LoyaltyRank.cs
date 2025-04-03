@@ -1,4 +1,4 @@
-namespace LivinParis.Models.Order.Enums;
+namespace LivinParis.Models.Enums;
 
 public enum LoyaltyRank
 {

@@ -1,1 +1,1 @@
-global using LivinParis.Models.Order.Enums;
+global using LivinParis.Models.Enums;
