@@ -8,7 +8,7 @@ public interface IOrderLine
         int orderLineId,
         DateTime orderLineDate,
         int duration,
-        Status status,
+        OrderLineStatus orderLineStatus,
         bool isEatIn,
         int adressId,
         int transactionId,
@@ -20,7 +20,7 @@ public interface IOrderLine
         int limit,
         DateTime? orderLineDate = null,
         int? duration = null,
-        Status? status = null,
+        OrderLineStatus? orderLineStatus = null,
         bool? isEatIn = null,
         int? adressId = null,
         int? transactionId = null,
@@ -30,7 +30,11 @@ public interface IOrderLine
         MySqlCommand? command = null
     );
 
-    void UpdateStatusOrderLine(int orderLineId, Status status, MySqlCommand? command = null);
+    void UpdateOrderLineStatus(
+        int orderLineId,
+        OrderLineStatus orderLineStatus,
+        MySqlCommand? command = null
+    );
 
     void DeleteOrderLine(int orderLineId, MySqlCommand? command = null);
 }

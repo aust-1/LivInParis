@@ -85,7 +85,7 @@ CREATE TABLE OrderLine(
    order_line_id INT,
    order_line_datetime DATETIME,
    duration INT,
-   status ENUM(
+   order_line_status ENUM(
       'pending',
       'prepared',
       'in_delivery',
