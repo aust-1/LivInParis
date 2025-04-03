@@ -3,6 +3,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Services;
 
+/// <summary>
+/// Provides implementation for account-related operations.
+/// </summary>
 [ConnectionControl]
 public class AccountService : IAccountService
 {
@@ -14,27 +17,33 @@ public class AccountService : IAccountService
         MySqlCommand? command = null
     )
     {
-        command!.CommandText = "INSERT INTO Account VALUES (@a,@e, @p)";
-        command.Parameters.AddWithValue("@e", email);
-        command.Parameters.AddWithValue("@a", accountId);
-        command.Parameters.AddWithValue("@p", password);
+        command!.CommandText =
+            "INSERT INTO Account (account_id, email, password) VALUES (@id, @mail, @pwd)";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", accountId);
+        command.Parameters.AddWithValue("@mail", email);
+        command.Parameters.AddWithValue("@pwd", password);
         command.ExecuteNonQuery();
     }
 
     /// <inheritdoc/>
     public virtual List<List<string>> Read(int limit, MySqlCommand? command = null)
     {
-        command!.CommandText = "SELECT * FROM Account LIMIT @l";
-        command.Parameters.AddWithValue("@l", limit);
+        command!.CommandText = "SELECT * FROM Account LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        List<List<string>> accounts = [];
 
         using var reader = command.ExecuteReader();
-        List<List<string>> accounts = [];
         while (reader.Read())
         {
             List<string> account = [];
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                string value = reader[i]?.ToString() ?? string.Empty;
+                string value = reader.IsDBNull(i)
+                    ? string.Empty
+                    : reader.GetValue(i).ToString() ?? string.Empty;
                 account.Add(value);
             }
             accounts.Add(account);
@@ -45,26 +54,29 @@ public class AccountService : IAccountService
     /// <inheritdoc/>
     public virtual void UpdateEmail(int accountId, string email, MySqlCommand? command = null)
     {
-        command!.CommandText = "UPDATE Account SET email = @e WHERE account_id = @a";
-        command.Parameters.AddWithValue("@e", email);
-        command.Parameters.AddWithValue("@a", accountId);
+        command!.CommandText = "UPDATE Account SET email = @mail WHERE account_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", accountId);
+        command.Parameters.AddWithValue("@mail", email);
         command.ExecuteNonQuery();
     }
 
     /// <inheritdoc/>
     public virtual void UpdatePassword(int accountId, string password, MySqlCommand? command = null)
     {
-        command!.CommandText = "UPDATE Account SET password = @p WHERE account_id = @a";
-        command.Parameters.AddWithValue("@e", password);
-        command.Parameters.AddWithValue("@p", accountId);
+        command!.CommandText = "UPDATE Account SET password = @pwd WHERE account_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", accountId);
+        command.Parameters.AddWithValue("@pwd", password);
         command.ExecuteNonQuery();
     }
 
     /// <inheritdoc/>
     public virtual void Delete(int accountId, MySqlCommand? command = null)
     {
-        command!.CommandText = "DELETE FROM account WHERE account_id = @a";
-        command.Parameters.AddWithValue("@a", accountId);
+        command!.CommandText = "DELETE FROM Account WHERE account_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", accountId);
         command.ExecuteNonQuery();
     }
 }
