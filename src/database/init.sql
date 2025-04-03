@@ -40,7 +40,7 @@ CREATE TABLE Dish(
 CREATE TABLE Customer(
    account_id INT,
    customer_rating DECIMAL(2, 1),
-   loyalty_rank ENUM('Classic', 'Bronze', 'Silver', 'Gold'),
+   loyalty_rank ENUM('classic', 'bronze', 'silver', 'gold'),
    customer_is_banned BOOLEAN,
    PRIMARY KEY(account_id),
    FOREIGN KEY(account_id) REFERENCES Account(account_id)
