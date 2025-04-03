@@ -3,277 +3,293 @@ using System.Diagnostics;
 using System.Globalization;
 using Aspose.Cells;
 
-namespace LivinParisRoussilleTeynier.Tests;
-
-[TestClass]
-public class GraphOptimisation
+namespace LivinParisRoussilleTeynier.Tests
 {
-    private const string dataDirectory = "data/";
-
-    private static SortedDictionary<
-        Node<Station>,
-        SortedDictionary<Node<Station>, double>
-    > XlsxToAdjacencyList(string fileName)
+    [TestClass]
+    public class GraphOptimisation
     {
-        CultureInfo culture = new CultureInfo("en-US");
-        Thread.CurrentThread.CurrentCulture = culture;
-        Thread.CurrentThread.CurrentUICulture = culture;
+        private const string dataDirectory = "data/";
 
-        var adjacencyList =
-            new SortedDictionary<Node<Station>, SortedDictionary<Node<Station>, double>>();
-
-        var file = dataDirectory + fileName + ".xlsx";
-        var wb = new Workbook(file);
-        var stations = wb.Worksheets[0].Cells;
-        var lines = wb.Worksheets[1].Cells;
-        var correspondences = wb.Worksheets[2].Cells;
-
-        for (int i = 1; i <= stations.MaxDataRow; i++)
+        private static SortedDictionary<
+            Node<Station>,
+            SortedDictionary<Node<Station>, double>
+        > XlsxToAdjacencyList(string fileName)
         {
-            var stationId = stations[i, 0].IntValue;
-            var lineName = stations[i, 1].StringValue;
-            var stationName = stations[i, 2].StringValue;
-            var longitude = stations[i, 3].DoubleValue;
-            var latitude = stations[i, 4].DoubleValue;
-            var commune = stations[i, 5].StringValue;
-            var insee = stations[i, 6].IntValue;
+            CultureInfo culture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
 
-            var station = new Station(lineName, stationName, longitude, latitude, commune, insee);
-            var node = new Node<Station>(
-                stationId,
-                station,
-                longitude,
-                latitude,
-                station.ColorLine,
-                stationName
-            );
-            adjacencyList[node] = [];
-        }
+            var adjacencyList =
+                new SortedDictionary<Node<Station>, SortedDictionary<Node<Station>, double>>();
 
-        for (int i = 1; i <= lines.MaxDataRow; i++)
-        {
-            var stationId = lines[i, 0].IntValue;
-            var station = Node<Station>.GetNode(stationId);
+            var file = dataDirectory + fileName + ".xlsx";
+            var wb = new Workbook(file);
+            var stations = wb.Worksheets[0].Cells;
+            var lines = wb.Worksheets[1].Cells;
+            var correspondences = wb.Worksheets[2].Cells;
 
-            try
+            for (int i = 1; i <= stations.MaxDataRow; i++)
             {
-                var preStationId = lines[i, 3].IntValue;
-                var preStation = Node<Station>.GetNode(preStationId);
-                adjacencyList[station].Add(preStation, station.Data.GetTimeTo(preStation.Data));
-            }
-            catch (Exception) { }
+                var stationId = stations[i, 0].IntValue;
+                var lineName = stations[i, 1].StringValue;
+                var stationName = stations[i, 2].StringValue;
+                var longitude = stations[i, 3].DoubleValue;
+                var latitude = stations[i, 4].DoubleValue;
+                var commune = stations[i, 5].StringValue;
+                var insee = stations[i, 6].IntValue;
 
-            try
+                var station = new Station(
+                    lineName,
+                    stationName,
+                    longitude,
+                    latitude,
+                    commune,
+                    insee
+                );
+                var node = new Node<Station>(
+                    stationId,
+                    station,
+                    longitude,
+                    latitude,
+                    station.ColorLine,
+                    stationName
+                );
+                adjacencyList[node] = [];
+            }
+
+            for (int i = 1; i <= lines.MaxDataRow; i++)
             {
-                var nextStationId = lines[i, 4].IntValue;
-                var nextStation = Node<Station>.GetNode(nextStationId);
-                adjacencyList[station].Add(nextStation, station.Data.GetTimeTo(nextStation.Data));
+                var stationId = lines[i, 0].IntValue;
+                var station = Node<Station>.GetNode(stationId);
+
+                try
+                {
+                    var preStationId = lines[i, 3].IntValue;
+                    var preStation = Node<Station>.GetNode(preStationId);
+                    adjacencyList[station].Add(preStation, station.Data.GetTimeTo(preStation.Data));
+                }
+                catch (Exception) { }
+
+                try
+                {
+                    var nextStationId = lines[i, 4].IntValue;
+                    var nextStation = Node<Station>.GetNode(nextStationId);
+                    adjacencyList[station]
+                        .Add(nextStation, station.Data.GetTimeTo(nextStation.Data));
+                }
+                catch (Exception) { }
             }
-            catch (Exception) { }
-        }
 
-        for (int i = 1; i <= correspondences.MaxDataRow; i++)
-        {
-            var stationId = correspondences[i, 1].IntValue;
-            var correspondenceId = correspondences[i, 2].IntValue;
-            var correspondenceTime = correspondences[i, 3].DoubleValue;
-
-            var node = Node<Station>.GetNode(stationId);
-            var correspondence = Node<Station>.GetNode(correspondenceId);
-
-            adjacencyList[node].Add(correspondence, correspondenceTime);
-            adjacencyList[correspondence].Add(node, correspondenceTime);
-        }
-
-        return adjacencyList;
-    }
-
-    private static double[,] XlsxToAdjacencyMatrix(string fileName)
-    {
-        CultureInfo culture = new CultureInfo("en-US");
-        Thread.CurrentThread.CurrentCulture = culture;
-        Thread.CurrentThread.CurrentUICulture = culture;
-
-        var file = dataDirectory + fileName + ".xlsx";
-        var wb = new Workbook(file);
-        var stations = wb.Worksheets[0].Cells;
-        var lines = wb.Worksheets[1].Cells;
-        var correspondences = wb.Worksheets[2].Cells;
-
-        for (int i = 1; i <= stations.MaxDataRow; i++)
-        {
-            var stationId = stations[i, 0].IntValue;
-            var lineName = stations[i, 1].StringValue;
-            var stationName = stations[i, 2].StringValue;
-            var longitude = stations[i, 3].DoubleValue;
-            var latitude = stations[i, 4].DoubleValue;
-            var commune = stations[i, 5].StringValue;
-            var insee = stations[i, 6].IntValue;
-
-            var station = new Station(lineName, stationName, longitude, latitude, commune, insee);
-            new Node<Station>(
-                stationId,
-                station,
-                longitude,
-                latitude,
-                station.ColorLine,
-                stationName
-            );
-        }
-
-        var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
-
-        for (int i = 0; i < Node<Station>.Count; i++)
-        {
-            for (int j = 0; j < Node<Station>.Count; j++)
+            for (int i = 1; i <= correspondences.MaxDataRow; i++)
             {
-                adjacencyMatrix[i, j] = double.MaxValue;
+                var stationId = correspondences[i, 1].IntValue;
+                var correspondenceId = correspondences[i, 2].IntValue;
+                var correspondenceTime = correspondences[i, 3].DoubleValue;
+
+                var node = Node<Station>.GetNode(stationId);
+                var correspondence = Node<Station>.GetNode(correspondenceId);
+
+                adjacencyList[node].Add(correspondence, correspondenceTime);
+                adjacencyList[correspondence].Add(node, correspondenceTime);
             }
-            adjacencyMatrix[i, i] = 0;
+
+            return adjacencyList;
         }
 
-        for (int i = 1; i <= lines.MaxDataRow; i++)
+        private static double[,] XlsxToAdjacencyMatrix(string fileName)
         {
-            var stationId = lines[i, 0].IntValue;
-            var station = Node<Station>.GetNode(stationId).Data;
+            CultureInfo culture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
 
-            try
-            {
-                var preStationId = lines[i, 3].IntValue;
-                var preStation = Node<Station>.GetNode(preStationId).Data;
-                adjacencyMatrix[stationId, preStationId] = station.GetTimeTo(preStation);
-            }
-            catch (Exception) { }
+            var file = dataDirectory + fileName + ".xlsx";
+            var wb = new Workbook(file);
+            var stations = wb.Worksheets[0].Cells;
+            var lines = wb.Worksheets[1].Cells;
+            var correspondences = wb.Worksheets[2].Cells;
 
-            try
+            for (int i = 1; i <= stations.MaxDataRow; i++)
             {
-                var nextStationId = lines[i, 4].IntValue;
-                var nextStation = Node<Station>.GetNode(nextStationId).Data;
-                adjacencyMatrix[stationId, nextStationId] = station.GetTimeTo(nextStation);
+                var stationId = stations[i, 0].IntValue;
+                var lineName = stations[i, 1].StringValue;
+                var stationName = stations[i, 2].StringValue;
+                var longitude = stations[i, 3].DoubleValue;
+                var latitude = stations[i, 4].DoubleValue;
+                var commune = stations[i, 5].StringValue;
+                var insee = stations[i, 6].IntValue;
+
+                var station = new Station(
+                    lineName,
+                    stationName,
+                    longitude,
+                    latitude,
+                    commune,
+                    insee
+                );
+                new Node<Station>(
+                    stationId,
+                    station,
+                    longitude,
+                    latitude,
+                    station.ColorLine,
+                    stationName
+                );
             }
-            catch (Exception) { }
+
+            var adjacencyMatrix = new double[Node<Station>.Count, Node<Station>.Count];
+
+            for (int i = 0; i < Node<Station>.Count; i++)
+            {
+                for (int j = 0; j < Node<Station>.Count; j++)
+                {
+                    adjacencyMatrix[i, j] = double.MaxValue;
+                }
+                adjacencyMatrix[i, i] = 0;
+            }
+
+            for (int i = 1; i <= lines.MaxDataRow; i++)
+            {
+                var stationId = lines[i, 0].IntValue;
+                var station = Node<Station>.GetNode(stationId).Data;
+
+                try
+                {
+                    var preStationId = lines[i, 3].IntValue;
+                    var preStation = Node<Station>.GetNode(preStationId).Data;
+                    adjacencyMatrix[stationId, preStationId] = station.GetTimeTo(preStation);
+                }
+                catch (Exception) { }
+
+                try
+                {
+                    var nextStationId = lines[i, 4].IntValue;
+                    var nextStation = Node<Station>.GetNode(nextStationId).Data;
+                    adjacencyMatrix[stationId, nextStationId] = station.GetTimeTo(nextStation);
+                }
+                catch (Exception) { }
+            }
+
+            for (int i = 1; i <= correspondences.MaxDataRow; i++)
+            {
+                var stationId1 = correspondences[i, 1].IntValue;
+                var stationId2 = correspondences[i, 2].IntValue;
+                var correspondenceTime = correspondences[i, 3].DoubleValue;
+
+                adjacencyMatrix[stationId1, stationId2] = correspondenceTime;
+                adjacencyMatrix[stationId2, stationId1] = correspondenceTime;
+            }
+
+            return adjacencyMatrix;
         }
 
-        for (int i = 1; i <= correspondences.MaxDataRow; i++)
-        {
-            var stationId1 = correspondences[i, 1].IntValue;
-            var stationId2 = correspondences[i, 2].IntValue;
-            var correspondenceTime = correspondences[i, 3].DoubleValue;
-
-            adjacencyMatrix[stationId1, stationId2] = correspondenceTime;
-            adjacencyMatrix[stationId2, stationId1] = correspondenceTime;
-        }
-
-        return adjacencyMatrix;
-    }
-
-    [TestInitialize]
-    [TestCleanup]
-    public void Clean()
-    {
-        Node<Station>.Clean();
-    }
-
-    #region Temps en fonction de l'initialisation
-
-    [TestMethod]
-    public void InitTimeByAdjacencyList()
-    {
-        long total = 0;
-        for (int i = 0; i < 20; i++)
+        [TestInitialize]
+        [TestCleanup]
+        public void Clean()
         {
             Node<Station>.Clean();
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var adjacencyList = XlsxToAdjacencyList("MetroParis");
-            new Graph<Station>(adjacencyList);
-            sw.Stop();
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Debug.WriteLine(elapsedMilliseconds + " ms");
-            total += elapsedMilliseconds;
         }
-        Debug.WriteLine("Moyenne: " + total / 20 + " ms");
-    }
 
-    [TestMethod]
-    public void InitTimeByAdjacencyMatrix()
-    {
-        long total = 0;
-        for (int i = 0; i < 20; i++)
+        #region Temps en fonction de l'initialisation
+
+        [TestMethod]
+        public void InitTimeByAdjacencyList()
         {
-            Node<Station>.Clean();
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var adjacencyMatrix = XlsxToAdjacencyMatrix("MetroParis");
-            new Graph<Station>(adjacencyMatrix);
-            sw.Stop();
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Debug.WriteLine(elapsedMilliseconds + " ms");
-            total += elapsedMilliseconds;
+            long total = 0;
+            for (int i = 0; i < 20; i++)
+            {
+                Node<Station>.Clean();
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var adjacencyList = XlsxToAdjacencyList("MetroParis");
+                new Graph<Station>(adjacencyList);
+                sw.Stop();
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                Debug.WriteLine(elapsedMilliseconds + " ms");
+                total += elapsedMilliseconds;
+            }
+            Debug.WriteLine("Moyenne: " + total / 20 + " ms");
         }
-        Debug.WriteLine("Moyenne: " + total / 20 + " ms");
-    }
 
-    #endregion Temps en fonction des méthodes de gestion de données
-
-    #region Temps en fonction des méthodes de pathfinding
-
-    [TestMethod]
-    [DataRow(0, 330)]
-    public void PathfindingTimeByDijkstra(int startMin, int startMax)
-    {
-        long total = 0;
-        Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
-        for (int start = startMin; start <= startMax; start++)
+        [TestMethod]
+        public void InitTimeByAdjacencyMatrix()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var result = graph.Dijkstra(start);
-            sw.Stop();
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            total += elapsedMilliseconds;
+            long total = 0;
+            for (int i = 0; i < 20; i++)
+            {
+                Node<Station>.Clean();
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var adjacencyMatrix = XlsxToAdjacencyMatrix("MetroParis");
+                new Graph<Station>(adjacencyMatrix);
+                sw.Stop();
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                Debug.WriteLine(elapsedMilliseconds + " ms");
+                total += elapsedMilliseconds;
+            }
+            Debug.WriteLine("Moyenne: " + total / 20 + " ms");
         }
-        Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
-        Debug.WriteLine("Total: " + total + " ms");
-    }
 
-    [TestMethod]
-    [DataRow(0, 330)]
-    public void PathfindingTimeByBellmanFord(int startMin, int startMax)
-    {
-        long total = 0;
-        Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
-        for (int start = startMin; start <= startMax; start++)
+        #endregion Temps en fonction des méthodes de gestion de données
+
+        #region Temps en fonction des méthodes de pathfinding
+
+        [TestMethod]
+        [DataRow(0, 330)]
+        public void PathfindingTimeByDijkstra(int startMin, int startMax)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var result = graph.BellmanFord(start);
-            sw.Stop();
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            total += elapsedMilliseconds;
+            long total = 0;
+            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            for (int start = startMin; start <= startMax; start++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var result = graph.Dijkstra(start);
+                sw.Stop();
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                total += elapsedMilliseconds;
+            }
+            Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
+            Debug.WriteLine("Total: " + total + " ms");
         }
-        Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
-        Debug.WriteLine("Total: " + total + " ms");
-    }
 
-    [TestMethod]
-    [DataRow(30)]
-    public void PathfindingTimeByRoyFloydWarshall(int iterations)
-    {
-        long total = 0;
-        Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
-        for (int i = 0; i < iterations; i++)
+        [TestMethod]
+        [DataRow(0, 330)]
+        public void PathfindingTimeByBellmanFord(int startMin, int startMax)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var result = graph.RoyFloydWarshall();
-            sw.Stop();
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            total += elapsedMilliseconds;
-            Debug.WriteLine(elapsedMilliseconds + " ms");
+            long total = 0;
+            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            for (int start = startMin; start <= startMax; start++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var result = graph.BellmanFord(start);
+                sw.Stop();
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                total += elapsedMilliseconds;
+            }
+            Debug.WriteLine("Moyenne: " + total / (startMax - startMin + 1) + " ms");
+            Debug.WriteLine("Total: " + total + " ms");
         }
-        Debug.WriteLine("Moyenne: " + total / iterations + " ms");
-    }
 
-    #endregion Temps en fonction des méthodes de pathfinding
+        [TestMethod]
+        [DataRow(30)]
+        public void PathfindingTimeByRoyFloydWarshall(int iterations)
+        {
+            long total = 0;
+            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            for (int i = 0; i < iterations; i++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var result = graph.RoyFloydWarshall();
+                sw.Stop();
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                total += elapsedMilliseconds;
+                Debug.WriteLine(elapsedMilliseconds + " ms");
+            }
+            Debug.WriteLine("Moyenne: " + total / iterations + " ms");
+        }
+
+        #endregion Temps en fonction des méthodes de pathfinding
+    }
 }
