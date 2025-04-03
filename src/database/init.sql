@@ -88,8 +88,9 @@ CREATE TABLE OrderLine(
    order_line_status ENUM(
       'pending',
       'prepared',
-      'in_delivery',
-      'delivered'
+      'delivering',
+      'delivered',
+      'canceled'
    ),
    is_eat_in BOOLEAN,
    address_id VARCHAR(50) NOT NULL,
