@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParis.Data;
 
-[AttributeUsage(AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class ConnectionControlAttribute : Attribute { }
 
 public class ConnectionInterceptor : IInterceptor
@@ -17,20 +17,47 @@ public class ConnectionInterceptor : IInterceptor
     {
         var method = invocation.MethodInvocationTarget ?? invocation.Method;
         bool shouldManageConnectionControl =
-            method.GetCustomAttribute<ConnectionControlAttribute>() != null;
+            method.GetCustomAttribute<ConnectionControlAttribute>() != null
+            || method.DeclaringType?.GetCustomAttribute<ConnectionControlAttribute>() != null;
+
+        MySqlCommand? command = null;
 
         if (shouldManageConnectionControl)
         {
-            Console.WriteLine($"[LOG] Avant d'exécuter {method.Name}");
+            Console.WriteLine($"[LOG] Ouverture de la connexion pour {method.Name}");
             s_connection.Open();
+            command = s_connection.CreateCommand();
+            Console.WriteLine($"[LOG] Connexion ouverte pour {method.Name}");
+
+            var parameters = invocation.Arguments;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (method.GetParameters()[i].ParameterType == typeof(MySqlCommand))
+                {
+                    invocation.SetArgumentValue(i, command);
+                    break;
+                }
+            }
         }
 
-        invocation.Proceed();
-
-        if (shouldManageConnectionControl)
+        try
         {
-            Console.WriteLine($"[LOG] Après avoir exécuté {method.Name}");
-            s_connection.Close();
+            invocation.Proceed();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LOG] Erreur pendant {method.Name} : {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            if (shouldManageConnectionControl)
+            {
+                Console.WriteLine($"[LOG] Fermeture de la connexion pour {method.Name}");
+                command?.Dispose();
+                s_connection.Close();
+                Console.WriteLine($"[LOG] Connexion fermée pour {method.Name}");
+            }
         }
     }
 }

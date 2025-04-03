@@ -1,34 +1,16 @@
+using MySql.Data.MySqlClient;
+
 namespace LivinParis.Data;
 
-interface IAccount
+public interface IAccount
 {
-    [ConnectionControl]
-    public virtual void CreateAccount(int accountId, string email, string password)
-    {
-        throw new NotImplementedException();
-    }
+    void CreateAccount(int accountId, string email, string password, MySqlCommand? command = null);
 
-    [ConnectionControl]
-    public virtual List<List<string>> GetAccounts(int limit)
-    {
-        throw new NotImplementedException();
-    }
+    Dictionary<int, List<string>> GetAccounts(int limit, MySqlCommand? command = null);
 
-    [ConnectionControl]
-    public virtual void UpdateEmail(int accountId, string email)
-    {
-        throw new NotImplementedException();
-    }
+    void UpdateEmail(int accountId, string email, MySqlCommand? command = null);
 
-    [ConnectionControl]
-    public virtual void UpdatePassword(int accountId, string password)
-    {
-        throw new NotImplementedException();
-    }
+    void UpdatePassword(int accountId, string password, MySqlCommand? command = null);
 
-    [ConnectionControl]
-    public virtual void DeleteAccount(int accountId)
-    {
-        throw new NotImplementedException();
-    }
+    void DeleteAccount(int accountId, MySqlCommand? command = null);
 }
