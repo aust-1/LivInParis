@@ -34,7 +34,7 @@ public static class CycleDetector<T>
             foreach (var node in successors.Where(n => predecessors.Contains(n)))
             {
                 visited.Add(node);
-                localAdjacency[node] = new SortedDictionary<Node<T>, double>();
+                localAdjacency[node] = [];
             }
 
             foreach (var edge in graph.Edges)
@@ -121,7 +121,7 @@ public static class CycleDetector<T>
                 }
             }
         }
-        return new List<Node<T>>();
+        return [];
     }
 
     #endregion Public Methods - Cycle Detection

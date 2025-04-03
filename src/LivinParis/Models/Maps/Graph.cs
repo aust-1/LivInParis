@@ -96,10 +96,10 @@ public class Graph<T>
     public Graph(SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>> adjacencyList)
     {
         _nodes = new SortedSet<Node<T>>(adjacencyList.Keys);
-        _edges = new List<Edge<T>>();
+        _edges = [];
         _adjacencyList = adjacencyList;
         _order = _nodes.Count;
-        _nodeIndexMap = new SortedDictionary<Node<T>, int>();
+        _nodeIndexMap = [];
         int counter = 0;
         foreach (var node in _adjacencyList.Keys)
         {
@@ -157,18 +157,18 @@ public class Graph<T>
         }
 
         _isDirected = !IsMatrixSymmetric(adjacencyMatrix);
-        _nodes = new SortedSet<Node<T>>();
-        _edges = new List<Edge<T>>();
-        _adjacencyList = new SortedDictionary<Node<T>, SortedDictionary<Node<T>, double>>();
+        _nodes = [];
+        _edges = [];
+        _adjacencyList = [];
         _adjacencyMatrix = adjacencyMatrix;
-        _nodeIndexMap = new SortedDictionary<Node<T>, int>();
+        _nodeIndexMap = [];
         _order = _adjacencyMatrix.GetLength(0);
 
         for (int i = 0; i < _order; i++)
         {
             var node = Node<T>.GetNode(i);
             _nodes.Add(node);
-            _adjacencyList[node] = new SortedDictionary<Node<T>, double>();
+            _adjacencyList[node] = [];
             _nodeIndexMap[node] = i;
         }
 
@@ -179,7 +179,7 @@ public class Graph<T>
 
         _density = _isDirected
             ? (double)_size / (_order * (_order - 1))
-            : (2.0 * _size) / (_order * (_order - 1));
+            : 2.0 * _size / (_order * (_order - 1));
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;

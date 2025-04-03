@@ -47,7 +47,7 @@ public class GraphOptimisation
                 station.ColorLine,
                 stationName
             );
-            adjacencyList[node] = new SortedDictionary<Node<Station>, double>();
+            adjacencyList[node] = [];
         }
 
         for (int i = 1; i <= lines.MaxDataRow; i++)

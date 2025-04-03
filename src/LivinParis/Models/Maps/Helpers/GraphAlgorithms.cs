@@ -426,7 +426,7 @@ public static class GraphAlgorithms<T>
             for (int j = 0; j < n; j++)
             {
                 distanceMatrix[i, j] = graph.AdjacencyMatrix[i, j];
-                pathMatrix[i, j] = new List<Node<T>>();
+                pathMatrix[i, j] = [];
 
                 if (i == j)
                 {
@@ -585,7 +585,7 @@ public static class GraphAlgorithms<T>
 
         foreach (var node in graph.Nodes)
         {
-            localAdjacency[node] = new SortedDictionary<Node<T>, double>();
+            localAdjacency[node] = [];
         }
 
         foreach (var kvp in results)

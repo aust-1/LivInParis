@@ -9,9 +9,9 @@ public class ConnectionControlAttribute : Attribute { }
 
 public class ConnectionInterceptor : IInterceptor
 {
-    static string connection =
+    static readonly string connection =
         "SERVER=localhost;PORT=3306;DATABASE=LivinParis;UID=eliottfrancois;PASSWORD=PSI";
-    static MySqlConnection s_connection = new(connection);
+    static readonly MySqlConnection s_connection = new(connection);
 
     public void Intercept(IInvocation invocation)
     {

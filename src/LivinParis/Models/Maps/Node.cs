@@ -21,7 +21,7 @@ public class Node<T> : IComparable<Node<T>>
     /// <summary>
     /// A static dictionary that associates each node's integer ID with the node instance.
     /// </summary>
-    private static readonly SortedDictionary<int, Node<T>> s_existingNodes = new();
+    private static readonly SortedDictionary<int, Node<T>> s_existingNodes = [];
 
     /// <summary>
     /// The unique integer ID for this node.
