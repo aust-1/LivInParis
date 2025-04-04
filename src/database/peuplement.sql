@@ -238,6 +238,58 @@ INSERT INTO Ingredient (ingredient_name, is_vegetarian, is_vegan, is_gluten_free
 ('Gingembre', TRUE, TRUE, TRUE, TRUE, TRUE),
 ('Curcuma', TRUE, TRUE, TRUE, TRUE, TRUE);
 
+
+INSERT INTO Ingredient (ingredient_name, is_vegetarian, is_vegan, is_gluten_free, is_halal, is_kosher) VALUES
+('Steak haché', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Fromage cheddar', TRUE, FALSE, TRUE, FALSE, FALSE),
+('Pain à hamburger', TRUE, FALSE, FALSE, TRUE, FALSE),
+('Porc mariné (en fines tranches)', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Tortillas de maïs', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Ananas', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Frites', TRUE, TRUE, TRUE, TRUE, TRUE), -- Vérifier l'huile de cuisson pour le végane
+('Fromage en grains', TRUE, FALSE, TRUE, FALSE, FALSE),
+('Sauce brune', FALSE, FALSE, FALSE, FALSE, FALSE), -- Contient souvent du bouillon de viande et de la farine de blé
+('Haricots noirs', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Diverses coupes de porc', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Diverses coupes de bœuf', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Poisson blanc cru', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Piments', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Mozzarella', TRUE, FALSE, TRUE, FALSE, FALSE),
+('Basilic frais', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Safran', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Mélange de fruits de mer', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Poulet grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Porc grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Agneau grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Pain pita', TRUE, TRUE, FALSE, TRUE, FALSE),
+('Sauce tzatziki', TRUE, FALSE, TRUE, TRUE, TRUE), -- Contient du yaourt
+('Viande hachée (porc/bœuf)', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Chou', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Huile de sésame', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Vinaigre', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Nouilles de riz', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Germes de soja', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Poulet cuit en sauce', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Épices diverses', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Pain naan', TRUE, TRUE, FALSE, TRUE, FALSE),
+('Légumes variés', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Gochujang (pâte de piment)', TRUE, TRUE, FALSE, TRUE, TRUE), -- Contient souvent du blé
+('Agneau mijoté', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Fruits secs', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Poulet mijoté', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Farine de teff', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Ragoût (avec viande/légumes)', FALSE, FALSE, FALSE, TRUE, TRUE), -- Dépend des ingrédients
+('Viande hachée (bœuf/agneau)', FALSE, FALSE, TRUE, FALSE, FALSE),
+('Sauce de viande', FALSE, FALSE, FALSE, FALSE, FALSE),
+('Pommes de terre cuites sous terre', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Kumara (patate douce)', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Fèves', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Tahini (pâte de sésame)', TRUE, TRUE, TRUE, TRUE, TRUE),
+('Agneau grillé sur brochette', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Poulet grillé sur brochette', FALSE, FALSE, TRUE, TRUE, TRUE),
+('Bœuf grillé sur brochette', FALSE, FALSE, TRUE, FALSE, FALSE);
+
+
 INSERT INTO Dish (dish_name, dish_type, preparation_date, expiration_date, cuisine_nationality, quantity, price, photo) VALUES
 ('Ratatouille', 'main_course', '2025-04-01', '2025-04-03', 'Française', 10, 15.99, NULL),
 ('Bœuf Bourguignon', 'main_course', '2025-04-01', '2025-04-02', 'Française', 8, 22.50, NULL),
@@ -254,6 +306,28 @@ INSERT INTO Dish (dish_name, dish_type, preparation_date, expiration_date, cuisi
 ('Mousse au Chocolat', 'dessert', '2025-04-01', '2025-04-05', 'Française', 15, 6.99, NULL),
 ('Crêpes', 'dessert', '2025-04-01', '2025-04-03', 'Française', 20, 7.99, NULL),
 ('Soufflé au Fromage', 'main_course', '2025-04-01', '2025-04-02', 'Française', 6, 13.99, NULL);
+
+INSERT INTO Dish (dish_name, dish_type, preparation_date, expiration_date, cuisine_nationality, quantity, price, photo) VALUES
+('Cheeseburger and Fries', 'main_course', '2025-04-04', '2025-04-05', 'American', 15, 9.99, NULL),
+('Tacos al Pastor', 'main_course', '2025-04-04', '2025-04-05', 'Mexican', 20, 12.50, NULL),
+('Poutine', 'main_course', '2025-04-04', '2025-04-05', 'Canadian', 12, 8.75, NULL),
+('Feijoada', 'main_course', '2025-04-04', '2025-04-06', 'Brazilian', 10, 16.25, NULL),
+('Ceviche', 'starter', '2025-04-04', '2025-04-04', 'Peruvian', 18, 11.00, NULL),
+('Pizza Margherita', 'main_course', '2025-04-04', '2025-04-05', 'Italian', 25, 14.00, NULL),
+('Paella', 'main_course', '2025-04-04', '2025-04-05', 'Spanish', 8, 25.50, NULL),
+('Souvlaki', 'main_course', '2025-04-04', '2025-04-05', 'Greek', 16, 10.50, NULL),
+('Dumplings (Jiaozi)', 'starter', '2025-04-04', '2025-04-05', 'Chinese', 30, 7.99, NULL),
+('Sushi (Nigiri)', 'main_course', '2025-04-04', '2025-04-04', 'Japanese', 14, 18.00, NULL),
+('Butter Chicken', 'main_course', '2025-04-04', '2025-04-06', 'Indian', 11, 15.75, NULL),
+('Pad Thai', 'main_course', '2025-04-04', '2025-04-05', 'Thai', 22, 13.25, NULL),
+('Bibimbap', 'main_course', '2025-04-04', '2025-04-05', 'Korean', 17, 14.50, NULL),
+('Tagine', 'main_course', '2025-04-04', '2025-04-06', 'Moroccan', 9, 17.00, NULL),
+('Jollof Rice', 'main_course', '2025-04-04', '2025-04-06', 'Nigerian', 13, 12.00, NULL),
+('Injera with Wat', 'main_course', '2025-04-04', '2025-04-05', 'Ethiopian', 7, 16.50, NULL),
+('Meat Pie', 'main_course', '2025-04-04', '2025-04-05', 'Australian', 19, 6.99, NULL),
+('Hangi', 'main_course', '2025-04-04', '2025-04-06', 'New Zealander', 5, 28.00, NULL),
+('Falafel', 'starter', '2025-04-04', '2025-04-05', 'Lebanese', 28, 9.25, NULL),
+('Kebab', 'main_course', '2025-04-04', '2025-04-05', 'Turkish', 21, 11.75, NULL);
 
 
 INSERT INTO MenuProposal (account_id, proposal_date, dish_name) VALUES
@@ -272,6 +346,23 @@ INSERT INTO MenuProposal (account_id, proposal_date, dish_name) VALUES
 (39, '2025-04-13', 'Mousse au Chocolat'),
 (40, '2025-04-14', 'Crêpes'),
 (41, '2025-04-15', 'Soufflé au Fromage');
+
+INSERT INTO MenuProposal (account_id, proposal_date, dish_name) VALUES
+(26, '2025-04-16', 'Cheeseburger and Fries'),
+(28, '2025-04-18', 'Poutine'),
+(29, '2025-04-19', 'Feijoada'),
+(30, '2025-04-20', 'Ceviche'),
+(31, '2025-04-21', 'Pizza Margherita'),
+(32, '2025-04-22', 'Paella'),
+(33, '2025-04-23', 'Souvlaki'),
+(34, '2025-04-24', 'Dumplings (Jiaozi)'),
+(35, '2025-04-25', 'Sushi (Nigiri)'),
+(36, '2025-04-26', 'Butter Chicken'),
+(37, '2025-04-27', 'Pad Thai'),
+(38, '2025-04-28', 'Bibimbap'),
+(39, '2025-04-29', 'Tagine'),
+(40, '2025-04-30', 'Jollof Rice'),
+(41, '2025-05-01', 'Injera with Wat');
 
 
 INSERT INTO Contains (dish_name, ingredient_name) VALUES
@@ -343,3 +434,157 @@ INSERT INTO Contains (dish_name, ingredient_name) VALUES
 ('Soufflé au Fromage', 'Fromage'),
 ('Soufflé au Fromage', 'Lait'),
 ('Soufflé au Fromage', 'Œufs');
+
+-- Cheeseburger and Fries
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Steak haché', 'Cheeseburger and Fries'),
+('Fromage cheddar', 'Cheeseburger and Fries'),
+('Pain à hamburger', 'Cheeseburger and Fries'),
+('Tomate', 'Cheeseburger and Fries'),
+('Oignon', 'Cheeseburger and Fries'),
+('Frites', 'Cheeseburger and Fries');
+
+
+-- Poutine
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Frites', 'Poutine'),
+('Fromage en grains', 'Poutine'),
+('Sauce brune', 'Poutine');
+
+-- Feijoada
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Haricots noirs', 'Feijoada'),
+('Diverses coupes de porc', 'Feijoada'),
+('Oignon', 'Feijoada'),
+('Ail', 'Feijoada');
+
+-- Ceviche
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Poisson blanc cru', 'Ceviche'),
+('Citron vert', 'Ceviche'),
+('Oignon', 'Ceviche'),
+('Coriandre', 'Ceviche'),
+('Piments', 'Ceviche');
+
+-- Pizza Margherita
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Farine de blé', 'Pizza Margherita'),
+('Tomate', 'Pizza Margherita'),
+('Mozzarella', 'Pizza Margherita'),
+('Basilic frais', 'Pizza Margherita'),
+('Huile d’olive', 'Pizza Margherita');
+
+-- Paella
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Riz', 'Paella'),
+('Mélange de fruits de mer', 'Paella'),
+('Safran', 'Paella'),
+('Poivron', 'Paella'),
+('Tomate', 'Paella'),
+('Oignon', 'Paella');
+
+-- Souvlaki
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Poulet grillé sur brochette', 'Souvlaki'),
+('Pain pita', 'Souvlaki'),
+('Sauce tzatziki', 'Souvlaki'),
+('Tomate', 'Souvlaki'),
+('Oignon', 'Souvlaki');
+
+-- Dumplings (Jiaozi)
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Farine de blé', 'Dumplings (Jiaozi)'),
+('Chou', 'Dumplings (Jiaozi)'),
+('Viande hachée (porc/bœuf)', 'Dumplings (Jiaozi)'),
+('Gingembre', 'Dumplings (Jiaozi)'),
+('Coriandre', 'Dumplings (Jiaozi)'),
+('Ail', 'Dumplings (Jiaozi)'),
+('Sauce soja', 'Dumplings (Jiaozi)'),
+('Huile de sésame', 'Dumplings (Jiaozi)');
+
+-- Sushi (Nigiri)
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Riz', 'Sushi (Nigiri)'),
+('Saumon', 'Sushi (Nigiri)'),
+('Vinaigre', 'Sushi (Nigiri)');
+
+-- Butter Chicken
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Poulet cuit en sauce', 'Butter Chicken'),
+('Tomate', 'Butter Chicken'),
+('Crème', 'Butter Chicken'),
+('Épices diverses', 'Butter Chicken'),
+('Beurre', 'Butter Chicken');
+
+-- Pad Thai
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Nouilles de riz', 'Pad Thai'),
+('Crevettes', 'Pad Thai'),
+('Germes de soja', 'Pad Thai'),
+('Cacahuètes', 'Pad Thai'),
+('Œufs', 'Pad Thai'),
+('Sauce soja', 'Pad Thai'),
+('Coriandre', 'Pad Thai');
+
+-- Bibimbap
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Riz', 'Bibimbap'),
+('Légumes variés', 'Bibimbap'),
+('Œufs', 'Bibimbap'),
+('Gochujang (pâte de piment)', 'Bibimbap'),
+('Viande hachée (bœuf/agneau)', 'Bibimbap');
+
+-- Tagine
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Agneau mijoté', 'Tagine'),
+('Fruits secs', 'Tagine'),
+('Épices diverses', 'Tagine'),
+('Amandes', 'Tagine'),
+('Carotte', 'Tagine');
+
+-- Jollof Rice
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Riz', 'Jollof Rice'),
+('Tomate', 'Jollof Rice'),
+('Poivron', 'Jollof Rice'),
+('Oignon', 'Jollof Rice'),
+('Épices diverses', 'Jollof Rice');
+
+-- Injera with Wat
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Farine de teff', 'Injera with Wat'),
+('Ragoût (avec viande/légumes)', 'Injera with Wat'),
+('Oignon', 'Injera with Wat'),
+('Ail', 'Injera with Wat'),
+('Épices diverses', 'Injera with Wat');
+
+-- Meat Pie
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Farine de blé', 'Meat Pie'),
+('Beurre', 'Meat Pie'),
+('Viande hachée (bœuf/agneau)', 'Meat Pie'),
+('Oignon', 'Meat Pie');
+
+-- Hangi
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Pommes de terre cuites sous terre', 'Hangi'),
+('Viande hachée (bœuf/agneau)', 'Hangi'),
+('Légumes variés', 'Hangi'),
+('Kumara (patate douce)', 'Hangi');
+
+-- Falafel
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Pois chiches', 'Falafel'),
+('Ail', 'Falafel'),
+('Coriandre', 'Falafel'),
+('Persil', 'Falafel'),
+('Tahini (pâte de sésame)', 'Falafel');
+
+-- Kebab
+INSERT INTO Contains (ingredient_name, dish_name) VALUES 
+('Agneau grillé sur brochette', 'Kebab'),
+('Pain pita', 'Kebab'),
+('Oignon', 'Kebab'),
+('Tomate', 'Kebab'),
+('Sauce de viande', 'Kebab');
+
