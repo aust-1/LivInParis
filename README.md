@@ -1,6 +1,94 @@
 # LivinParis
 
-## Projet d'architecture
+Bienvenue dans le projet **LivinParis**, une plateforme de livraison de repas dans Paris intra muros.
+
+## 👥 Nous
+
+Captainbleu (Austin) : Eliott Roussille
+proxy-1 : François Teynier
+
+## 🚀 Démarrage rapide - Docker Desktop
+
+Ce guide vous aide à démarrer rapidement l’environnement de développement avec Docker.
+
+---
+
+### 🐳 Prérequis
+
+Assurez-vous d’avoir installé :
+
+- [Docker](https://www.docker.com/products/docker-desktop/)
+- [Docker Compose](https://docs.docker.com/compose/install/) (souvent inclus avec Docker Desktop)
+
+Ou avec :
+
+```bash
+winget install -e --id Docker.DockerDesktop
+```
+
+---
+
+### 🚀 Lancer le projet
+
+#### 1. Cloner le dépôt
+
+```bash
+git clone https://github.com/Captainbleu/LivinParis.git
+cd LivinParis
+```
+
+#### 2. Démarrer les conteneurs
+
+```bash
+docker compose up -d
+```
+
+Cela va :
+
+- Démarrer une instance MySQL préconfigurée
+- Créer les volumes nécessaires pour la persistance
+- Exposer le port de la base de données (`3306` par défaut)
+
+#### 3. (Optionnel) Vérifier l’état
+
+```bash
+docker compose ps
+```
+
+---
+
+### 🛠️ Détails techniques
+
+| Service     | Port | Description                  |
+|-------------|------|------------------------------|
+| `mysql`     | 3306 | Base de données MySQL        |
+
+Les identifiants par défaut (définis dans `docker-compose.yml`) sont :
+
+```env
+DB_HOST=localhost
+DB_ROOT_PASSWORD=451520
+DB_USER=livinuser
+DB_PASSWORD=postgresbatmysql
+DB_NAME=livinparisroussilleteynier
+DB_PORT=3306
+```
+
+---
+
+### 🧹 Arrêter et nettoyer
+
+```bash
+docker compose down
+```
+
+Ajoutez `--volumes` si vous souhaitez supprimer les volumes (⚠️ perte de données) :
+
+```bash
+docker compose down --volumes
+```
+
+# Architecture
 
 LivinParis
 ├─ docs
