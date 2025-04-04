@@ -8,7 +8,7 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 /// Provides implementation for transaction-related operations in the database.
 /// </summary>
 [ConnectionControl]
-public class TransactionService : ITransactionService
+public class OrderTransactionService : IOrderTransactionService
 {
     #region CRUD
 
@@ -22,7 +22,7 @@ public class TransactionService : ITransactionService
     {
         command!.CommandText =
             @"
-                INSERT INTO Transaction (
+                INSERT INTO OrderTransaction (
                     transaction_id,
                     transaction_datetime,
                     account_id
@@ -56,7 +56,7 @@ public class TransactionService : ITransactionService
         StringBuilder query = new(
             @"
                 SELECT *
-                FROM Transaction t
+                FROM OrderTransaction ot
             "
         );
 
@@ -64,7 +64,7 @@ public class TransactionService : ITransactionService
         {
             query.Append(
                 @"
-                    JOIN OrderLine ol ON t.transaction_id = ol.transaction_id
+                    JOIN OrderLine ol ON ot.transaction_id = ol.transaction_id
                     JOIN MenuProposal mp ON ol.account_id = mp.account_id
                     JOIN Dish d ON mp.dish_id = d.dish_id
                 "
@@ -73,12 +73,12 @@ public class TransactionService : ITransactionService
 
         if (transactionDate is not null)
         {
-            conditions.Add("t.transaction_datetime = @date");
+            conditions.Add("ot.transaction_datetime = @date");
         }
 
         if (customerAccountId is not null)
         {
-            conditions.Add("t.account_id = @account");
+            conditions.Add("ot.account_id = @account");
         }
 
         if (minTotalPrice is not null || maxTotalPrice is not null)
@@ -93,7 +93,7 @@ public class TransactionService : ITransactionService
 
         if (minTotalPrice is not null || maxTotalPrice is not null)
         {
-            query.Append(" GROUP BY t.transaction_id HAVING ");
+            query.Append(" GROUP BY ot.transaction_id HAVING ");
             List<string> having = [];
 
             if (minTotalPrice is not null)
@@ -160,7 +160,7 @@ public class TransactionService : ITransactionService
     /// <inheritdoc/>
     public virtual void Delete(int transactionId, MySqlCommand? command = null)
     {
-        command!.CommandText = "DELETE FROM Transaction WHERE transaction_id = @id";
+        command!.CommandText = "DELETE FROM OrderTransaction WHERE transaction_id = @id";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@id", transactionId);
         command.ExecuteNonQuery();
@@ -181,7 +181,7 @@ public class TransactionService : ITransactionService
         command!.CommandText =
             @"
         SELECT account_id, COUNT(*) AS command_count
-        FROM Transaction
+        FROM OrderTransaction
         GROUP BY account_id
         ORDER BY command_count DESC
         LIMIT @limit";
@@ -209,13 +209,13 @@ public class TransactionService : ITransactionService
 
         command!.CommandText =
             @"
-        SELECT t.account_id, SUM(d.price) AS total_spent
-        FROM Transaction t
-        JOIN OrderLine o ON t.transaction_id = o.transaction_id
-        JOIN MenuProposal mp ON o.account_id = mp.account_id
+        SELECT ot.account_id, SUM(d.price) AS total_spent
+        FROM OrderTransaction ot
+        JOIN OrderLine ol ON ot.transaction_id = ol.transaction_id
+        JOIN MenuProposal mp ON ol.account_id = mp.account_id
         JOIN Dish d ON mp.dish_id = d.dish_id
-        WHERE mp.proposal_date = DATE(o.order_line_datetime)
-        GROUP BY t.account_id
+        WHERE mp.proposal_date = DATE(ol.order_line_datetime)
+        GROUP BY ot.account_id
         ORDER BY total_spent DESC
         LIMIT @limit";
         command.Parameters.Clear();
@@ -225,7 +225,7 @@ public class TransactionService : ITransactionService
         while (reader.Read())
         {
             results.Add(
-                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
             );
         }
 

@@ -42,8 +42,8 @@ public static class Repository
         s_generator.CreateClassProxy<OrderLineService>(s_interceptor);
     private static readonly ReviewService s_reviewService =
         s_generator.CreateClassProxy<ReviewService>(s_interceptor);
-    private static readonly TransactionService s_transactionService =
-        s_generator.CreateClassProxy<TransactionService>(s_interceptor);
+    private static readonly OrderTransactionService s_orderTransactionService =
+        s_generator.CreateClassProxy<OrderTransactionService>(s_interceptor);
 
     #endregion Fields
 
@@ -97,9 +97,9 @@ public static class Repository
     {
         get { return s_reviewService; }
     }
-    public static TransactionService Transaction
+    public static OrderTransactionService OrderTransaction
     {
-        get { return s_transactionService; }
+        get { return s_orderTransactionService; }
     }
 
     #endregion Properties

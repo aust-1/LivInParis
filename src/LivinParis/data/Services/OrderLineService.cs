@@ -384,7 +384,7 @@ public class OrderLineService : IOrderLineService
         MySqlCommand? command = null
     )
     {
-        List<List<string>> results = new();
+        List<List<string>> results = [];
 
         command!.CommandText =
             @"
@@ -400,7 +400,7 @@ public class OrderLineService : IOrderLineService
         while (reader.Read())
         {
             results.Add(
-                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
             );
         }
 

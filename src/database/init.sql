@@ -53,7 +53,7 @@ CREATE TABLE
       loyalty_rank ENUM ('classic', 'bronze', 'silver', 'gold'),
       customer_is_banned BOOLEAN,
       PRIMARY KEY (account_id),
-      FOREIGN KEY (account_id) REFERENCES Account (account_id)
+      FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -64,17 +64,18 @@ CREATE TABLE
       chef_is_banned BOOLEAN,
       address_id VARCHAR(50) NOT NULL,
       PRIMARY KEY (account_id),
-      FOREIGN KEY (account_id) REFERENCES Account (account_id),
+      FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE,
       FOREIGN KEY (address_id) REFERENCES Address (address_id)
    );
+   //TODO: gérer adress delete sans cascade
 
 CREATE TABLE
-   Transaction (
+   OrderTransaction (
       transaction_id INT,
       transaction_datetime DATETIME,
       account_id INT NOT NULL,
       PRIMARY KEY (transaction_id),
-      FOREIGN KEY (account_id) REFERENCES Customer (account_id)
+      FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -84,7 +85,7 @@ CREATE TABLE
       contact_first_name VARCHAR(50),
       contact_last_name VARCHAR(50),
       PRIMARY KEY (account_id),
-      FOREIGN KEY (account_id) REFERENCES Customer (account_id)
+      FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -96,8 +97,8 @@ CREATE TABLE
       phone_number VARCHAR(50),
       address_id VARCHAR(50) NOT NULL,
       PRIMARY KEY (account_id),
-      FOREIGN KEY (account_id) REFERENCES Customer (account_id),
-      FOREIGN KEY (address_id) REFERENCES Address (address_id)
+      FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE,
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -117,9 +118,9 @@ CREATE TABLE
       transaction_id INT NOT NULL,
       account_id INT NOT NULL,
       PRIMARY KEY (order_line_id),
-      FOREIGN KEY (address_id) REFERENCES Address (address_id),
-      FOREIGN KEY (transaction_id) REFERENCES Transaction (transaction_id),
-      FOREIGN KEY (account_id) REFERENCES Chef (account_id)
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE CASCADE,
+      FOREIGN KEY (transaction_id) REFERENCES OrderTransaction (transaction_id) ON DELETE CASCADE,
+      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -131,7 +132,7 @@ CREATE TABLE
       review_date DATE,
       order_line_id INT NOT NULL,
       PRIMARY KEY (review_id),
-      FOREIGN KEY (order_line_id) REFERENCES OrderLine (order_line_id)
+      FOREIGN KEY (order_line_id) REFERENCES OrderLine (order_line_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -140,8 +141,8 @@ CREATE TABLE
       proposal_date DATE,
       dish_id INT NOT NULL,
       PRIMARY KEY (account_id, proposal_date),
-      FOREIGN KEY (account_id) REFERENCES Chef (account_id),
-      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id)
+      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE CASCADE,
+      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
@@ -149,6 +150,6 @@ CREATE TABLE
       ingredient_id INT,
       dish_id INT,
       PRIMARY KEY (ingredient_id, dish_id),
-      FOREIGN KEY (ingredient_id) REFERENCES Ingredient (ingredient_id),
-      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id)
+      FOREIGN KEY (ingredient_id) REFERENCES Ingredient (ingredient_id) ON DELETE CASCADE,
+      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id) ON DELETE CASCADE
    );

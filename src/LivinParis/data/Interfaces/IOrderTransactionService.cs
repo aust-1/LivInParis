@@ -5,7 +5,7 @@ namespace LivinParisRoussilleTeynier.Data.Interfaces;
 /// <summary>
 /// Provides methods for transaction-related operations in the database.
 /// </summary>
-public interface ITransactionService
+public interface IOrderTransactionService
 {
     #region CRUD
 

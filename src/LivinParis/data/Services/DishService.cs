@@ -297,7 +297,7 @@ public class DishService : IDishService
     /// <inheritdoc/>
     public virtual List<List<string>> GetMostOrderedDishes(int limit, MySqlCommand? command = null)
     {
-        List<List<string>> results = new();
+        List<List<string>> results = [];
 
         command!.CommandText =
             @"
@@ -316,7 +316,7 @@ public class DishService : IDishService
         while (reader.Read())
         {
             results.Add(
-                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
             );
         }
 
@@ -336,7 +336,7 @@ public class DishService : IDishService
             @"
         SELECT d.cuisine_nationality, COUNT(*) AS count
         FROM OrderLine ol
-        JOIN Transaction t ON ol.transaction_id = t.transaction_id
+        JOIN OrderTransaction ot ON ol.transaction_id = ot.transaction_id
         JOIN MenuProposal mp ON mp.account_id = ol.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
         JOIN Dish d ON mp.dish_id = d.dish_id
         WHERE t.account_id = @customerId
