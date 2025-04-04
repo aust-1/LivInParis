@@ -2,7 +2,7 @@ CREATE DATABASE PSI;
 USE PSI --;
 CREATE TABLE Account(
    account_id INT,
-   email_account VARCHAR(100),
+   account_email VARCHAR(100),
    password VARCHAR(50),
    PRIMARY KEY(account_id)
 );
@@ -22,7 +22,7 @@ CREATE TABLE Address(
    address_id VARCHAR(50),
    number INT NOT NULL,
    street VARCHAR(50) NOT NULL,
-   postalCode INT,
+   postal_code INT,
    nearest_metro VARCHAR(50),
    PRIMARY KEY(address_id)
 );
@@ -74,7 +74,7 @@ CREATE TABLE Individual(
    account_id INT,
    last_name VARCHAR(50),
    first_name VARCHAR(50),
-   email VARCHAR(100),
+   personal_email VARCHAR(100),
    phone_number VARCHAR(50),
    address_id VARCHAR(50) NOT NULL,
    PRIMARY KEY(account_id),
