@@ -1,3 +1,9 @@
+global using ConsoleAppVisuals;
+global using ConsoleAppVisuals.Enums;
+global using ConsoleAppVisuals.InteractiveElements;
+global using ConsoleAppVisuals.PassiveElements;
+global using LivinParisRoussilleTeynier.Data;
 global using LivinParisRoussilleTeynier.Data.Attributes;
 global using LivinParisRoussilleTeynier.Models.Enums;
 global using LivinParisRoussilleTeynier.Models.Maps;
+global using LivinParisRoussilleTeynier.UI;

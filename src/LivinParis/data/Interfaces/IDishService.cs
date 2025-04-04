@@ -22,7 +22,7 @@ public interface IDishService
     /// <param name="photoPath">The path to the dish's photo.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int dishId,
+        int? dishId,
         string dishName,
         DishType dishType,
         int expiryTime,

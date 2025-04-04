@@ -14,7 +14,7 @@ public class OrderLineService : IOrderLineService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int orderLineId,
+        int? orderLineId,
         DateTime orderLineDate,
         int duration,
         OrderLineStatus orderLineStatus,

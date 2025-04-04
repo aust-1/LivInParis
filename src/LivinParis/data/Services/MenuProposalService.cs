@@ -14,7 +14,7 @@ public class MenuProposalService : IMenuProposalService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int chefId,
+        int? chefId,
         DateOnly proposalDate,
         int dishId,
         MySqlCommand? command = null

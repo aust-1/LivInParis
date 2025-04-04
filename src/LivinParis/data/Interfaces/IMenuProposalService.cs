@@ -16,7 +16,7 @@ public interface IMenuProposalService
     /// <param name="proposalDate">The date of the proposal.</param>
     /// <param name="dishId">The ID of the dish being proposed.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Create(int chefId, DateOnly proposalDate, int dishId, MySqlCommand? command = null);
+    void Create(int? chefId, DateOnly proposalDate, int dishId, MySqlCommand? command = null);
 
     /// <summary>
     /// Retrieves a list of menu proposals with optional filters.

@@ -14,7 +14,7 @@ public class ReviewService : IReviewService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int reviewId,
+        int? reviewId,
         ReviewType reviewType,
         decimal rating,
         string comment,

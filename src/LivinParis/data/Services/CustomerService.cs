@@ -14,7 +14,7 @@ public class CustomerService : ICustomerService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int customerAccountId,
+        int? customerAccountId,
         decimal customerRating,
         LoyaltyRank loyaltyRank,
         bool customerIsBanned,
@@ -182,53 +182,62 @@ public class CustomerService : ICustomerService
     #region Statistics
 
     /// <inheritdoc/>
-    public virtual List<List<string>> GetCustomersServedByChef(
+    public virtual List<List<string>> GetCustomersByOrderCount(
         int limit,
-        int chefId,
-        DateTime? from = null,
-        DateTime? to = null,
         MySqlCommand? command = null
     )
     {
         List<List<string>> results = [];
 
-        StringBuilder query = new(
+        command!.CommandText =
             @"
-        SELECT DISTINCT ot.account_id
-        FROM OrderLine ol
-        JOIN OrderTransaction ot ON ol.transaction_id = ot.transaction_id
-        WHERE ol.account_id = @chefId
-    "
-        );
-
-        if (from is not null)
-        {
-            query.Append(" AND ol.order_line_datetime >= @from");
-        }
-        if (to is not null)
-        {
-            query.Append(" AND ol.order_line_datetime <= @to");
-        }
-
-        query.Append(" LIMIT @limit");
-
-        command!.CommandText = query.ToString();
+        SELECT account_id, COUNT(*) AS command_count
+        FROM OrderTransaction
+        GROUP BY account_id
+        ORDER BY command_count DESC
+        LIMIT @limit";
         command.Parameters.Clear();
-        command.Parameters.AddWithValue("@chefId", chefId);
         command.Parameters.AddWithValue("@limit", limit);
-        if (from is not null)
-        {
-            command.Parameters.AddWithValue("@from", from);
-        }
-        if (to is not null)
-        {
-            command.Parameters.AddWithValue("@to", to);
-        }
 
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            results.Add([reader[0]?.ToString() ?? string.Empty]);
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCustomersBySpending(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT ot.account_id, SUM(d.price) AS total_spent
+        FROM OrderTransaction ot
+        JOIN OrderLine ol ON ot.transaction_id = ol.transaction_id
+        JOIN MenuProposal mp ON ol.account_id = mp.account_id
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE mp.proposal_date = DATE(ol.order_line_datetime)
+        GROUP BY ot.account_id
+        ORDER BY total_spent DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
         }
 
         return results;

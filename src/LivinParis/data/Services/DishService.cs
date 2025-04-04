@@ -14,7 +14,7 @@ public class DishService : IDishService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int dishId,
+        int? dishId,
         string dishName,
         DishType dishType,
         int expiryTime,

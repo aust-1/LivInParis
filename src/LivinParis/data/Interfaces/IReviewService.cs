@@ -20,7 +20,7 @@ public interface IReviewService
     /// <param name="orderLineId">The unique identifier for the order line associated with the review.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int reviewId,
+        int? reviewId,
         ReviewType reviewType,
         decimal rating,
         string comment,

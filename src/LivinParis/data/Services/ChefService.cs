@@ -14,7 +14,7 @@ public class ChefService : IChefService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int chefAccountId,
+        int? chefAccountId,
         decimal chefRating,
         bool eatsOnSite,
         bool chefIsBanned,
@@ -182,6 +182,59 @@ public class ChefService : IChefService
     #endregion CRUD
 
     #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCustomersServedByChef(
+        int limit,
+        int chefId,
+        DateTime? from = null,
+        DateTime? to = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        StringBuilder query = new(
+            @"
+        SELECT DISTINCT ot.account_id
+        FROM OrderLine ol
+        JOIN OrderTransaction ot ON ol.transaction_id = ot.transaction_id
+        WHERE ol.account_id = @chefId
+    "
+        );
+
+        if (from is not null)
+        {
+            query.Append(" AND ol.order_line_datetime >= @from");
+        }
+        if (to is not null)
+        {
+            query.Append(" AND ol.order_line_datetime <= @to");
+        }
+
+        query.Append(" LIMIT @limit");
+
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@chefId", chefId);
+        command.Parameters.AddWithValue("@limit", limit);
+        if (from is not null)
+        {
+            command.Parameters.AddWithValue("@from", from);
+        }
+        if (to is not null)
+        {
+            command.Parameters.AddWithValue("@to", to);
+        }
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add([reader[0]?.ToString() ?? string.Empty]);
+        }
+
+        return results;
+    }
 
     /// <inheritdoc/>
     public virtual List<string> GetTodayDishByChef(int chefId, MySqlCommand? command = null)

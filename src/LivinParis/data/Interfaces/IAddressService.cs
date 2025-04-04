@@ -19,7 +19,7 @@ public interface IAddressService
     /// <param name="nearestMetro">The nearest metro station to the address.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
     void Create(
-        int addressId,
+        int? addressId,
         int addressNumber,
         string street,
         int postalCode,

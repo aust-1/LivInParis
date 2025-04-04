@@ -18,7 +18,7 @@ public interface ICustomerService
     /// <param name="customerIsBanned">Indicates whether the customer is banned.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int customerAccountId,
+        int? customerAccountId,
         decimal customerRating,
         LoyaltyRank loyaltyRank,
         bool customerIsBanned,
@@ -92,21 +92,20 @@ public interface ICustomerService
     #region Statistics
 
     /// <summary>
-    /// Retrieves customers served by a specific chef within a date range.
+    /// Retrieves the top customers by order count from the database.
     /// </summary>
-    /// <param name="limit">The maximum number of results to return.</param>
-    /// <param name="chefId">The unique identifier for the chef.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
+    /// <param name="limit">The maximum number of customers to retrieve.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of lists of strings representing customers served by the chef.</returns>
-    List<List<string>> GetCustomersServedByChef(
-        int limit,
-        int chefId,
-        DateTime? from = null,
-        DateTime? to = null,
-        MySqlCommand? command = null
-    );
+    /// <returns>A list of customers sorted by order count.</returns>
+    List<List<string>> GetCustomersByOrderCount(int limit, MySqlCommand? command = null);
+
+    /// <summary>
+    /// Retrieves the top customers by spending from the database.
+    /// </summary>
+    /// <param name="limit">The maximum number of customers to retrieve.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of customers sorted by spending.</returns>
+    List<List<string>> GetCustomersBySpending(int limit, MySqlCommand? command = null);
 
     /// <summary>
     /// Retrieves the average price per customer order.

@@ -15,7 +15,7 @@ namespace LivinParisRoussilleTeynier.Tests
             SortedDictionary<Node<Station>, double>
         > XlsxToAdjacencyList(string fileName)
         {
-            CultureInfo culture = new CultureInfo("en-US");
+            CultureInfo culture = new("en-US");
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
@@ -98,7 +98,7 @@ namespace LivinParisRoussilleTeynier.Tests
 
         private static double[,] XlsxToAdjacencyMatrix(string fileName)
         {
-            CultureInfo culture = new CultureInfo("en-US");
+            CultureInfo culture = new("en-US");
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
@@ -198,7 +198,7 @@ namespace LivinParisRoussilleTeynier.Tests
             for (int i = 0; i < 20; i++)
             {
                 Node<Station>.Clean();
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var adjacencyList = XlsxToAdjacencyList("MetroParis");
                 new Graph<Station>(adjacencyList);
@@ -217,7 +217,7 @@ namespace LivinParisRoussilleTeynier.Tests
             for (int i = 0; i < 20; i++)
             {
                 Node<Station>.Clean();
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var adjacencyMatrix = XlsxToAdjacencyMatrix("MetroParis");
                 new Graph<Station>(adjacencyMatrix);
@@ -238,10 +238,10 @@ namespace LivinParisRoussilleTeynier.Tests
         public void PathfindingTimeByDijkstra(int startMin, int startMax)
         {
             long total = 0;
-            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            Graph<Station> graph = new(XlsxToAdjacencyMatrix("MetroParis"));
             for (int start = startMin; start <= startMax; start++)
             {
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var result = graph.Dijkstra(start);
                 sw.Stop();
@@ -257,10 +257,10 @@ namespace LivinParisRoussilleTeynier.Tests
         public void PathfindingTimeByBellmanFord(int startMin, int startMax)
         {
             long total = 0;
-            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            Graph<Station> graph = new(XlsxToAdjacencyMatrix("MetroParis"));
             for (int start = startMin; start <= startMax; start++)
             {
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var result = graph.BellmanFord(start);
                 sw.Stop();
@@ -276,10 +276,10 @@ namespace LivinParisRoussilleTeynier.Tests
         public void PathfindingTimeByRoyFloydWarshall(int iterations)
         {
             long total = 0;
-            Graph<Station> graph = new Graph<Station>(XlsxToAdjacencyMatrix("MetroParis"));
+            Graph<Station> graph = new(XlsxToAdjacencyMatrix("MetroParis"));
             for (int i = 0; i < iterations; i++)
             {
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var result = graph.RoyFloydWarshall();
                 sw.Stop();

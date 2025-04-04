@@ -12,7 +12,7 @@ public class ContainsService : IContainsService
     #region CRUD
 
     /// <inheritdoc/>
-    public virtual void Create(int ingredientId, int dishId, MySqlCommand? command = null)
+    public virtual void Create(int? ingredientId, int dishId, MySqlCommand? command = null)
     {
         command!.CommandText =
             "INSERT INTO Contains (ingredient_id, dish_id) VALUES (@ingredient, @dish)";

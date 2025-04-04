@@ -18,7 +18,7 @@ public interface ICompanyService
     /// <param name="contactLastName">The last name of the contact person.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int companyCustomerAccountId,
+        int? companyCustomerAccountId,
         string companyName,
         string contactFirstName,
         string contactLastName,

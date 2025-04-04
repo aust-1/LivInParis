@@ -13,7 +13,7 @@ public class AccountService : IAccountService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int accountId,
+        int? accountId,
         string accountEmail,
         string accountPassword,
         MySqlCommand? command = null
@@ -82,11 +82,11 @@ public class AccountService : IAccountService
     }
 
     /// <inheritdoc/>
-    public virtual void Delete(int accountId, MySqlCommand? command = null)
+    public virtual void Delete(string accountEmail, MySqlCommand? command = null)
     {
-        command!.CommandText = "DELETE FROM Account WHERE account_id = @id";
+        command!.CommandText = "DELETE FROM Account WHERE account_email = @email";
         command.Parameters.Clear();
-        command.Parameters.AddWithValue("@id", accountId);
+        command.Parameters.AddWithValue("@email", accountEmail);
         command.ExecuteNonQuery();
     }
 

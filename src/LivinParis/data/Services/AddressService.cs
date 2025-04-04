@@ -13,7 +13,7 @@ public class AddressService : IAddressService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int addressId,
+        int? addressId,
         int addressNumber,
         string street,
         int postalCode,

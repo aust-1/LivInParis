@@ -36,7 +36,7 @@ public static class Visualization<T>
         float fontsize
     )
     {
-        CultureInfo culture = new CultureInfo("en-US");
+        CultureInfo culture = new("en-US");
         Thread.CurrentThread.CurrentCulture = culture;
         Thread.CurrentThread.CurrentUICulture = culture;
 

@@ -14,7 +14,7 @@ public class OrderTransactionService : IOrderTransactionService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int transactionId,
+        int? transactionId,
         DateTime transactionDate,
         int customerAccountId,
         MySqlCommand? command = null
@@ -169,68 +169,6 @@ public class OrderTransactionService : IOrderTransactionService
     #endregion CRUD
 
     #region Statistics
-
-    /// <inheritdoc/>
-    public virtual List<List<string>> GetTopCustomersByOrderCount(
-        int limit,
-        MySqlCommand? command = null
-    )
-    {
-        List<List<string>> results = [];
-
-        command!.CommandText =
-            @"
-        SELECT account_id, COUNT(*) AS command_count
-        FROM OrderTransaction
-        GROUP BY account_id
-        ORDER BY command_count DESC
-        LIMIT @limit";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@limit", limit);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            results.Add(
-                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
-            );
-        }
-
-        return results;
-    }
-
-    /// <inheritdoc/>
-    public virtual List<List<string>> GetTopCustomersBySpending(
-        int limit,
-        MySqlCommand? command = null
-    )
-    {
-        List<List<string>> results = [];
-
-        command!.CommandText =
-            @"
-        SELECT ot.account_id, SUM(d.price) AS total_spent
-        FROM OrderTransaction ot
-        JOIN OrderLine ol ON ot.transaction_id = ol.transaction_id
-        JOIN MenuProposal mp ON ol.account_id = mp.account_id
-        JOIN Dish d ON mp.dish_id = d.dish_id
-        WHERE mp.proposal_date = DATE(ol.order_line_datetime)
-        GROUP BY ot.account_id
-        ORDER BY total_spent DESC
-        LIMIT @limit";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@limit", limit);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            results.Add(
-                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
-            );
-        }
-
-        return results;
-    }
 
     public virtual decimal GetOrderTotalPrice(int transactionId, MySqlCommand? command = null)
     {

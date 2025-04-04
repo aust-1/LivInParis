@@ -20,7 +20,7 @@ public interface IIndividualService
     /// <param name="addressId">The ID of the address associated with the individual customer.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int individualCustomerAccountId,
+        int? individualCustomerAccountId,
         string lastName,
         string firstName,
         string personalEmail,

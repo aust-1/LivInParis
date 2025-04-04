@@ -20,7 +20,7 @@ public interface IIngredientService
     /// <param name="productOrigin">The origin of the product.</param>
     /// /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int ingredientId,
+        int? ingredientId,
         string name,
         bool isVegetarian,
         bool isVegan,

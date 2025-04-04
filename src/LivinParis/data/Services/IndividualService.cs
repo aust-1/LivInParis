@@ -14,7 +14,7 @@ public class IndividualService : IIndividualService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int individualCustomerAccountId,
+        int? individualCustomerAccountId,
         string lastName,
         string firstName,
         string personalEmail,

@@ -15,7 +15,7 @@ public interface IContainsService
     /// <param name="ingredientId">The ID of the ingredient.</param>
     /// <param name="dishId">The ID of the dish.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Create(int ingredientId, int dishId, MySqlCommand? command = null);
+    void Create(int? ingredientId, int dishId, MySqlCommand? command = null);
 
     /// <summary>
     /// Gets a list of ingredient IDs for a given dish.

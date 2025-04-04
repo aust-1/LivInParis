@@ -17,7 +17,7 @@ public interface IAccountService
     /// <param name="accountPassword">The password associated with the account.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
     void Create(
-        int accountId,
+        int? accountId,
         string accountEmail,
         string accountPassword,
         MySqlCommand? command = null
@@ -48,11 +48,11 @@ public interface IAccountService
     void UpdatePassword(int accountId, string accountPassword, MySqlCommand? command = null);
 
     /// <summary>
-    /// Deletes a user account by its ID.
+    /// Deletes a user account by its email.
     /// </summary>
-    /// <param name="accountId">The ID of the account to delete.</param>
+    /// <param name="accountEmail">The email of the account to delete.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
-    void Delete(int accountId, MySqlCommand? command = null);
+    void Delete(string accountEmail, MySqlCommand? command = null);
 
     #endregion CRUD
 }

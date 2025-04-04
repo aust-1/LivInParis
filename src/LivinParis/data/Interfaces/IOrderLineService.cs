@@ -22,7 +22,7 @@ public interface IOrderLineService
     /// <param name="chefAccountId">The unique identifier for the chef account associated with the order line.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int orderLineId,
+        int? orderLineId,
         DateTime orderLineDate,
         int duration,
         OrderLineStatus orderLineStatus,

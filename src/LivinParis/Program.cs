@@ -73,6 +73,10 @@ namespace LivinParisRoussilleTeynier
 
             // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
             // metro.Graph.DisplayGraph();
+
+            Window.Open();
+            new MainMenuPage().Display();
+            Window.Close();
         }
     }
 }

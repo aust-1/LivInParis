@@ -17,7 +17,7 @@ public interface IOrderTransactionService
     /// <param name="customerAccountId">The ID of the customer account associated with the transaction.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
-        int transactionId,
+        int? transactionId,
         DateTime transactionDate,
         int customerAccountId,
         MySqlCommand? command = null
@@ -56,22 +56,6 @@ public interface IOrderTransactionService
     #endregion CRUD
 
     #region Statistics
-
-    /// <summary>
-    /// Retrieves the top customers by order count from the database.
-    /// </summary>
-    /// <param name="limit">The maximum number of customers to retrieve.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of customers sorted by order count.</returns>
-    List<List<string>> GetTopCustomersByOrderCount(int limit, MySqlCommand? command = null);
-
-    /// <summary>
-    /// Retrieves the top customers by spending from the database.
-    /// </summary>
-    /// <param name="limit">The maximum number of customers to retrieve.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of customers sorted by spending.</returns>
-    List<List<string>> GetTopCustomersBySpending(int limit, MySqlCommand? command = null);
 
     /// <summary>
     /// Retrieves the total price of an transaction.

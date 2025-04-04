@@ -14,7 +14,7 @@ public class CompanyService : ICompanyService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int companyCustomerAccountId,
+        int? companyCustomerAccountId,
         string companyName,
         string contactFirstName,
         string contactLastName,

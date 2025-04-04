@@ -2,7 +2,7 @@
 
 CREATE TABLE
    Account (
-      account_id INT,
+      account_id INT AUTO_INCREMENT,
       account_email VARCHAR(100),
       account_password VARCHAR(50),
       PRIMARY KEY (account_id)
@@ -10,7 +10,7 @@ CREATE TABLE
 
 CREATE TABLE
    Ingredient (
-      ingredient_id INT,
+      ingredient_id INT AUTO_INCREMENT,
       ingredient_name VARCHAR(50) NOT NULL,
       is_vegetarian BOOLEAN,
       is_vegan BOOLEAN,
@@ -24,7 +24,7 @@ CREATE TABLE
 
 CREATE TABLE
    Address (
-      address_id INT,
+      address_id INT AUTO_INCREMENT,
       address_number INT NOT NULL,
       street VARCHAR(50) NOT NULL,
       postal_code INT,
@@ -35,7 +35,7 @@ CREATE TABLE
 
 CREATE TABLE
    Dish (
-      dish_id INT,
+      dish_id INT AUTO_INCREMENT,
       dish_name VARCHAR(50) NOT NULL,
       dish_type ENUM ('starter', 'main_course', 'dessert'),
       expiry_time INT,
@@ -48,7 +48,7 @@ CREATE TABLE
 
 CREATE TABLE
    Customer (
-      account_id INT,
+      account_id INT AUTO_INCREMENT,
       customer_rating DECIMAL(2, 1) CHECK (customer_rating BETWEEN 1 AND 5),
       loyalty_rank ENUM ('classic', 'bronze', 'silver', 'gold'),
       customer_is_banned BOOLEAN,
@@ -58,7 +58,7 @@ CREATE TABLE
 
 CREATE TABLE
    Chef (
-      account_id INT,
+      account_id INT AUTO_INCREMENT,
       chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
       eats_on_site BOOLEAN,
       chef_is_banned BOOLEAN,
@@ -70,7 +70,7 @@ CREATE TABLE
 
 CREATE TABLE
    OrderTransaction (
-      transaction_id INT,
+      transaction_id INT AUTO_INCREMENT,
       transaction_datetime DATETIME,
       account_id INT NOT NULL,
       PRIMARY KEY (transaction_id),
@@ -79,7 +79,7 @@ CREATE TABLE
 
 CREATE TABLE
    Company (
-      account_id INT,
+      account_id INT AUTO_INCREMENT,
       company_name VARCHAR(50) UNIQUE,
       contact_first_name VARCHAR(50),
       contact_last_name VARCHAR(50),
@@ -89,7 +89,7 @@ CREATE TABLE
 
 CREATE TABLE
    Individual (
-      account_id INT,
+      account_id INT AUTO_INCREMENT,
       last_name VARCHAR(50),
       first_name VARCHAR(50),
       personal_email VARCHAR(100),
@@ -102,7 +102,7 @@ CREATE TABLE
 
 CREATE TABLE
    OrderLine (
-      order_line_id INT,
+      order_line_id INT AUTO_INCREMENT,
       order_line_datetime DATETIME,
       duration INT,
       order_line_status ENUM (
@@ -124,7 +124,7 @@ CREATE TABLE
 
 CREATE TABLE
    Review (
-      review_id INT,
+      review_id INT AUTO_INCREMENT,
       review_type ENUM ('customer', 'chef'),
       review_rating DECIMAL(2, 1) CHECK (review_rating BETWEEN 1 AND 5),
       comment VARCHAR(500),

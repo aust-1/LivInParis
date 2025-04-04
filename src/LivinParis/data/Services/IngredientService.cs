@@ -14,7 +14,7 @@ public class IngredientService : IIngredientService
 
     /// <inheritdoc/>
     public virtual void Create(
-        int ingredientId,
+        int? ingredientId,
         string name,
         bool isVegetarian,
         bool isVegan,
