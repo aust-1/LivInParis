@@ -3,7 +3,7 @@ USE PSI --;
 CREATE TABLE Account(
    account_id INT,
    account_email VARCHAR(100),
-   password VARCHAR(50),
+   account_password VARCHAR(50),
    PRIMARY KEY(account_id)
 );
 CREATE TABLE Ingredient(
@@ -20,11 +20,12 @@ CREATE TABLE Ingredient(
 );
 CREATE TABLE Address(
    address_id VARCHAR(50),
-   number INT NOT NULL,
+   address_number INT NOT NULL,
    street VARCHAR(50) NOT NULL,
    postal_code INT,
    nearest_metro VARCHAR(50),
-   PRIMARY KEY(address_id)
+   PRIMARY KEY(address_id),
+   UNIQUE(address_number, street)
 );
 CREATE TABLE Dish(
    dish_id INT,
@@ -32,14 +33,14 @@ CREATE TABLE Dish(
    dish_type ENUM('starter', 'main_course', 'dessert'),
    expiry_time INT,
    cuisine_nationality VARCHAR(50),
-   quantity INT,
-   price VARCHAR(50),
+   quantity INT CHECK (quantity >= 0),
+   price DECIMAL(15, 2) CHECK (price >= 0),
    photo_path VARCHAR(50),
    PRIMARY KEY(dish_id)
 );
 CREATE TABLE Customer(
    account_id INT,
-   customer_rating DECIMAL(2, 1),
+   customer_rating DECIMAL(2, 1) CHECK (customer_rating BETWEEN 1 AND 5),
    loyalty_rank ENUM('classic', 'bronze', 'silver', 'gold'),
    customer_is_banned BOOLEAN,
    PRIMARY KEY(account_id),
@@ -47,7 +48,7 @@ CREATE TABLE Customer(
 );
 CREATE TABLE Chef(
    account_id INT,
-   chef_rating DECIMAL(2, 1),
+   chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
    eats_on_site BOOLEAN,
    chef_is_banned BOOLEAN,
    address_id VARCHAR(50) NOT NULL,
@@ -64,7 +65,7 @@ CREATE TABLE Transaction(
 );
 CREATE TABLE Company(
    account_id INT,
-   company_name VARCHAR(50),
+   company_name VARCHAR(50) UNIQUE,
    contact_first_name VARCHAR(50),
    contact_last_name VARCHAR(50),
    PRIMARY KEY(account_id),
@@ -104,7 +105,7 @@ CREATE TABLE OrderLine(
 CREATE TABLE Review(
    review_id INT,
    review_type ENUM('customer', 'chef'),
-   review_rating DECIMAL(2, 1),
+   review_rating DECIMAL(2, 1) CHECK (review_rating BETWEEN 1 AND 5),
    comment VARCHAR(500),
    review_date DATE,
    order_line_id INT NOT NULL,
