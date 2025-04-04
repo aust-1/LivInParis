@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IIndividual
+public interface IIndividualService
 {
-    void CreateIndividual(
+    void Create(
         int individualCustomerAccountId,
         string lastName,
         string firstName,
@@ -14,7 +14,7 @@ public interface IIndividual
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetIndividuals(
+    List<List<string>> Read(
         int limit,
         string? lastName = null,
         string? firstName = null,
@@ -25,7 +25,7 @@ public interface IIndividual
         MySqlCommand? command = null
     );
 
-    void UpdateIndividual(
+    void Update(
         int individualCustomerAccountId,
         string? lastName = null,
         string? firstName = null,
@@ -35,7 +35,5 @@ public interface IIndividual
         MySqlCommand? command = null
     );
 
-    void DeleteIndividual(int individualCustomerAccountId, MySqlCommand? command = null);
+    void Delete(int individualCustomerAccountId, MySqlCommand? command = null);
 }
-
-//HACK: stats par prenom, par nom

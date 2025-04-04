@@ -1,74 +1,403 @@
-// using LivinParisRoussilleTeynier.Data.Interfaces;
-// using MySql.Data.MySqlClient;
+using System.Text;
+using LivinParisRoussilleTeynier.Data.Interfaces;
+using MySql.Data.MySqlClient;
 
-// namespace LivinParisRoussilleTeynier.Data.Services;
+namespace LivinParisRoussilleTeynier.Data.Services;
 
-// [ConnectionControl]
-// public class OrderLineRepository : IOrderLine
-// {
-//     public virtual void CreateOrderLine(
-//         int orderLineId,
-//         DateTime orderLineDate,
-//         int duration,
-//         string status,
-//         bool itsEatIn,
-//         int adressId,
-//         int transactionId,
-//         int accountId,
-//         MySqlCommand? command = null
-//     )
-//     {
-//         command!.CommandText =
-//             "INSERT INTO OrderLine VALUES (@io, @da, @du, @s, @e, @adressId, @transactionId, @accountId)";
-//         command.Parameters.AddWithValue("@io", orderLineId);
-//         command.Parameters.AddWithValue("@da", orderLineDate);
-//         command.Parameters.AddWithValue("@du", duration);
-//         command.Parameters.AddWithValue("@s", status);
-//         command.Parameters.AddWithValue("@e", itsEatIn);
-//         command.Parameters.AddWithValue("@adressId", adressId);
-//         command.Parameters.AddWithValue("@transactionId", transactionId);
-//         command.Parameters.AddWithValue("@accountId", accountId);
-//         command.ExecuteNonQuery();
-//     }
+/// <summary>
+/// Provides implementation for order line operations in the database.
+/// </summary>
+[ConnectionControl]
+public class OrderLineService : IOrderLineService
+{
+    /// <inheritdoc/>
+    public virtual void Create(
+        int orderLineId,
+        DateTime orderLineDate,
+        int duration,
+        OrderLineStatus orderLineStatus,
+        bool isEatIn,
+        int addressId,
+        int transactionId,
+        int chefAccountId,
+        MySqlCommand? command = null
+    )
+    {
+        command!.CommandText =
+            @"
+                INSERT INTO OrderLine (
+                    order_line_id, order_line_datetime, duration, order_line_status,
+                    is_eat_in, address_id, transaction_id, account_id
+                )
+                VALUES (
+                    @id, @date, @duration, @status,
+                    @eatIn, @address, @transaction, @chef
+                )";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", orderLineId);
+        command.Parameters.AddWithValue("@date", orderLineDate);
+        command.Parameters.AddWithValue("@duration", duration);
+        command.Parameters.AddWithValue("@status", orderLineStatus.ToString());
+        command.Parameters.AddWithValue("@eatIn", isEatIn);
+        command.Parameters.AddWithValue("@address", addressId);
+        command.Parameters.AddWithValue("@transaction", transactionId);
+        command.Parameters.AddWithValue("@chef", chefAccountId);
+        command.ExecuteNonQuery();
+    }
 
-//     public virtual List<List<string>> GetOrderLines(int limit, MySqlCommand? command = null)
-//     {
-//         command!.CommandText = "SELECT * FROM OrderLine LIMIT @l";
-//         command.Parameters.AddWithValue("@l", limit);
+    /// <inheritdoc/>
+    public virtual List<List<string>> Read(
+        int limit,
+        DateTime? orderLineDate = null,
+        int? duration = null,
+        OrderLineStatus? orderLineStatus = null,
+        bool? isEatIn = null,
+        int? addressId = null,
+        int? transactionId = null,
+        int? chefAccountId = null,
+        string? orderBy = null,
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+        List<string> conditions = [];
+        StringBuilder query = new("SELECT * FROM OrderLine");
 
-//         using var reader = command.ExecuteReader();
-//         List<List<string>> orderlines = [];
-//         while (reader.Read())
-//         {
-//             List<string> orderline = [];
-//             for (int i = 0; i < reader.FieldCount; i++)
-//             {
-//                 string value = reader[i]?.ToString() ?? string.Empty;
-//                 orderline.Add(value);
-//             }
+        if (orderLineDate is not null)
+        {
+            conditions.Add("order_line_datetime = @date");
+        }
+        if (duration is not null)
+        {
+            conditions.Add("duration = @duration");
+        }
+        if (orderLineStatus is not null)
+        {
+            conditions.Add("order_line_status = @status");
+        }
+        if (isEatIn is not null)
+        {
+            conditions.Add("is_eat_in = @eatIn");
+        }
+        if (addressId is not null)
+        {
+            conditions.Add("address_id = @address");
+        }
+        if (transactionId is not null)
+        {
+            conditions.Add("transaction_id = @transaction");
+        }
+        if (chefAccountId is not null)
+        {
+            conditions.Add("account_id = @chef");
+        }
 
-//             orderlines.Add(orderline);
-//         }
+        if (conditions.Count > 0)
+        {
+            query.Append(" WHERE " + string.Join(" AND ", conditions));
+        }
 
-//         return orderlines;
-//     }
+        if (!string.IsNullOrWhiteSpace(orderBy))
+        {
+            query.Append(" ORDER BY ");
+            query.Append(orderBy);
+            query.Append(orderDirection == true ? " ASC" : " DESC");
+        }
 
-//     public virtual void UpdateStatusOrderLine(
-//         int orderLineId,
-//         string status,
-//         MySqlCommand? command = null
-//     )
-//     {
-//         command!.CommandText = "UPDATE OrderLine SET status = @s WHERE order_line_id = @i";
-//         command.Parameters.AddWithValue("@s", status);
-//         command.Parameters.AddWithValue("@i", orderLineId);
-//         command.ExecuteNonQuery();
-//     }
+        query.Append(" LIMIT @limit");
 
-//     public virtual void DeleteOrderLine(int orderLineId, MySqlCommand? command = null)
-//     {
-//         command!.CommandText = "DELETE FROM OrderLine WHERE order_line_id = @i";
-//         command.Parameters.AddWithValue("@i", orderLineId);
-//         command.ExecuteNonQuery();
-//     }
-// }
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+
+        if (orderLineDate is not null)
+        {
+            command.Parameters.AddWithValue("@date", orderLineDate);
+        }
+        if (duration is not null)
+        {
+            command.Parameters.AddWithValue("@duration", duration);
+        }
+        if (orderLineStatus is not null)
+        {
+            command.Parameters.AddWithValue("@status", orderLineStatus.ToString());
+        }
+        if (isEatIn is not null)
+        {
+            command.Parameters.AddWithValue("@eatIn", isEatIn);
+        }
+        if (addressId is not null)
+        {
+            command.Parameters.AddWithValue("@address", addressId);
+        }
+        if (transactionId is not null)
+        {
+            command.Parameters.AddWithValue("@transaction", transactionId);
+        }
+        if (chefAccountId is not null)
+        {
+            command.Parameters.AddWithValue("@chef", chefAccountId);
+        }
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader.IsDBNull(i)
+                    ? string.Empty
+                    : reader.GetValue(i).ToString() ?? string.Empty;
+                row.Add(value);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCommandCountByStreet(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+                SELECT street, COUNT(*) AS command_count
+                FROM OrderLine
+                JOIN Address ON Address.address_id = OrderLine.address_id
+                GROUP BY street
+                ORDER BY command_count DESC
+                LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [
+                    reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                    reader.IsDBNull(1)
+                        ? string.Empty
+                        : reader.GetValue(1).ToString() ?? string.Empty,
+                ]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCommandCountByPostalCode(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+                SELECT postal_code, COUNT(*) AS command_count
+                FROM OrderLine
+                JOIN Address ON OrderLine.address_id = Address.address_id
+                GROUP BY postal_code
+                ORDER BY command_count DESC
+                LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [
+                    reader.IsDBNull(0)
+                        ? string.Empty
+                        : reader.GetValue(0).ToString() ?? string.Empty,
+                    reader.IsDBNull(1)
+                        ? string.Empty
+                        : reader.GetValue(1).ToString() ?? string.Empty,
+                ]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetTotalOrderValueByStreet(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT a.street, SUM(d.price) AS total_value
+        FROM OrderLine ol
+        JOIN Address a ON ol.address_id = a.address_id
+        JOIN MenuProposal mp ON mp.account_id = ol.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        GROUP BY a.street
+        ORDER BY total_value DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetTotalOrderValueByPostalCode(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT a.postal_code, SUM(d.price) AS total_value
+        FROM OrderLine o
+        JOIN Address a ON o.address_id = a.address_id
+        JOIN MenuProposal mp ON mp.account_id = ol.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        GROUP BY a.postal_code
+        ORDER BY total_value DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetMostOrderedHours(int limit, MySqlCommand? command = null)
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT HOUR(order_line_datetime) AS hour_slot, COUNT(*) AS count
+        FROM OrderLine
+        GROUP BY hour_slot
+        ORDER BY count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetMostOrderedWeekdays(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT DAYNAME(order_line_datetime) AS weekday, COUNT(*) AS count
+        FROM OrderLine
+        GROUP BY weekday
+        ORDER BY count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetAverageOrderDuration(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = new();
+
+        command!.CommandText =
+            @"
+        SELECT o.account_id, AVG(o.duration) AS average_duration
+        FROM OrderLine o
+        GROUP BY o.account_id
+        ORDER BY average_duration DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual void UpdateStatus(
+        int orderLineId,
+        OrderLineStatus orderLineStatus,
+        MySqlCommand? command = null
+    )
+    {
+        command!.CommandText =
+            "UPDATE OrderLine SET order_line_status = @status WHERE order_line_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@status", orderLineStatus.ToString());
+        command.Parameters.AddWithValue("@id", orderLineId);
+        command.ExecuteNonQuery();
+    }
+
+    /// <inheritdoc/>
+    public virtual void Delete(int orderLineId, MySqlCommand? command = null)
+    {
+        command!.CommandText = "DELETE FROM OrderLine WHERE order_line_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", orderLineId);
+        command.ExecuteNonQuery();
+    }
+}

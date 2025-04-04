@@ -2,16 +2,11 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IMenuProposalRepository
+public interface IMenuProposalService
 {
-    void CreateMenuProposal(
-        int chefId,
-        DateOnly proposalDate,
-        int dishId,
-        MySqlCommand? command = null
-    );
+    void Create(int chefId, DateOnly proposalDate, int dishId, MySqlCommand? command = null);
 
-    List<List<string>> GetMenuProposals(
+    List<List<string>> Read(
         int limit,
         int? chefId = null,
         DateOnly? proposalDate = null,
@@ -28,11 +23,6 @@ public interface IMenuProposalRepository
     /// <param name="proposalDate"></param>
     /// <param name="dishId"></param>
     /// <param name="command"></param>
-    void UpdateMenuProposal(
-        int chefId,
-        DateOnly proposalDate,
-        int dishId,
-        MySqlCommand? command = null
-    );
-    void DeleteMenuProposal(int chefId, DateOnly proposalDate, MySqlCommand? command = null);
+    void Update(int chefId, DateOnly proposalDate, int dishId, MySqlCommand? command = null);
+    void Delete(int chefId, DateOnly proposalDate, MySqlCommand? command = null);
 }

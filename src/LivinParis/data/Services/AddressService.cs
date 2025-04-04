@@ -12,7 +12,7 @@ public class AddressService : IAddressService
     /// <inheritdoc/>
     public virtual void Create(
         int addressId,
-        int number,
+        int addressNumber,
         string street,
         int postalCode,
         string nearestMetro,
@@ -21,11 +21,11 @@ public class AddressService : IAddressService
     {
         command!.CommandText =
             @"
-                INSERT INTO Address (address_id, number, street, postal_code, nearest_metro)
-                VALUES (@id, @number, @street, @postalCode, @metro)";
+                INSERT INTO Address (address_id, address_number, street, postal_code, nearest_metro)
+                VALUES (@id, @nb, @street, @postalCode, @metro)";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@id", addressId);
-        command.Parameters.AddWithValue("@number", number);
+        command.Parameters.AddWithValue("@nb", addressNumber);
         command.Parameters.AddWithValue("@street", street);
         command.Parameters.AddWithValue("@postalCode", postalCode);
         command.Parameters.AddWithValue("@metro", nearestMetro);

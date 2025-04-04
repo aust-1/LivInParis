@@ -1,131 +1,228 @@
-// using MySql.Data.MySqlClient;
+using System.Text;
+using LivinParisRoussilleTeynier.Data.Interfaces;
+using MySql.Data.MySqlClient;
 
-// namespace LivinParis.Data;
+namespace LivinParisRoussilleTeynier.Data.Services;
 
-// public static class ReviewRepository : IReview
-// {
-//     private static MySqlConnection? s_connection;
+/// <summary>
+/// Provides implementation for review-related operations in the database.
+/// </summary>
+[ConnectionControl]
+public class ReviewService : IReviewService
+{
+    /// <inheritdoc/>
+    public virtual void Create(
+        int reviewId,
+        ReviewType reviewType,
+        decimal rating,
+        string comment,
+        DateOnly reviewDate,
+        int orderLineId,
+        MySqlCommand? command = null
+    )
+    {
+        command!.CommandText =
+            @"
+                INSERT INTO Review (
+                    review_id, review_type, review_rating, comment,
+                    review_date, order_line_id
+                )
+                VALUES (
+                    @id, @type, @rating, @comment,
+                    @date, @orderLine
+                )";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", reviewId);
+        command.Parameters.AddWithValue("@type", reviewType.ToString());
+        command.Parameters.AddWithValue("@rating", rating);
+        command.Parameters.AddWithValue("@comment", comment);
+        command.Parameters.AddWithValue("@date", reviewDate.ToDateTime(TimeOnly.MinValue));
+        command.Parameters.AddWithValue("@orderLine", orderLineId);
+        command.ExecuteNonQuery();
+    }
 
-//     public static bool InitConnection()
-//     {
-//         try
-//         {
-//             string connection =
-//                 "SERVER=localhost;PORT=3306;DATABASE=PSI;UID=eliottfrancois;PASSWORD=PSI";
-//             s_connection = new MySqlConnection(connection);
-//             return true;
-//         }
-//         catch (Exception)
-//         {
-//             return false;
-//         }
-//     }
+    /// <inheritdoc/>
+    public virtual List<List<string>> Read(
+        int limit,
+        int? reviewId = null,
+        ReviewType? reviewType = null,
+        decimal? minRating = null,
+        decimal? maxRating = null,
+        int? orderLineId = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+        List<string> conditions = [];
+        StringBuilder query = new("SELECT * FROM Review");
 
-//     public static void OpenConnection()
-//     {
-//         s_connection!.Open();
-//     }
+        if (reviewId is not null)
+        {
+            conditions.Add("review_id = @id");
+        }
+        if (reviewType is not null)
+        {
+            conditions.Add("review_type = @type");
+        }
+        if (minRating is not null)
+        {
+            conditions.Add("review_rating >= @minRating");
+        }
+        if (maxRating is not null)
+        {
+            conditions.Add("review_rating <= @maxRating");
+        }
+        if (orderLineId is not null)
+        {
+            conditions.Add("order_line_id = @orderLine");
+        }
 
-//     public static void CloseConnection()
-//     {
-//         s_connection!.Close();
-//     }
+        if (conditions.Count > 0)
+        {
+            query.Append(" WHERE " + string.Join(" AND ", conditions));
+        }
 
-//     ///CRUD
+        query.Append(" LIMIT @limit");
 
-//     public static void CreateReview(
-//         int reviewId,
-//         string reviewType,
-//         decimal reviewRating,
-//         string comment,
-//         DateTime reviewDate
-//     )
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "INSERT INTO account VALUES (@i, @t, @r, @c, @d)";
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.Parameters.AddWithValue("@t", reviewType);
-//         command.Parameters.AddWithValue("@r", reviewRating);
-//         command.Parameters.AddWithValue("@c", comment);
-//         command.Parameters.AddWithValue("@d", reviewDate);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
 
-//     public static List<List<string>> GetReviews(int limit)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "SELECT * FROM Review LIMIT @l";
-//         command.Parameters.AddWithValue("@l", limit);
+        if (reviewId is not null)
+        {
+            command.Parameters.AddWithValue("@id", reviewId);
+        }
+        if (reviewType is not null)
+        {
+            command.Parameters.AddWithValue("@type", reviewType.ToString());
+        }
+        if (minRating is not null)
+        {
+            command.Parameters.AddWithValue("@minRating", minRating);
+        }
+        if (maxRating is not null)
+        {
+            command.Parameters.AddWithValue("@maxRating", maxRating);
+        }
+        if (orderLineId is not null)
+        {
+            command.Parameters.AddWithValue("@orderLine", orderLineId);
+        }
 
-//         using var reader = command.ExecuteReader();
-//         List<List<string>> reviews = [];
-//         while (reader.Read())
-//         {
-//             List<string> review = [];
-//             for (int i = 0; i < reader.FieldCount; i++)
-//             {
-//                 string value = reader[i]?.ToString() ?? string.Empty;
-//                 review.Add(value);
-//             }
-//             reviews.Add(review);
-//         }
-//         return reviews;
-//     }
+        command.Parameters.AddWithValue("@limit", limit);
 
-//     public static void UpdateType(string reviewType, int reviewId)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "UPDATE Review SET review_type = @t WHERE review_id = @i";
-//         command.Parameters.AddWithValue("@t", reviewType);
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader.IsDBNull(i)
+                    ? string.Empty
+                    : reader.GetValue(i).ToString() ?? string.Empty;
+                row.Add(value);
+            }
+            results.Add(row);
+        }
 
-//     public static void UpdateRating(decimal reviewRating, int reviewId)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "UPDATE Review SET review_rating = @r WHERE review_id = @i";
-//         command.Parameters.AddWithValue("@r", reviewRating);
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
+        return results;
+    }
 
-//     public static void UpdateComment(string comment, int reviewId)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "UPDATE Review SET comment = @c WHERE review_id = @i";
-//         command.Parameters.AddWithValue("@c", comment);
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetReviewsByAccount(
+        int limit,
+        int accountId,
+        ReviewType reviewType,
+        string? orderBy = "review_rating",
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
 
-//     public static void UpdateDate(DateTime reviewDate, int reviewId)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "UPDATE Review SET review_date = @d WHERE review_id = @i";
-//         command.Parameters.AddWithValue("@d", reviewDate);
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
+        StringBuilder query = new(
+            @"
+        SELECT r.*
+        FROM Review r
+        JOIN OrderLine o ON r.order_line_id = o.order_line_id
+        WHERE r.review_type = @type AND o.account_id = @accountId
+    "
+        );
 
-//     public static void DeleteReview(string reviewId)
-//     {
-//         OpenConnection();
-//         using var command = new MySqlCommand();
-//         command.CommandText = "DELETE FROM Review WHERE review_id = @i";
-//         command.Parameters.AddWithValue("@i", reviewId);
-//         command.ExecuteNonQuery();
-//         CloseConnection();
-//     }
-// }
+        query.Append(" ORDER BY ");
+        query.Append(orderBy ?? "review_rating");
+        query.Append(orderDirection == true ? " ASC" : " DESC");
+        query.Append(" LIMIT @limit");
+
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@type", reviewType.ToString());
+        command.Parameters.AddWithValue("@accountId", accountId);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row.Add(reader.IsDBNull(i) ? string.Empty : reader[i].ToString() ?? string.Empty);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual void Update(
+        int reviewId,
+        decimal? rating = null,
+        string? comment = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<string> updates = [];
+
+        if (rating is not null)
+        {
+            updates.Add("review_rating = @rating");
+        }
+        if (comment is not null)
+        {
+            updates.Add("comment = @comment");
+        }
+
+        if (updates.Count == 0)
+        {
+            return;
+        }
+
+        StringBuilder query = new();
+        query.Append("UPDATE Review SET ");
+        query.Append(string.Join(", ", updates));
+        query.Append(" WHERE review_id = @id");
+
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+        if (rating is not null)
+        {
+            command.Parameters.AddWithValue("@rating", rating);
+        }
+        if (comment is not null)
+        {
+            command.Parameters.AddWithValue("@comment", comment);
+        }
+        command.Parameters.AddWithValue("@id", reviewId);
+
+        command.ExecuteNonQuery();
+    }
+
+    /// <inheritdoc/>
+    public virtual void Delete(int reviewId, MySqlCommand? command = null)
+    {
+        command!.CommandText = "DELETE FROM Review WHERE review_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", reviewId);
+        command.ExecuteNonQuery();
+    }
+}

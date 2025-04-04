@@ -3,7 +3,7 @@ namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
 /// <summary>
 /// Defines the visual parameters for positioning and styling nodes on a map.
 /// </summary>
-public struct VisualizationParameters
+public class VisualizationParameters
 {
     #region Constants
 

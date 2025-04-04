@@ -18,11 +18,9 @@ public interface IDishService
 
     List<List<string>> Read(
         int limit,
-        int? chefId = null,
-        int? customerId = null,
         string? dishName = null,
         DishType? dishType = null,
-        int? expiryTime = null,
+        int? minExpiryTime = null,
         string? cuisineNationality = null,
         int? quantity = null,
         decimal? minPrice = null,
@@ -34,6 +32,14 @@ public interface IDishService
         bool? isHalal = null,
         bool? isKosher = null,
         ProductOrigin? productOrigin = null,
+        MySqlCommand? command = null
+    );
+
+    List<List<string>> GetMostOrderedDishes(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetCuisineStatsByCustomer(
+        int limit,
+        int customerId,
         MySqlCommand? command = null
     );
 

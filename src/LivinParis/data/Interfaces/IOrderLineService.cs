@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IOrderLine
+public interface IOrderLineService
 {
-    void CreateOrderLine(
+    void Create(
         int orderLineId,
         DateTime orderLineDate,
         int duration,
@@ -16,7 +16,7 @@ public interface IOrderLine
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetOrderLines(
+    List<List<string>> Read(
         int limit,
         DateTime? orderLineDate = null,
         int? duration = null,
@@ -30,15 +30,25 @@ public interface IOrderLine
         MySqlCommand? command = null
     );
 
-    List<List<string>> RetrieveCommandCountByStreet(int limit, MySqlCommand? command = null);
+    List<List<string>> GetCommandCountByStreet(int limit, MySqlCommand? command = null);
 
-    List<List<string>> RetrieveCommandCountByDistrict(int limit, MySqlCommand? command = null);
+    List<List<string>> GetCommandCountByPostalCode(int limit, MySqlCommand? command = null);
 
-    void UpdateOrderLineStatus(
+    List<List<string>> GetTotalOrderValueByStreet(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetTotalOrderValueByPostalCode(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetMostOrderedHours(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetMostOrderedWeekdays(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetAverageOrderDuration(int limit, MySqlCommand? command = null);
+
+    void UpdateStatus(
         int orderLineId,
         OrderLineStatus orderLineStatus,
         MySqlCommand? command = null
     );
 
-    void DeleteOrderLine(int orderLineId, MySqlCommand? command = null);
+    void Delete(int orderLineId, MySqlCommand? command = null);
 }

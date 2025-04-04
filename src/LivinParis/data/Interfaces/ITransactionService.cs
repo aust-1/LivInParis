@@ -2,25 +2,29 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface ITransaction
+public interface ITransactionService
 {
-    void CreateTransaction(
+    void Create(
         int transactionId,
         DateTime transactionDate,
         int customerAccountId,
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetTransactions(
+    List<List<string>> Read(
         int limit,
         DateTime? transactionDate = null,
         int? customerAccountId = null,
-        decimal? totalPriceHigherThan = null,
-        decimal? totalPriceBelow = null,
+        decimal? minTotalPrice = null,
+        decimal? maxTotalPrice = null,
         string? orderBy = null,
         bool? orderDirection = null,
         MySqlCommand? command = null
     );
 
-    void DeleteTransaction(int transactionId, MySqlCommand? command = null);
+    List<List<string>> GetTopCustomersByOrderCount(int limit, MySqlCommand? command = null);
+
+    List<List<string>> GetTopCustomersBySpending(int limit, MySqlCommand? command = null);
+
+    void Delete(int transactionId, MySqlCommand? command = null);
 }

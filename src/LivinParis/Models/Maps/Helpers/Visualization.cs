@@ -140,12 +140,15 @@ public static class Visualization<T>
                 && (layout == "neato" || layout == "fdp")
             )
             {
-                dotBuilder.Append(", penwidth=4");
+                dotBuilder.Append(", penwidth=3.5");
             }
             else
             {
                 dotBuilder.Append($", xlabel=\"{node.VisualizationParameters.Label}\"");
-                //dotBuilder.Append($", fontcolor=\"{node.VisualizationParameters.Color}\"");
+                if (layout != "neato" && layout != "fdp")
+                {
+                    dotBuilder.Append($", fontcolor=\"{node.VisualizationParameters.Color}\"");
+                }
                 processedLabels.Add(node.VisualizationParameters.Label);
             }
 

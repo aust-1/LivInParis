@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Text;
 
 namespace LivinParisRoussilleTeynier
 {
@@ -63,16 +63,16 @@ namespace LivinParisRoussilleTeynier
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            var metro = new Metro("MetroParis");
+            // var metro = new Metro("MetroParis");
 
-            var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
+            // var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
 
-            Console.WriteLine($"La station la plus proche est : {st}");
+            // Console.WriteLine($"La station la plus proche est : {st}");
 
             // var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
 
             // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
-            metro.Graph.DisplayGraph();
+            // metro.Graph.DisplayGraph();
 
             // var generator = new ProxyGenerator();
             // var interceptor = new ConnectionInterceptor();

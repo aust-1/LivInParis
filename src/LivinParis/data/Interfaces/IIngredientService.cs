@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IIngredient
+public interface IIngredientService
 {
-    void CreateIngredient(
+    void Create(
         int ingredientId,
         string name,
         bool isVegetarian,
@@ -17,7 +17,7 @@ public interface IIngredient
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetIngredients(
+    List<List<string>> Read(
         int limit,
         string? name = null,
         bool? isVegetarian = null,
@@ -30,7 +30,7 @@ public interface IIngredient
         MySqlCommand? command = null
     );
 
-    void UpdateIngredientRestrictions(
+    void UpdateRestrictions(
         int ingredientId,
         bool? isVegetarian = null,
         bool? isVegan = null,
@@ -41,5 +41,5 @@ public interface IIngredient
         MySqlCommand? command = null
     );
 
-    void DeleteIngredient(int ingredientId, MySqlCommand? command = null);
+    void Delete(int ingredientId, MySqlCommand? command = null);
 }

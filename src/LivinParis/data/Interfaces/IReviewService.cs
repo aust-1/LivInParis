@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IReview
+public interface IReviewService
 {
-    void CreateReview(
+    void Create(
         int reviewId,
         ReviewType reviewType,
         decimal rating,
@@ -14,22 +14,31 @@ public interface IReview
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetReviews(
+    List<List<string>> Read(
         int limit,
         int? reviewId = null,
         ReviewType? reviewType = null,
-        decimal? ratingHigherThan = null,
-        decimal? ratingBelow = null,
+        decimal? minRating = null,
+        decimal? maxRating = null,
         int? orderLineId = null,
         MySqlCommand? command = null
     );
 
-    void UpdateReview(
+    List<List<string>> GetReviewsByAccount(
+        int limit,
+        int accountId,
+        ReviewType reviewType,
+        string? orderBy = "review_rating",
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    );
+
+    void Update(
         int reviewId,
         decimal? rating = null,
         string? comment = null,
         MySqlCommand? command = null
     );
 
-    void DeleteReview(int reviewId, MySqlCommand? command = null);
+    void Delete(int reviewId, MySqlCommand? command = null);
 }

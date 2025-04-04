@@ -12,9 +12,14 @@ public interface IAccountService
     /// </summary>
     /// <param name="accountId">The unique identifier of the account.</param>
     /// <param name="accountEmail">The email address associated with the account.</param>
-    /// <param name="password">The password associated with the account.</param>
+    /// <param name="accountPassword">The password associated with the account.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
-    void Create(int accountId, string accountEmail, string password, MySqlCommand? command = null);
+    void Create(
+        int accountId,
+        string accountEmail,
+        string accountPassword,
+        MySqlCommand? command = null
+    );
 
     /// <summary>
     /// Retrieves a list of user accounts from the database.
@@ -36,9 +41,9 @@ public interface IAccountService
     /// Updates the password of an existing user account.
     /// </summary>
     /// <param name="accountId">The ID of the account to update.</param>
-    /// <param name="password">The new password.</param>
+    /// <param name="accountPassword">The new password.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
-    void UpdatePassword(int accountId, string password, MySqlCommand? command = null);
+    void UpdatePassword(int accountId, string accountPassword, MySqlCommand? command = null);
 
     /// <summary>
     /// Deletes a user account by its ID.

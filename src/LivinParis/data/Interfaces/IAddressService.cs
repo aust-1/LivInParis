@@ -6,7 +6,7 @@ public interface IAddressService
 {
     void Create(
         int addressId,
-        int number,
+        int addressNumber,
         string street,
         int postalCode,
         string nearestMetro,
