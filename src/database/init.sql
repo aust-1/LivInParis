@@ -24,7 +24,7 @@ CREATE TABLE
 
 CREATE TABLE
    Address (
-      address_id VARCHAR(50),
+      address_id INT,
       address_number INT NOT NULL,
       street VARCHAR(50) NOT NULL,
       postal_code INT,
@@ -62,12 +62,13 @@ CREATE TABLE
       chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
       eats_on_site BOOLEAN,
       chef_is_banned BOOLEAN,
-      address_id VARCHAR(50) NOT NULL,
+      address_id INT NOT NULL,
       PRIMARY KEY (account_id),
       FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE,
-      FOREIGN KEY (address_id) REFERENCES Address (address_id)
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE RESTRICT
    );
-   //TODO: gérer adress delete sans cascade
+   //TODO: gérer adress delete sans cascade pour chef et individual
+   //TODO: gérer delete pour pas impacter transaction, orderline, menuproposal et review
 
 CREATE TABLE
    OrderTransaction (
@@ -95,10 +96,10 @@ CREATE TABLE
       first_name VARCHAR(50),
       personal_email VARCHAR(100),
       phone_number VARCHAR(50),
-      address_id VARCHAR(50) NOT NULL,
+      address_id INT NOT NULL,
       PRIMARY KEY (account_id),
       FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE,
-      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE CASCADE
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE RESTRICT
    );
 
 CREATE TABLE
@@ -114,13 +115,13 @@ CREATE TABLE
          'canceled'
       ),
       is_eat_in BOOLEAN,
-      address_id VARCHAR(50) NOT NULL,
-      transaction_id INT NOT NULL,
-      account_id INT NOT NULL,
+      address_id INT,
+      transaction_id INT,
+      account_id INT,
       PRIMARY KEY (order_line_id),
-      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE CASCADE,
-      FOREIGN KEY (transaction_id) REFERENCES OrderTransaction (transaction_id) ON DELETE CASCADE,
-      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE CASCADE
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE SET NULL,
+      FOREIGN KEY (transaction_id) REFERENCES OrderTransaction (transaction_id) ON DELETE SET NULL,
+      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE SET NULL
    );
 
 CREATE TABLE
@@ -141,8 +142,8 @@ CREATE TABLE
       proposal_date DATE,
       dish_id INT NOT NULL,
       PRIMARY KEY (account_id, proposal_date),
-      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE CASCADE,
-      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id) ON DELETE CASCADE
+      FOREIGN KEY (account_id) REFERENCES Chef (account_id),
+      FOREIGN KEY (dish_id) REFERENCES Dish (dish_id) ON DELETE RESTRICT
    );
 
 CREATE TABLE

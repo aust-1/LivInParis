@@ -8,6 +8,7 @@ namespace LivinParisRoussilleTeynier.Data.Interfaces;
 public interface IChefService
 {
     #region CRUD
+    //TODO: stat argent gagné
 
     /// <summary>
     /// Creates a new chef account with the specified information.
