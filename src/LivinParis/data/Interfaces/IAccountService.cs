@@ -11,10 +11,10 @@ public interface IAccountService
     /// Creates a new user account with the specified information.
     /// </summary>
     /// <param name="accountId">The unique identifier of the account.</param>
-    /// <param name="email">The email address associated with the account.</param>
+    /// <param name="accountEmail">The email address associated with the account.</param>
     /// <param name="password">The password associated with the account.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
-    void Create(int accountId, string email, string password, MySqlCommand? command = null);
+    void Create(int accountId, string accountEmail, string password, MySqlCommand? command = null);
 
     /// <summary>
     /// Retrieves a list of user accounts from the database.
@@ -28,9 +28,9 @@ public interface IAccountService
     /// Updates the email address of an existing user account.
     /// </summary>
     /// <param name="accountId">The ID of the account to update.</param>
-    /// <param name="email">The new email address.</param>
+    /// <param name="accountEmail">The new email address.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
-    void UpdateEmail(int accountId, string email, MySqlCommand? command = null);
+    void UpdateEmail(int accountId, string accountEmail, MySqlCommand? command = null);
 
     /// <summary>
     /// Updates the password of an existing user account.

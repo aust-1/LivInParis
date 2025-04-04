@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface IDish
+public interface IDishService
 {
-    void CreateDish(
+    void Create(
         int dishId,
         string dishName,
         DishType dishType,
@@ -16,7 +16,7 @@ public interface IDish
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetDishes(
+    List<List<string>> Read(
         int limit,
         int? chefId = null,
         int? customerId = null,
@@ -25,8 +25,8 @@ public interface IDish
         int? expiryTime = null,
         string? cuisineNationality = null,
         int? quantity = null,
-        decimal? priceHigherThan = null,
-        decimal? priceBelow = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
         bool? isVegetarian = null,
         bool? isVegan = null,
         bool? isGlutenFree = null,
@@ -37,23 +37,23 @@ public interface IDish
         MySqlCommand? command = null
     );
 
-    void UpdateDishName(int dishId, string dishName, MySqlCommand? command = null);
+    void UpdateName(int dishId, string dishName, MySqlCommand? command = null);
 
-    void UpdateDishType(int dishId, DishType dishType, MySqlCommand? command = null);
+    void UpdateType(int dishId, DishType dishType, MySqlCommand? command = null);
 
-    void UpdateDishExpiryTime(int dishId, int expiryTime, MySqlCommand? command = null);
+    void UpdateExpiryTime(int dishId, int expiryTime, MySqlCommand? command = null);
 
-    void UpdateDishCuisineNationality(
+    void UpdateCuisineNationality(
         int dishId,
         string cuisineNationality,
         MySqlCommand? command = null
     );
 
-    void UpdateDishQuantity(int dishId, int quantity, MySqlCommand? command = null);
+    void UpdateQuantity(int dishId, int quantity, MySqlCommand? command = null);
 
-    void UpdateDishPrice(int dishId, decimal dishPrice, MySqlCommand? command = null);
+    void UpdatePrice(int dishId, decimal dishPrice, MySqlCommand? command = null);
 
-    void DeleteDish(int dishId, MySqlCommand? command = null);
+    void Delete(int dishId, MySqlCommand? command = null);
 }
 
 //HACK: combien de fois un plat proposé

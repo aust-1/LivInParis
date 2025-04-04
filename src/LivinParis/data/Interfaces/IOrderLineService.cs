@@ -10,7 +10,7 @@ public interface IOrderLine
         int duration,
         OrderLineStatus orderLineStatus,
         bool isEatIn,
-        int adressId,
+        int addressId,
         int transactionId,
         int chefAccountId,
         MySqlCommand? command = null
@@ -22,13 +22,17 @@ public interface IOrderLine
         int? duration = null,
         OrderLineStatus? orderLineStatus = null,
         bool? isEatIn = null,
-        int? adressId = null,
+        int? addressId = null,
         int? transactionId = null,
         int? chefAccountId = null,
         string? orderBy = null,
         bool? orderDirection = null,
         MySqlCommand? command = null
     );
+
+    List<List<string>> RetrieveCommandCountByStreet(int limit, MySqlCommand? command = null);
+
+    List<List<string>> RetrieveCommandCountByDistrict(int limit, MySqlCommand? command = null);
 
     void UpdateOrderLineStatus(
         int orderLineId,

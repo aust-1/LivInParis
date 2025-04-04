@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface ICompany
+public interface ICompanyService
 {
-    void CreateCompany(
+    void Create(
         int companyCustomerAccountId,
         string companyName,
         string contactFirstName,
@@ -12,7 +12,7 @@ public interface ICompany
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetCompanies(
+    List<List<string>> Read(
         int limit,
         bool? companyIsBanned = null,
         string? orderBy = null,
@@ -20,18 +20,14 @@ public interface ICompany
         MySqlCommand? command = null
     );
 
-    void UpdateCompanyName(
-        int companyCustomerAccountId,
-        string companyName,
-        MySqlCommand? command = null
-    );
+    void UpdateName(int companyCustomerAccountId, string companyName, MySqlCommand? command = null);
 
-    void UpdateCompanyContact(
+    void UpdateContact(
         int companyCustomerAccountId,
         string contactFirstName,
         string contactLastName,
         MySqlCommand? command = null
     );
 
-    void DeleteCompany(int companyCustomerAccountId, MySqlCommand? command = null);
+    void Delete(int companyCustomerAccountId, MySqlCommand? command = null);
 }

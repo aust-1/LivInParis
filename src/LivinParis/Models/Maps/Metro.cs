@@ -95,11 +95,11 @@ public class Metro
     /// <summary>
     /// Finds the nearest station to the given coordinates (longitude, latitude).
     /// </summary>
-    /// <param name="adress">The address of the target point.</param>
+    /// <param name="address">The address of the target point.</param>
     /// <returns>The nearest station.</returns>
-    public async Task<Station> GetNearestStation(string adress)
+    public async Task<Station> GetNearestStation(string address)
     {
-        (double Lon, double Lat)? coordonnees = await GetCoordinatesFromAdress(adress);
+        (double Lon, double Lat)? coordonnees = await GetCoordinatesFromAddress(address);
 
         return GetNearestStation(coordonnees.Value.Lon, coordonnees.Value.Lat);
     }
@@ -129,14 +129,14 @@ public class Metro
         return nearestStation;
     }
 
-    public static async Task<(double, double)?> GetCoordinatesFromAdress(string adresse)
+    public static async Task<(double, double)?> GetCoordinatesFromAddress(string address)
     {
-        adresse = adresse.Replace(" ", "+");
-        adresse = adresse.Replace("'", "%27");
-        adresse += "+Paris+France";
+        address = address.Replace(" ", "+");
+        address = address.Replace("'", "%27");
+        address += "+Paris+France";
         string baseUrl = "https://nominatim.openstreetmap.org/search";
 
-        string url = $"{baseUrl}?format=json&q={Uri.EscapeDataString(adresse)}";
+        string url = $"{baseUrl}?format=json&q={Uri.EscapeDataString(address)}";
 
         using var client = new HttpClient();
         try

@@ -2,9 +2,9 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
-public interface ICustomer
+public interface ICustomerService
 {
-    void CreateCustomer(
+    void Create(
         int customerAccountId,
         decimal customerRating,
         LoyaltyRank loyaltyRank,
@@ -12,10 +12,10 @@ public interface ICustomer
         MySqlCommand? command = null
     );
 
-    List<List<string>> GetCustomers(
+    List<List<string>> Read(
         int limit,
-        decimal? ratingHigherThan = null,
-        decimal? ratingBelow = null,
+        decimal? minRating = null,
+        decimal? maxRating = null,
         LoyaltyRank? loyaltyRank = null,
         bool? customerIsBanned = null,
         string? orderBy = null,
@@ -23,20 +23,16 @@ public interface ICustomer
         MySqlCommand? command = null
     );
 
-    void UpdateCustomerRating(
-        int customerAccountId,
-        decimal customerRating,
-        MySqlCommand? command = null
-    );
-    void UpdateCustomerLoyaltyRank(
+    void UpdateRating(int customerAccountId, decimal customerRating, MySqlCommand? command = null);
+    void UpdateLoyaltyRank(
         int customerAccountId,
         LoyaltyRank loyaltyRank,
         MySqlCommand? command = null
     );
-    void UpdateCustomerBanStatus(
+    void UpdateBanStatus(
         int customerAccountId,
         bool customerIsBanned,
         MySqlCommand? command = null
     );
-    void DeleteCustomer(int customerAccountId, MySqlCommand? command = null);
+    void Delete(int customerAccountId, MySqlCommand? command = null);
 }

@@ -8,7 +8,7 @@ public interface IIndividual
         int individualCustomerAccountId,
         string lastName,
         string firstName,
-        string email,
+        string personalEmail,
         string phoneNumber,
         int addressId,
         MySqlCommand? command = null
@@ -18,7 +18,7 @@ public interface IIndividual
         int limit,
         string? lastName = null,
         string? firstName = null,
-        string? email = null,
+        string? personalEmail = null,
         string? phoneNumber = null,
         string? street = null,
         int? postalCode = null,
@@ -29,7 +29,7 @@ public interface IIndividual
         int individualCustomerAccountId,
         string? lastName = null,
         string? firstName = null,
-        string? email = null,
+        string? personalEmail = null,
         string? phoneNumber = null,
         int? addressId = null,
         MySqlCommand? command = null

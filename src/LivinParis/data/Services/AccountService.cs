@@ -12,16 +12,16 @@ public class AccountService : IAccountService
     /// <inheritdoc/>
     public virtual void Create(
         int accountId,
-        string email,
+        string accountEmail,
         string password,
         MySqlCommand? command = null
     )
     {
         command!.CommandText =
-            "INSERT INTO Account (account_id, email, password) VALUES (@id, @mail, @pwd)";
+            "INSERT INTO Account (account_id, account_email, password) VALUES (@id, @mail, @pwd)";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@id", accountId);
-        command.Parameters.AddWithValue("@mail", email);
+        command.Parameters.AddWithValue("@mail", accountEmail);
         command.Parameters.AddWithValue("@pwd", password);
         command.ExecuteNonQuery();
     }
@@ -52,12 +52,16 @@ public class AccountService : IAccountService
     }
 
     /// <inheritdoc/>
-    public virtual void UpdateEmail(int accountId, string email, MySqlCommand? command = null)
+    public virtual void UpdateEmail(
+        int accountId,
+        string accountEmail,
+        MySqlCommand? command = null
+    )
     {
-        command!.CommandText = "UPDATE Account SET email = @mail WHERE account_id = @id";
+        command!.CommandText = "UPDATE Account SET account_email = @mail WHERE account_id = @id";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@id", accountId);
-        command.Parameters.AddWithValue("@mail", email);
+        command.Parameters.AddWithValue("@mail", accountEmail);
         command.ExecuteNonQuery();
     }
 
