@@ -16,10 +16,10 @@ public class ConnectionInterceptor : IInterceptor
     /// <param name="invocation">The intercepted method invocation.</param>
     public void Intercept(IInvocation invocation)
     {
-        Env.Load(Path.Combine("src", "database", ".env"));
+        Env.Load(Path.Combine("..", "database", ".env"));
 
         string connectionString =
-            $"SERVER=localhost;DATABASE={Environment.GetEnvironmentVariable("MYSQL_DATABASE")};UID={Environment.GetEnvironmentVariable("MYSQL_USER")};PASSWORD={Environment.GetEnvironmentVariable("MYSQL_PASSWORD")}";
+            $"SERVER={Environment.GetEnvironmentVariable("DB_HOST")};PORT={Environment.GetEnvironmentVariable("DB_PORT")};DATABASE={Environment.GetEnvironmentVariable("DB_NAME")};UID={Environment.GetEnvironmentVariable("DB_USER")};PASSWORD={Environment.GetEnvironmentVariable("DB_PASSWORD")}";
         MySqlConnection connection = new(connectionString);
 
         var method = invocation.MethodInvocationTarget ?? invocation.Method;

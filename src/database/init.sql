@@ -1,6 +1,5 @@
-CREATE DATABASE PSI;
+\r livinparisroussilleteynier
 
-USE PSI --;
 CREATE TABLE
    Account (
       account_id INT,
@@ -153,7 +152,3 @@ CREATE TABLE
       FOREIGN KEY (ingredient_id) REFERENCES Ingredient (ingredient_id),
       FOREIGN KEY (dish_id) REFERENCES Dish (dish_id)
    );
-
-CREATE USER 'eliottfrancois' @'localhost' IDENTIFIED BY 'PSI';
-GRANT ALL privileges ON psi.* TO 'eliottfrancois' @'localhost';
-FLUSH PRIVILEGES;
