@@ -2,8 +2,16 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
+/// <summary>
+/// Provides methods for managing individual customer profiles.
+/// </summary>
 public interface IIndividualService
 {
+    #region CRUD
+
+    /// <summary>
+    /// Creates a new individual customer profile.
+    /// </summary>
     void Create(
         int individualCustomerAccountId,
         string lastName,
@@ -14,6 +22,9 @@ public interface IIndividualService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Retrieves individual profiles with optional filters.
+    /// </summary>
     List<List<string>> Read(
         int limit,
         string? lastName = null,
@@ -25,6 +36,9 @@ public interface IIndividualService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Updates fields of an individual profile.
+    /// </summary>
     void Update(
         int individualCustomerAccountId,
         string? lastName = null,
@@ -35,5 +49,10 @@ public interface IIndividualService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Deletes an individual profile.
+    /// </summary>
     void Delete(int individualCustomerAccountId, MySqlCommand? command = null);
+
+    #endregion CRUD
 }

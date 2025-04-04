@@ -2,8 +2,21 @@ using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Interfaces;
 
+/// <summary>
+/// Provides methods for managing company customer accounts.
+/// </summary>
 public interface ICompanyService
 {
+    #region CRUD
+
+    /// <summary>
+    /// Creates a new company customer account with the specified information.
+    /// </summary>
+    /// <param name="companyCustomerAccountId">The account ID of the company (linked to the Account table).</param>
+    /// <param name="companyName">The name of the company.</param>
+    /// <param name="contactFirstName">The first name of the contact person.</param>
+    /// <param name="contactLastName">The last name of the contact person.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
         int companyCustomerAccountId,
         string companyName,
@@ -12,6 +25,15 @@ public interface ICompanyService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Retrieves a list of company customer accounts with optional filters.
+    /// </summary>
+    /// <param name="limit">The maximum number of rows to return.</param>
+    /// <param name="companyIsBanned">Optional filter to select banned or non-banned companies.</param>
+    /// <param name="orderBy">Optional column to order the result set by.</param>
+    /// <param name="orderDirection">True for ascending, false for descending ordering.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing company rows.</returns>
     List<List<string>> Read(
         int limit,
         bool? companyIsBanned = null,
@@ -20,8 +42,14 @@ public interface ICompanyService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Updates the name of a company.
+    /// </summary>
     void UpdateName(int companyCustomerAccountId, string companyName, MySqlCommand? command = null);
 
+    /// <summary>
+    /// Updates the contact person of a company.
+    /// </summary>
     void UpdateContact(
         int companyCustomerAccountId,
         string contactFirstName,
@@ -29,5 +57,10 @@ public interface ICompanyService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Deletes a company customer.
+    /// </summary>
     void Delete(int companyCustomerAccountId, MySqlCommand? command = null);
+
+    #endregion CRUD
 }
