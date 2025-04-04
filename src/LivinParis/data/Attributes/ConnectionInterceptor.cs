@@ -54,6 +54,8 @@ public class ConnectionInterceptor : IInterceptor
     /// <summary>
     /// Determines whether the method or its declaring type has the <see cref="ConnectionControlAttribute"/>.
     /// </summary>
+    /// <param name="method">The method to check.</param>
+    /// <returns>True if the method or its declaring type has the attribute; otherwise, false.</returns>
     private static bool RequiresConnectionControl(MethodInfo method)
     {
         return method.GetCustomAttribute<ConnectionControlAttribute>() != null
@@ -63,6 +65,10 @@ public class ConnectionInterceptor : IInterceptor
     /// <summary>
     /// Opens the shared connection and injects a new command object into the method arguments.
     /// </summary>
+    /// <param name="connection">The MySQL connection to open.</param>
+    /// <param name="invocation">The intercepted method invocation.</param>
+    /// <param name="method">The method being invoked.</param>
+    /// <returns>The created MySQL command.</returns>
     private static MySqlCommand OpenConnectionAndInjectCommand(
         MySqlConnection connection,
         IInvocation invocation,
@@ -87,6 +93,10 @@ public class ConnectionInterceptor : IInterceptor
     /// <summary>
     /// Injects the provided command into the correct parameter slot in the method arguments.
     /// </summary>
+    /// <param name="invocation">The intercepted method invocation.</param>
+    /// <param name="method">The method being invoked.</param>
+    /// <param name="command">The MySQL command to inject.</param>
+    /// <exception cref="ArgumentException">Thrown if the command parameter is not found.</exception>
     private static void InjectCommandIntoArguments(
         IInvocation invocation,
         MethodInfo method,
@@ -108,6 +118,10 @@ public class ConnectionInterceptor : IInterceptor
     /// <summary>
     /// Closes the connection and disposes the command.
     /// </summary>
+    /// <param name="connection">The MySQL connection to close.</param>
+    /// <param name="command">The MySQL command to dispose.</param>
+    /// <param name="methodName">The name of the method being invoked.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the connection is not in a valid state.</exception>
     private static void CloseConnection(
         MySqlConnection connection,
         MySqlCommand? command,
