@@ -88,7 +88,11 @@ Ajoutez `--volumes` si vous souhaitez supprimer les volumes (⚠️ perte de don
 docker compose down --volumes
 ```
 
-# Architecture
+## Explications supplémentaires
+
+Nous n'avions pas conscience qu'il fallait faire la logique métier pour ce rendu, nous nous sommes donc concentré sur tous les objets métiers et la base de données. Nous vous invitons donc à lire le code notamment dans le dossier `src/LivinParis/Models` pour les graphes et les objets métiers, et dans le dossier `src/LivinParis/data` pour la base de donnée. Nous avons implémenté énormément de requête SQL pour faire des statistiques. Nous avons développé un attribute `ConnectionInterceptor` qui nous permet de faire des requêtes SQL avant et après chaque appel de méthode dans le repository. Cela nous permet de mieux encapsuler et centraliser la gestion de la connexion à la base de données. Bonne lecture !
+
+## Architecture
 
 LivinParis
 ├─ docs
