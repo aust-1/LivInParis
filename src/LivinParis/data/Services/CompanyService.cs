@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class CompanyService : ICompanyService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int companyCustomerAccountId,
@@ -133,4 +135,6 @@ public class CompanyService : ICompanyService
         command.Parameters.AddWithValue("@id", companyCustomerAccountId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

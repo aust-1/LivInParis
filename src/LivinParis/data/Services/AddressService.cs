@@ -9,6 +9,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class AddressService : IAddressService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int addressId,
@@ -119,4 +121,6 @@ public class AddressService : IAddressService
         command.Parameters.AddWithValue("@id", addressId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

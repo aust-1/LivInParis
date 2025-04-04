@@ -9,6 +9,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class ContainsService : IContainsService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(int ingredientId, int dishId, MySqlCommand? command = null)
     {
@@ -94,4 +96,6 @@ public class ContainsService : IContainsService
         command.Parameters.AddWithValue("@dish", dishId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

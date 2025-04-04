@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class TransactionService : ITransactionService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int transactionId,
@@ -156,6 +158,19 @@ public class TransactionService : ITransactionService
     }
 
     /// <inheritdoc/>
+    public virtual void Delete(int transactionId, MySqlCommand? command = null)
+    {
+        command!.CommandText = "DELETE FROM Transaction WHERE transaction_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", transactionId);
+        command.ExecuteNonQuery();
+    }
+
+    #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
     public virtual List<List<string>> GetTopCustomersByOrderCount(
         int limit,
         MySqlCommand? command = null
@@ -217,12 +232,5 @@ public class TransactionService : ITransactionService
         return results;
     }
 
-    /// <inheritdoc/>
-    public virtual void Delete(int transactionId, MySqlCommand? command = null)
-    {
-        command!.CommandText = "DELETE FROM Transaction WHERE transaction_id = @id";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@id", transactionId);
-        command.ExecuteNonQuery();
-    }
+    #endregion Statistics
 }

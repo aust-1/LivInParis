@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class IndividualService : IIndividualService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int individualCustomerAccountId,
@@ -224,4 +226,6 @@ public class IndividualService : IIndividualService
         command.Parameters.AddWithValue("@id", individualCustomerAccountId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

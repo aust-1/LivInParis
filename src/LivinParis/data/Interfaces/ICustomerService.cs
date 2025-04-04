@@ -12,6 +12,11 @@ public interface ICustomerService
     /// <summary>
     /// Creates a new customer account.
     /// </summary>
+    /// <param name="customerAccountId">The account ID of the customer (linked to the Account table).</param>
+    /// <param name="customerRating">The rating of the customer.</param>
+    /// <param name="loyaltyRank">The loyalty rank of the customer.</param>
+    /// <param name="customerIsBanned">Indicates whether the customer is banned.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Create(
         int customerAccountId,
         decimal customerRating,
@@ -23,6 +28,15 @@ public interface ICustomerService
     /// <summary>
     /// Retrieves a list of customers with optional filters.
     /// </summary>
+    /// <param name="limit">The maximum number of rows to return.</param>
+    /// <param name="minRating">Minimum rating filter.</param>
+    /// <param name="maxRating">Maximum rating filter.</param>
+    /// <param name="loyaltyRank">Loyalty rank filter.</param>
+    /// <param name="customerIsBanned">Filter for banned or non-banned customers.</param>
+    /// <param name="orderBy">Column to order the result set by.</param>
+    /// <param name="orderDirection">True for ascending, false for descending ordering.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing customer rows.</returns>
     List<List<string>> Read(
         int limit,
         decimal? minRating = null,
@@ -37,11 +51,17 @@ public interface ICustomerService
     /// <summary>
     /// Updates the rating of a customer.
     /// </summary>
+    /// <param name="customerAccountId">The account ID of the customer.</param>
+    /// <param name="customerRating">The new rating of the customer.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void UpdateRating(int customerAccountId, decimal customerRating, MySqlCommand? command = null);
 
     /// <summary>
     /// Updates the loyalty rank of a customer.
     /// </summary>
+    /// <param name="customerAccountId">The account ID of the customer.</param>
+    /// <param name="loyaltyRank">The new loyalty rank of the customer.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void UpdateLoyaltyRank(
         int customerAccountId,
         LoyaltyRank loyaltyRank,
@@ -51,6 +71,9 @@ public interface ICustomerService
     /// <summary>
     /// Updates the ban status of a customer.
     /// </summary>
+    /// <param name="customerAccountId">The account ID of the customer.</param>
+    /// <param name="customerIsBanned">Indicates whether the customer is banned.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void UpdateBanStatus(
         int customerAccountId,
         bool customerIsBanned,
@@ -60,6 +83,8 @@ public interface ICustomerService
     /// <summary>
     /// Deletes a customer from the system.
     /// </summary>
+    /// <param name="customerAccountId">The account ID of the customer.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Delete(int customerAccountId, MySqlCommand? command = null);
 
     #endregion CRUD

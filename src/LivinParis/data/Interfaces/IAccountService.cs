@@ -8,7 +8,7 @@ namespace LivinParisRoussilleTeynier.Data.Interfaces;
 public interface IAccountService
 {
     #region CRUD
-
+    //TODO:Check Password
     /// <summary>
     /// Creates a new user account with the specified information.
     /// </summary>

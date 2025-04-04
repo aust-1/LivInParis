@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class ReviewService : IReviewService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int reviewId,
@@ -128,52 +130,6 @@ public class ReviewService : IReviewService
     }
 
     /// <inheritdoc/>
-    public virtual List<List<string>> GetReviewsByAccount(
-        int limit,
-        int accountId,
-        ReviewType reviewType,
-        string? orderBy = "review_rating",
-        bool? orderDirection = null,
-        MySqlCommand? command = null
-    )
-    {
-        List<List<string>> results = [];
-
-        StringBuilder query = new(
-            @"
-        SELECT r.*
-        FROM Review r
-        JOIN OrderLine o ON r.order_line_id = o.order_line_id
-        WHERE r.review_type = @type AND o.account_id = @accountId
-    "
-        );
-
-        query.Append(" ORDER BY ");
-        query.Append(orderBy ?? "review_rating");
-        query.Append(orderDirection == true ? " ASC" : " DESC");
-        query.Append(" LIMIT @limit");
-
-        command!.CommandText = query.ToString();
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@type", reviewType.ToString());
-        command.Parameters.AddWithValue("@accountId", accountId);
-        command.Parameters.AddWithValue("@limit", limit);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            List<string> row = [];
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                row.Add(reader.IsDBNull(i) ? string.Empty : reader[i].ToString() ?? string.Empty);
-            }
-            results.Add(row);
-        }
-
-        return results;
-    }
-
-    /// <inheritdoc/>
     public virtual void Update(
         int reviewId,
         decimal? rating = null,
@@ -225,4 +181,56 @@ public class ReviewService : IReviewService
         command.Parameters.AddWithValue("@id", reviewId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetReviewsByAccount(
+        int limit,
+        int accountId,
+        ReviewType reviewType,
+        string? orderBy = "review_rating",
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        StringBuilder query = new(
+            @"
+        SELECT r.*
+        FROM Review r
+        JOIN OrderLine o ON r.order_line_id = o.order_line_id
+        WHERE r.review_type = @type AND o.account_id = @accountId
+    "
+        );
+
+        query.Append(" ORDER BY ");
+        query.Append(orderBy ?? "review_rating");
+        query.Append(orderDirection == true ? " ASC" : " DESC");
+        query.Append(" LIMIT @limit");
+
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@type", reviewType.ToString());
+        command.Parameters.AddWithValue("@accountId", accountId);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row.Add(reader.IsDBNull(i) ? string.Empty : reader[i].ToString() ?? string.Empty);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
+    #endregion Statistics
 }

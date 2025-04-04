@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class DishService : IDishService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int dishId,
@@ -214,69 +216,6 @@ public class DishService : IDishService
         return results;
     }
 
-    public virtual List<List<string>> GetMostOrderedDishes(int limit, MySqlCommand? command = null)
-    {
-        List<List<string>> results = new();
-
-        command!.CommandText =
-            @"
-        SELECT d.dish_name, COUNT(*) AS order_count
-        FROM OrderLine o
-        JOIN MenuProposal mp ON o.account_id = mp.account_id
-        JOIN Dish d ON mp.dish_id = d.dish_id
-        WHERE mp.proposal_date = DATE(o.order_line_datetime)
-        GROUP BY d.dish_name
-        ORDER BY order_count DESC
-        LIMIT @limit";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@limit", limit);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            results.Add(
-                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
-            );
-        }
-
-        return results;
-    }
-
-    /// <inheritdoc/>
-    public virtual List<List<string>> GetCuisineStatsByCustomer(
-        int limit,
-        int customerId,
-        MySqlCommand? command = null
-    )
-    {
-        List<List<string>> results = [];
-
-        command!.CommandText =
-            @"
-        SELECT d.cuisine_nationality, COUNT(*) AS count
-        FROM OrderLine ol
-        JOIN Transaction t ON ol.transaction_id = t.transaction_id
-        JOIN MenuProposal mp ON mp.account_id = ol.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
-        JOIN Dish d ON mp.dish_id = d.dish_id
-        WHERE t.account_id = @customerId
-        GROUP BY d.cuisine_nationality
-        ORDER BY count DESC
-        LIMIT @limit";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@customerId", customerId);
-        command.Parameters.AddWithValue("@limit", limit);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            results.Add(
-                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
-            );
-        }
-
-        return results;
-    }
-
     /// <inheritdoc/>
     public virtual void UpdateName(int dishId, string dishName, MySqlCommand? command = null)
     {
@@ -350,4 +289,74 @@ public class DishService : IDishService
         command.Parameters.AddWithValue("@id", dishId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetMostOrderedDishes(int limit, MySqlCommand? command = null)
+    {
+        List<List<string>> results = new();
+
+        command!.CommandText =
+            @"
+        SELECT d.dish_name, COUNT(*) AS order_count
+        FROM OrderLine o
+        JOIN MenuProposal mp ON o.account_id = mp.account_id
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE mp.proposal_date = DATE(o.order_line_datetime)
+        GROUP BY d.dish_name
+        ORDER BY order_count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                new() { reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty }
+            );
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCuisineStatsByCustomer(
+        int limit,
+        int customerId,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT d.cuisine_nationality, COUNT(*) AS count
+        FROM OrderLine ol
+        JOIN Transaction t ON ol.transaction_id = t.transaction_id
+        JOIN MenuProposal mp ON mp.account_id = ol.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE t.account_id = @customerId
+        GROUP BY d.cuisine_nationality
+        ORDER BY count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@customerId", customerId);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0].ToString() ?? string.Empty, reader[1].ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    #endregion Statistics
 }

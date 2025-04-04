@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class IngredientService : IIngredientService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int ingredientId,
@@ -258,4 +260,6 @@ public class IngredientService : IIngredientService
         command.Parameters.AddWithValue("@id", ingredientId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

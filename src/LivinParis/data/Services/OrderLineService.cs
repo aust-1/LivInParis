@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class OrderLineService : IOrderLineService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int orderLineId,
@@ -156,6 +158,34 @@ public class OrderLineService : IOrderLineService
 
         return results;
     }
+
+    /// <inheritdoc/>
+    public virtual void UpdateStatus(
+        int orderLineId,
+        OrderLineStatus orderLineStatus,
+        MySqlCommand? command = null
+    )
+    {
+        command!.CommandText =
+            "UPDATE OrderLine SET order_line_status = @status WHERE order_line_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@status", orderLineStatus.ToString());
+        command.Parameters.AddWithValue("@id", orderLineId);
+        command.ExecuteNonQuery();
+    }
+
+    /// <inheritdoc/>
+    public virtual void Delete(int orderLineId, MySqlCommand? command = null)
+    {
+        command!.CommandText = "DELETE FROM OrderLine WHERE order_line_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", orderLineId);
+        command.ExecuteNonQuery();
+    }
+
+    #endregion CRUD
+
+    #region Statistics
 
     /// <inheritdoc/>
     public virtual List<List<string>> GetCommandCountByStreet(
@@ -377,27 +407,5 @@ public class OrderLineService : IOrderLineService
         return results;
     }
 
-    /// <inheritdoc/>
-    public virtual void UpdateStatus(
-        int orderLineId,
-        OrderLineStatus orderLineStatus,
-        MySqlCommand? command = null
-    )
-    {
-        command!.CommandText =
-            "UPDATE OrderLine SET order_line_status = @status WHERE order_line_id = @id";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@status", orderLineStatus.ToString());
-        command.Parameters.AddWithValue("@id", orderLineId);
-        command.ExecuteNonQuery();
-    }
-
-    /// <inheritdoc/>
-    public virtual void Delete(int orderLineId, MySqlCommand? command = null)
-    {
-        command!.CommandText = "DELETE FROM OrderLine WHERE order_line_id = @id";
-        command.Parameters.Clear();
-        command.Parameters.AddWithValue("@id", orderLineId);
-        command.ExecuteNonQuery();
-    }
+    #endregion Statistics
 }

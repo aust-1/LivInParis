@@ -10,6 +10,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class ChefService : IChefService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int chefAccountId,
@@ -176,4 +178,6 @@ public class ChefService : IChefService
         command.Parameters.AddWithValue("@id", chefAccountId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }

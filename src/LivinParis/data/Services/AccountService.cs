@@ -9,6 +9,8 @@ namespace LivinParisRoussilleTeynier.Data.Services;
 [ConnectionControl]
 public class AccountService : IAccountService
 {
+    #region CRUD
+
     /// <inheritdoc/>
     public virtual void Create(
         int accountId,
@@ -87,4 +89,6 @@ public class AccountService : IAccountService
         command.Parameters.AddWithValue("@id", accountId);
         command.ExecuteNonQuery();
     }
+
+    #endregion CRUD
 }
