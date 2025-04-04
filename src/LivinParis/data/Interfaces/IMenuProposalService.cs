@@ -57,4 +57,21 @@ public interface IMenuProposalService
     void Delete(int chefId, DateOnly proposalDate, MySqlCommand? command = null);
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <summary>
+    /// Retrieves the dishes proposed by a specific chef, ordered by frequency of proposal.
+    /// </summary>
+    /// <param name="limit">The maximum number of dishes to return.</param>
+    /// <param name="chefId">The ID of the chef.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>>A list of lists of strings representing the dishes proposed by the chef.</returns>
+    List<List<string>> GetDishesByChefFrequency(
+        int limit,
+        int chefId,
+        MySqlCommand? command = null
+    );
+
+    #endregion Statistics
 }

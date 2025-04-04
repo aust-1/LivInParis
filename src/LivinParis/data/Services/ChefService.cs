@@ -180,4 +180,66 @@ public class ChefService : IChefService
     }
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<string> GetTodayDishByChef(int chefId, MySqlCommand? command = null)
+    {
+        List<string> result = [];
+
+        command!.CommandText =
+            @"
+        SELECT d.*
+        FROM MenuProposal mp
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE mp.account_id = @chefId AND mp.proposal_date = CURDATE()";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@chefId", chefId);
+
+        using var reader = command.ExecuteReader();
+
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            result.Add(reader[i]?.ToString() ?? string.Empty);
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetDeliveryCountByChef(
+        int limit,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT account_id, COUNT(*) AS count
+        FROM OrderLine
+        WHERE order_line_status = 'delivered'
+        GROUP BY account_id
+        ORDER BY count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                new()
+                {
+                    reader[0]?.ToString() ?? string.Empty,
+                    reader[1]?.ToString() ?? string.Empty,
+                }
+            );
+        }
+
+        return results;
+    }
+
+    #endregion Statistics
 }

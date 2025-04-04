@@ -83,4 +83,24 @@ public interface IChefService
     void Delete(int chefAccountId, MySqlCommand? command = null);
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <summary>
+    /// Retrieves the dish proposed by a specific chef for today.
+    /// </summary>
+    /// <param name="chefId">The ID of the chef.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A string representing the dishes proposed by the chef for today.</returns>
+    List<string> GetTodayDishByChef(int chefId, MySqlCommand? command = null);
+
+    /// <summary>
+    /// Retrieves the number of orders made by the chefs, ordered by the number of orders.
+    /// </summary>
+    /// <param name="limit">The maximum number of chefs to return.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing the number of orders made by chefs.</returns>
+    List<List<string>> GetDeliveryCountByChef(int limit, MySqlCommand? command = null);
+
+    #endregion Statistics
 }

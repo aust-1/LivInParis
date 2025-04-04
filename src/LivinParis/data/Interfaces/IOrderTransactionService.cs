@@ -73,5 +73,13 @@ public interface IOrderTransactionService
     /// <returns>A list of customers sorted by spending.</returns>
     List<List<string>> GetTopCustomersBySpending(int limit, MySqlCommand? command = null);
 
+    /// <summary>
+    /// Retrieves the total price of an transaction.
+    /// </summary>
+    /// <param name="transactionId">The ID of the transaction.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>The total price of the transaction.</returns>
+    decimal GetOrderTotalPrice(int orderLineId, MySqlCommand? command = null);
+
     #endregion Statistics
 }

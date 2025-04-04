@@ -88,4 +88,25 @@ public interface ICustomerService
     void Delete(int customerAccountId, MySqlCommand? command = null);
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <summary>
+    /// Retrieves customers served by a specific chef within a date range.
+    /// </summary>
+    /// <param name="limit">The maximum number of results to return.</param>
+    /// <param name="chefId">The unique identifier for the chef.</param>
+    /// <param name="from">The start date of the range.</param>
+    /// <param name="to">The end date of the range.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing customers served by the chef.</returns>
+    List<List<string>> GetCustomersServedByChef(
+        int limit,
+        int chefId,
+        DateTime? from = null,
+        DateTime? to = null,
+        MySqlCommand? command = null
+    );
+
+    #endregion Statistics
 }

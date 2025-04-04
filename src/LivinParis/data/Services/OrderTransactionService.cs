@@ -232,5 +232,22 @@ public class OrderTransactionService : IOrderTransactionService
         return results;
     }
 
+    public virtual decimal GetOrderTotalPrice(int transactionId, MySqlCommand? command = null)
+    {
+        command!.CommandText =
+            @"
+        SELECT SUM(d.price) AS total
+        FROM OrderTransaction ot
+        JOIN OrderLine ol ON ot.transaction_id = ol.transaction_id
+        JOIN MenuProposal mp ON ol.account_id = mp.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE ot.transaction_id = @id";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@id", transactionId);
+
+        using var reader = command.ExecuteReader();
+        return Convert.ToDecimal(reader[0]);
+    }
+
     #endregion Statistics
 }

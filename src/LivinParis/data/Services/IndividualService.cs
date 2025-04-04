@@ -228,4 +228,52 @@ public class IndividualService : IIndividualService
     }
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCustomersByStreet(
+        int limit,
+        string streetName,
+        string? orderBy = null,
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        StringBuilder query = new(
+            @"
+        SELECT c.*
+        FROM Customer c
+        JOIN Individual i ON c.account_id = i.account_id
+        JOIN Address a ON i.address_id = a.address_id
+        WHERE a.street LIKE @street"
+        );
+
+        query.Append(" ORDER BY ");
+        query.Append(orderBy ?? "c.account_id");
+        query.Append(orderDirection == true ? " ASC" : " DESC");
+        query.Append(" LIMIT @limit");
+
+        command!.CommandText = query.ToString();
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@street", $"%{streetName}%");
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row.Add(reader[i]?.ToString() ?? string.Empty);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
+    #endregion Statistics
 }

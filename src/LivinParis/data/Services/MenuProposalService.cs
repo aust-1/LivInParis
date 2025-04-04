@@ -156,4 +156,41 @@ public class MenuProposalService : IMenuProposalService
     }
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetDishesByChefFrequency(
+        int limit,
+        int chefId,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT d.dish_name, COUNT(*) AS count
+        FROM MenuProposal mp
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE mp.account_id = @chefId
+        GROUP BY d.dish_name
+        ORDER BY count DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@chefId", chefId);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(
+                [reader[0]?.ToString() ?? string.Empty, reader[1]?.ToString() ?? string.Empty]
+            );
+        }
+
+        return results;
+    }
+
+    #endregion Statistics
 }

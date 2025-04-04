@@ -80,4 +80,25 @@ public interface IIndividualService
     void Delete(int individualCustomerAccountId, MySqlCommand? command = null);
 
     #endregion CRUD
+
+    #region Statistics
+
+    /// <summary>
+    /// Retrieves the customers grouped by street name.
+    /// </summary>
+    /// <param name="limit">The maximum number of results to return.</param>
+    /// <param name="streetName">The street name to filter by.</param>
+    /// <param name="orderBy">Column to order the result set by.</param>
+    /// <param name="orderDirection">True for ascending, false for descending ordering.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing customer rows.</returns>
+    List<List<string>> GetCustomersByStreet(
+        int limit,
+        string streetName,
+        string? orderBy = null,
+        bool? orderDirection = null,
+        MySqlCommand? command = null
+    );
+
+    #endregion Statistics
 }
