@@ -1,5 +1,6 @@
 using System.Reflection;
 using Castle.DynamicProxy;
+using DotNetEnv;
 using MySql.Data.MySqlClient;
 
 namespace LivinParisRoussilleTeynier.Data.Attributes;
@@ -9,17 +10,18 @@ namespace LivinParisRoussilleTeynier.Data.Attributes;
 /// </summary>
 public class ConnectionInterceptor : IInterceptor
 {
-    private static readonly string s_connectionString =
-        "SERVER=localhost;PORT=3306;DATABASE=LivinParis;UID=eliottfrancois;PASSWORD=PSI";
-
-    private static readonly MySqlConnection s_connection = new(s_connectionString);
-
     /// <summary>
     /// Intercepts method invocations and manages connection lifecycle if needed.
     /// </summary>
     /// <param name="invocation">The intercepted method invocation.</param>
     public void Intercept(IInvocation invocation)
     {
+        Env.Load(Path.Combine("src", "database", ".env"));
+
+        string connectionString =
+            $"SERVER=localhost;DATABASE={Environment.GetEnvironmentVariable("MYSQL_DATABASE")};UID={Environment.GetEnvironmentVariable("MYSQL_USER")};PASSWORD={Environment.GetEnvironmentVariable("MYSQL_PASSWORD")}";
+        MySqlConnection connection = new(connectionString);
+
         var method = invocation.MethodInvocationTarget ?? invocation.Method;
 
         bool requiresConnectionControl = RequiresConnectionControl(method);
@@ -30,7 +32,7 @@ public class ConnectionInterceptor : IInterceptor
         {
             if (requiresConnectionControl)
             {
-                command = OpenConnectionAndInjectCommand(invocation, method);
+                command = OpenConnectionAndInjectCommand(connection, invocation, method);
             }
 
             invocation.Proceed();
@@ -44,7 +46,7 @@ public class ConnectionInterceptor : IInterceptor
         {
             if (requiresConnectionControl)
             {
-                CloseConnection(command, method.Name);
+                CloseConnection(connection, command, method.Name);
             }
         }
     }
@@ -62,18 +64,19 @@ public class ConnectionInterceptor : IInterceptor
     /// Opens the shared connection and injects a new command object into the method arguments.
     /// </summary>
     private static MySqlCommand OpenConnectionAndInjectCommand(
+        MySqlConnection connection,
         IInvocation invocation,
         MethodInfo method
     )
     {
         Console.WriteLine($"[LOG] Opening connection for {method.Name}");
 
-        if (s_connection.State != System.Data.ConnectionState.Open)
+        if (connection.State != System.Data.ConnectionState.Open)
         {
-            s_connection.Open();
+            connection.Open();
         }
 
-        var command = s_connection.CreateCommand();
+        var command = connection.CreateCommand();
 
         InjectCommandIntoArguments(invocation, method, command);
 
@@ -105,14 +108,18 @@ public class ConnectionInterceptor : IInterceptor
     /// <summary>
     /// Closes the connection and disposes the command.
     /// </summary>
-    private static void CloseConnection(MySqlCommand? command, string methodName)
+    private static void CloseConnection(
+        MySqlConnection connection,
+        MySqlCommand? command,
+        string methodName
+    )
     {
         Console.WriteLine($"[LOG] Closing connection for {methodName}");
 
         command?.Dispose();
 
-        if (s_connection.State != System.Data.ConnectionState.Closed)
-            s_connection.Close();
+        if (connection.State != System.Data.ConnectionState.Closed)
+            connection.Close();
 
         Console.WriteLine($"[LOG] Connection closed for {methodName}");
     }
