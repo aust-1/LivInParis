@@ -112,7 +112,7 @@ public class AddressService : IAddressService
     }
 
     /// <inheritdoc/>
-    public virtual void Delete(string addressId, MySqlCommand? command = null)
+    public virtual void Delete(int addressId, MySqlCommand? command = null)
     {
         command!.CommandText = "DELETE FROM Address WHERE address_id = @id";
         command.Parameters.Clear();

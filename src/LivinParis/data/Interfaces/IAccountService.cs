@@ -7,6 +7,8 @@ namespace LivinParisRoussilleTeynier.Data.Interfaces;
 /// </summary>
 public interface IAccountService
 {
+    #region CRUD
+
     /// <summary>
     /// Creates a new user account with the specified information.
     /// </summary>
@@ -51,4 +53,6 @@ public interface IAccountService
     /// <param name="accountId">The ID of the account to delete.</param>
     /// <param name="command">Optional SQL command object for transaction support.</param>
     void Delete(int accountId, MySqlCommand? command = null);
+
+    #endregion CRUD
 }
