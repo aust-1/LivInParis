@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace LivinParisRoussilleTeynier
 {
     public static class Program
@@ -73,17 +71,6 @@ namespace LivinParisRoussilleTeynier
 
             // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
             // metro.Graph.DisplayGraph();
-
-            // var generator = new ProxyGenerator();
-            // var interceptor = new ConnectionInterceptor();
-            // var generator = new ProxyGenerator();
-            // var interceptor = new ConnectionInterceptor();
-
-            // // Crée un proxy autour de MonService
-            // var service = generator.CreateClassProxy<AccountService>(interceptor);
-
-            // // Appels
-            // service.Read(9);
         }
     }
 }
