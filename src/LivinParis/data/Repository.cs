@@ -1,11 +1,7 @@
-using Castle.Core;
 using Castle.DynamicProxy;
 using LivinParisRoussilleTeynier.Data.Services;
-using LivinParisRoussilleTeynier.Models.Order;
 
 namespace LivinParisRoussilleTeynier.Data;
-
-//TODO: repository proxy global
 
 //TODO: visu
 
