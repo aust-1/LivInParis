@@ -43,13 +43,20 @@ public interface ICompanyService
     );
 
     /// <summary>
-    /// Updates the name of a company.
+    /// Upates the name of a company customer account.
     /// </summary>
+    /// <param name="companyCustomerAccountId">The account ID of the company (linked to the Account table).</param>
+    /// <param name="companyName">The new name of the company.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void UpdateName(int companyCustomerAccountId, string companyName, MySqlCommand? command = null);
 
     /// <summary>
-    /// Updates the contact person of a company.
+    /// Updates the contact information of a company customer account.
     /// </summary>
+    /// <param name="companyCustomerAccountId">Company customer account ID (linked to the Account table).</param>
+    /// <param name="contactFirstName">The new first name of the contact person.</param>
+    /// <param name="contactLastName">The new last name of the contact person.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void UpdateContact(
         int companyCustomerAccountId,
         string contactFirstName,
@@ -58,8 +65,10 @@ public interface ICompanyService
     );
 
     /// <summary>
-    /// Deletes a company customer.
+    /// Deletes a company customer account by its ID.
     /// </summary>
+    /// <param name="companyCustomerAccountId">The account ID of the company (linked to the Account table).</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Delete(int companyCustomerAccountId, MySqlCommand? command = null);
 
     #endregion CRUD
