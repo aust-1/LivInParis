@@ -28,7 +28,7 @@ public class MainMenuPage : Page
                     "2. Cuisiniers",
                     "3. Commandes",
                     "4. Statistiques",
-                    "5. Autres fonctions",
+                    "5. Fonctions de Graphe",
                     "Quitter",
                 ]
             );

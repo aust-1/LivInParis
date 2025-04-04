@@ -238,31 +238,31 @@ public class Graph<T>
         get { return _order; }
     }
 
-    // /// <summary>
-    // /// Gets the size of the graph (number of edges).
-    // /// </summary>
-    // public int Size
-    // {
-    //     get { return _size; }
-    // }
+    /// <summary>
+    /// Gets the size of the graph (number of edges).
+    /// </summary>
+    public int Size
+    {
+        get { return _size; }
+    }
 
-    // /// <summary>
-    // /// Gets the density of the graph.
-    // /// For a directed graph, density = E / (V * (V - 1)).
-    // /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
-    // /// </summary>
-    // public double Density
-    // {
-    //     get { return _density; }
-    // }
+    /// <summary>
+    /// Gets the density of the graph.
+    /// For a directed graph, density = E / (V * (V - 1)).
+    /// For an undirected graph, density = (2 * E) / (V * (V - 1)).
+    /// </summary>
+    public double Density
+    {
+        get { return _density; }
+    }
 
-    // /// <summary>
-    // /// Gets the total weight of the graph,
-    // /// </summary>
-    // public double Weight
-    // {
-    //     get { return _weight; }
-    // }
+    /// <summary>
+    /// Gets the total weight of the graph,
+    /// </summary>
+    public double Weight
+    {
+        get { return _weight; }
+    }
 
     /// <summary>
     /// Indicates whether the graph is directed.
@@ -272,21 +272,21 @@ public class Graph<T>
         get { return _isDirected; }
     }
 
-    // /// <summary>
-    // /// Indicates whether the graph is weighted (i.e., any edge has a weight different from 1.0).
-    // /// </summary>
-    // public bool IsWeighted
-    // {
-    //     get { return _isWeighted; }
-    // }
+    /// <summary>
+    /// Indicates whether the graph is weighted (i.e., any edge has a weight different from 1.0).
+    /// </summary>
+    public bool IsWeighted
+    {
+        get { return _isWeighted; }
+    }
 
-    // /// <summary>
-    // /// Indicates whether the graph is connected based on its strongly connected components.
-    // /// </summary>
-    // public bool IsConnected
-    // {
-    //     get { return _isConnected; }
-    // }
+    /// <summary>
+    /// Indicates whether the graph is connected based on its strongly connected components.
+    /// </summary>
+    public bool IsConnected
+    {
+        get { return _isConnected; }
+    }
 
     #endregion Properties
 
