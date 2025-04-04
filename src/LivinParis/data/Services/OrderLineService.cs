@@ -407,5 +407,61 @@ public class OrderLineService : IOrderLineService
         return results;
     }
 
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetOrdersByPeriod(
+        int limit,
+        DateTime from,
+        DateTime to,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT *
+        FROM OrderLine
+        WHERE order_line_datetime BETWEEN @from AND @to
+        ORDER BY order_line_datetime DESC
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@from", from);
+        command.Parameters.AddWithValue("@to", to);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row.Add(reader[i]?.ToString() ?? string.Empty);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc/>
+    public virtual decimal GetAverageOrderPrice(MySqlCommand? command = null)
+    {
+        command!.CommandText =
+            @"
+        SELECT AVG(d.price)
+        FROM OrderLine o
+        JOIN MenuProposal mp ON o.account_id = mp.account_id AND mp.proposal_date = DATE(o.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id";
+        command.Parameters.Clear();
+
+        using var reader = command.ExecuteReader();
+
+        if (reader.Read())
+        {
+            return reader.IsDBNull(0) ? 0 : reader.GetDecimal(0);
+        }
+        return 0;
+    }
+
     #endregion Statistics
 }

@@ -246,7 +246,12 @@ public class OrderTransactionService : IOrderTransactionService
         command.Parameters.AddWithValue("@id", transactionId);
 
         using var reader = command.ExecuteReader();
-        return Convert.ToDecimal(reader[0]);
+
+        if (reader.Read())
+        {
+            return reader.IsDBNull(0) ? 0 : reader.GetDecimal(0);
+        }
+        return 0;
     }
 
     #endregion Statistics

@@ -141,5 +141,27 @@ public interface IOrderLineService
     /// <returns>A list of lists of strings representing the average order duration.</returns>
     List<List<string>> GetAverageOrderDuration(int limit, MySqlCommand? command = null);
 
+    /// <summary>
+    /// Retrieves the orders placed within a specific date range.
+    /// </summary>
+    /// <param name="limit">The maximum number of results to return.</param>
+    /// <param name="from">The start date of the range.</param>
+    /// <param name="to">The end date of the range.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing the orders placed within the specified date range.</returns>
+    List<List<string>> GetOrdersByPeriod(
+        int limit,
+        DateTime from,
+        DateTime to,
+        MySqlCommand? command = null
+    );
+
+    /// <summary>
+    /// Retrieves the average order price.
+    /// </summary>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>The average order price as a decimal.</returns>
+    decimal GetAverageOrderPrice(MySqlCommand? command = null);
+
     #endregion Statistics
 }

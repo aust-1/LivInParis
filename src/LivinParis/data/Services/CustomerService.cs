@@ -234,5 +234,73 @@ public class CustomerService : ICustomerService
         return results;
     }
 
+    /// <inheritdoc/>
+    public virtual decimal GetAveragePricePerCustomerOrder(MySqlCommand? command = null)
+    {
+        command!.CommandText =
+            @"
+        SELECT AVG(order_total) AS average_price
+        FROM (
+            SELECT o.order_line_id, SUM(d.price) AS order_total
+            FROM OrderLine o
+            JOIN MenuProposal mp ON o.account_id = mp.account_id AND mp.proposal_date = DATE(o.order_line_datetime)
+            JOIN Dish d ON mp.dish_id = d.dish_id
+            GROUP BY o.order_line_id
+        ) AS order_totals";
+        command.Parameters.Clear();
+
+        using var reader = command.ExecuteReader();
+        if (reader.Read() && !reader.IsDBNull(0))
+        {
+            return reader.GetDecimal(0);
+        }
+
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public virtual List<List<string>> GetCustomerOrdersByNationalityAndPeriod(
+        int limit,
+        int customerId,
+        string cuisineNationality,
+        DateTime from,
+        DateTime to,
+        MySqlCommand? command = null
+    )
+    {
+        List<List<string>> results = [];
+
+        command!.CommandText =
+            @"
+        SELECT ol.*
+        FROM OrderLine ol
+        JOIN OrderTransaction ot ON ol.transaction_id = ot.transaction_id
+        JOIN MenuProposal mp ON ol.account_id = mp.account_id AND mp.proposal_date = DATE(ol.order_line_datetime)
+        JOIN Dish d ON mp.dish_id = d.dish_id
+        WHERE ot.account_id = @customerId
+        AND d.cuisine_nationality = @nationality
+        AND ol.order_line_datetime BETWEEN @from AND @to
+        LIMIT @limit";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@customerId", customerId);
+        command.Parameters.AddWithValue("@nationality", cuisineNationality);
+        command.Parameters.AddWithValue("@from", from);
+        command.Parameters.AddWithValue("@to", to);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            List<string> row = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row.Add(reader[i]?.ToString() ?? string.Empty);
+            }
+            results.Add(row);
+        }
+
+        return results;
+    }
+
     #endregion Statistics
 }

@@ -108,5 +108,31 @@ public interface ICustomerService
         MySqlCommand? command = null
     );
 
+    /// <summary>
+    /// Retrieves the average price per customer order.
+    /// </summary>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>The average price per customer order.</returns>
+    decimal GetAveragePricePerCustomerOrder(MySqlCommand? command = null);
+
+    /// <summary>
+    /// Retrieves orders in a specific cuisine nationality made by a specific customer within a date range.
+    /// </summary>
+    /// <param name="limit">The maximum number of results to return.</param>
+    /// <param name="customerId">The unique identifier for the customer.</param>
+    /// <param name="cuisineNationality">The nationality of the cuisine.</param>
+    /// <param name="from">The start date of the range.</param>
+    /// <param name="to">The end date of the range.</param>
+    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <returns>A list of lists of strings representing customer orders.</returns>
+    List<List<string>> GetCustomerOrdersByNationalityAndPeriod(
+        int limit,
+        int customerId,
+        string cuisineNationality,
+        DateTime from,
+        DateTime to,
+        MySqlCommand? command = null
+    );
+
     #endregion Statistics
 }

@@ -230,11 +230,7 @@ public class ChefService : IChefService
         while (reader.Read())
         {
             results.Add(
-                new()
-                {
-                    reader[0]?.ToString() ?? string.Empty,
-                    reader[1]?.ToString() ?? string.Empty,
-                }
+                [reader[0]?.ToString() ?? string.Empty, reader[1]?.ToString() ?? string.Empty]
             );
         }
 
