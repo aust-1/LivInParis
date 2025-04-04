@@ -67,8 +67,6 @@ CREATE TABLE
       FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE,
       FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE RESTRICT
    );
-   //TODO: gérer adress delete sans cascade pour chef et individual
-   //TODO: gérer delete pour pas impacter transaction, orderline, menuproposal et review
 
 CREATE TABLE
    OrderTransaction (

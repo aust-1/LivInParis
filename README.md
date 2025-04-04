@@ -103,5 +103,3 @@ LivinParis
       ├─ MSTestSettings.cs
       ├─ NodeTests.cs
       └─ Using.cs
-
-Orderline, address, transaction et menuproposal ne sont pas deletable pour faire des stats, c'est un choix assumé.
