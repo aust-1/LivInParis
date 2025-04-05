@@ -5,6 +5,7 @@ Bienvenue dans le projet **LivinParis**, une plateforme de livraison de repas da
 ## 👥 Nous
 
 Captainbleu (Austin) : Eliott Roussille
+
 proxy-1 : François Teynier
 
 ## 🚀 Démarrage rapide - Docker Desktop
@@ -90,7 +91,9 @@ docker compose down --volumes
 
 ## Explications supplémentaires
 
-Nous n'avions pas conscience qu'il fallait faire la logique métier pour ce rendu, nous nous sommes donc concentré sur tous les objets métiers et la base de données. Nous vous invitons donc à lire le code notamment dans le dossier `src/LivinParis/Models` pour les graphes et les objets métiers, et dans le dossier `src/LivinParis/data` pour la base de donnée. Nous avons implémenté énormément de requête SQL pour faire des statistiques. Nous avons développé un attribute `ConnectionInterceptor` qui nous permet de faire des requêtes SQL avant et après chaque appel de méthode dans le repository. Cela nous permet de mieux encapsuler et centraliser la gestion de la connexion à la base de données. Bonne lecture !
+Nous n'avions pas conscience qu'il fallait faire la logique métier pour ce rendu, nous nous sommes donc concentré sur tous les objets métiers et la base de données. Nous vous invitons donc à lire le code notamment dans le dossier `src/LivinParis/Models` pour les graphes, stations, la détection automatique de la station la plus proche et les objets métiers, et dans le dossier `src/LivinParis/data` pour la base de donnée. Nous avons implémenté énormément de requête SQL pour faire des statistiques. Nous avons développé un attribute `ConnectionInterceptor` qui nous permet de faire des requêtes SQL avant et après chaque appel de méthode dans le repository. Cela nous permet de mieux encapsuler et centraliser la gestion de la connexion à la base de données.
+
+Bonne lecture !
 
 ## Architecture
 
