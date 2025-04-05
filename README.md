@@ -34,7 +34,7 @@ winget install -e --id Docker.DockerDesktop
 
 ```bash
 git clone https://github.com/Captainbleu/LivinParis.git
-cd LivinParis
+cd .\LivinParis\src\database\
 ```
 
 #### 2. Démarrer les conteneurs
