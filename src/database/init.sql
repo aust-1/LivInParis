@@ -3,7 +3,7 @@
 CREATE TABLE
    Account (
       account_id INT AUTO_INCREMENT,
-      account_email VARCHAR(100),
+      account_email VARCHAR(100) NOT NULL UNIQUE,
       account_password VARCHAR(50),
       PRIMARY KEY (account_id)
    );
@@ -154,58 +154,58 @@ CREATE TABLE
    );
 
 INSERT INTO
-   Account (account_id, password)
+   Account (account_email, account_password)
 VALUES
-   (1, 'pass1234'),
-   (2, 'secure567'),
-   (3, 'chef7890'),
-   (4, 'random654'),
-   (5, 'qwerty999'),
-   (6, 'foodie321'),
-   (7, 'delish876'),
-   (8, 'gourmet111'),
-   (9, 'cuisine555'),
-   (10, 'taste890'),
-   (11, 'flavor987'),
-   (12, 'savory654'),
-   (13, 'chefpass123'),
-   (14, 'cook987'),
-   (15, 'plate876'),
-   (16, 'feast222'),
-   (17, 'dish789'),
-   (18, 'yumyum654'),
-   (19, 'bite321'),
-   (20, 'recipe777'),
-   (21, 'spice987'),
-   (22, 'meal432'),
-   (23, 'fresh999'),
-   (24, 'delight789'),
-   (25, 'sweet654'),
-   (26, 'tasty321'),
-   (27, 'zesty876'),
-   (28, 'flavor999'),
-   (29, 'chefmagic123'),
-   (30, 'pastry888'),
-   (31, 'eatwell999'),
-   (32, 'munch654'),
-   (33, 'grill567'),
-   (34, 'fryit999'),
-   (35, 'broil321'),
-   (36, 'roast222'),
-   (37, 'steam654'),
-   (38, 'sizzle123'),
-   (39, 'braise987'),
-   (40, 'poach876'),
-   (41, 'saute999'),
-   (42, 'bake555'),
-   (43, 'boil999'),
-   (44, 'flambe432'),
-   (45, 'caramel999'),
-   (46, 'chop654'),
-   (47, 'dice321'),
-   (48, 'mince777'),
-   (49, 'knead987'),
-   (50, 'whisk789');
+   ('user1@email.com', 'pass1234'),
+   ('user2@email.com', 'secure567'),
+   ('user3@email.com', 'chef7890'),
+   ('user4@email.com', 'random654'),
+   ('user5@email.com', 'qwerty999'),
+   ('user6@email.com', 'foodie321'),
+   ('user7@email.com', 'delish876'),
+   ('user8@email.com', 'gourmet111'),
+   ('user9@email.com', 'cuisine555'),
+   ('user10@email.com', 'taste890'),
+   ('user11@email.com', 'flavor987'),
+   ('user12@email.com', 'savory654'),
+   ('user13@email.com', 'chefpass123'),
+   ('user14@email.com', 'cook987'),
+   ('user15@email.com', 'plate876'),
+   ('user16@email.com', 'feast222'),
+   ('user17@email.com', 'dish789'),
+   ('user18@email.com', 'yumyum654'),
+   ('user19@email.com', 'bite321'),
+   ('user20@email.com', 'recipe777'),
+   ('user21@email.com', 'spice987'),
+   ('user22@email.com', 'meal432'),
+   ('user23@email.com', 'fresh999'),
+   ('user24@email.com', 'delight789'),
+   ('user25@email.com', 'sweet654'),
+   ('user26@email.com', 'tasty321'),
+   ('user27@email.com', 'zesty876'),
+   ('user28@email.com', 'flavor999'),
+   ('user29@email.com', 'chefmagic123'),
+   ('user30@email.com', 'pastry888'),
+   ('user31@email.com', 'eatwell999'),
+   ('user32@email.com', 'munch654'),
+   ('user33@email.com', 'grill567'),
+   ('user34@email.com', 'fryit999'),
+   ('user35@email.com', 'broil321'),
+   ('user36@email.com', 'roast222'),
+   ('user37@email.com', 'steam654'),
+   ('user38@email.com', 'sizzle123'),
+   ('user39@email.com', 'braise987'),
+   ('user40@email.com', 'poach876'),
+   ('user41@email.com', 'saute999'),
+   ('user42@email.com', 'bake555'),
+   ('user43@email.com', 'boil999'),
+   ('user44@email.com', 'flambe432'),
+   ('user45@email.com', 'caramel999'),
+   ('user46@email.com', 'chop654'),
+   ('user47@email.com', 'dice321'),
+   ('user48@email.com', 'mince777'),
+   ('user49@email.com', 'knead987'),
+   ('user50@email.com', 'whisk789');
 
 INSERT INTO
    Customer (
@@ -242,7 +242,7 @@ VALUES
    (25, 3.0, 'Bronze', 0);
 
 INSERT INTO
-   Adress (number, street, nearest_metro)
+   Address (address_number, street, nearest_metro)
 VALUES
    (1, 'Rue de Rivoli', 'Châtelet'),
    (
@@ -277,11 +277,7 @@ VALUES
    (27, 'Boulevard Voltaire', 'Oberkampf'),
    (28, 'Boulevard Raspail', 'Raspail'),
    (29, 'Rue Saint-Denis', 'Étienne Marcel'),
-   (
-      30,
-      'Rue du Faubourg Poissonnière',
-      'Poissonnière'
-   ),
+   (30, 'Rue du Faubourg', 'Poissonnière'),
    (31, 'Avenue de Wagram', 'Ternes'),
    (
       32,
@@ -298,7 +294,7 @@ VALUES
    (40, 'Rue de Lancry', 'Jacques Bonsergent'),
    (
       41,
-      'Rue de la Goutte d’Or',
+      'Rue de la Goutte d_Or',
       'Barbès-Rochechouart'
    ),
    (42, 'Avenue Mozart', 'Ranelagh'),
@@ -310,9 +306,9 @@ VALUES
    (
       48,
       'Rue de Provence',
-      'Trinité-d’Estienne d’Orves'
+      'Trinité-d_Estienne d_Orves'
    ),
-   (49, 'Rue d’Alésia', 'Alésia'),
+   (49, 'Rue d_Alésia', 'Alésia'),
    (50, 'Rue Cambronne', 'Cambronne');
 
 INSERT INTO
@@ -321,65 +317,57 @@ INSERT INTO
       chef_rating,
       eats_on_site,
       chef_is_banned,
-      number,
-      street
+      address_id
    )
 VALUES
-   (26, 4.7, 1, 0, 2, 'Avenue des Champs-Élysées'),
-   (28, 4.5, 0, 0, 3, 'Boulevard Haussmann'),
-   (29, 4.8, 1, 0, 4, 'Rue Saint-Honoré'),
-   (30, 4.3, 1, 0, 5, 'Place de la République'),
-   (31, 4.2, 0, 0, 6, 'Rue de la Paix'),
-   (32, 4.6, 1, 0, 7, 'Avenue Montaigne'),
-   (33, 4.0, 1, 0, 8, 'Rue de Vaugirard'),
-   (34, 4.1, 0, 0, 9, 'Boulevard Saint-Germain'),
-   (35, 4.9, 1, 0, 10, 'Rue de Rennes'),
-   (36, 4.4, 1, 0, 11, 'Rue Mouffetard'),
-   (
-      37,
-      4.0,
-      0,
-      1,
-      12,
-      'Rue du Faubourg Saint-Antoine'
-   ),
-   (38, 3.8, 1, 0, 13, 'Rue de la Roquette'),
-   (39, 4.5, 1, 0, 14, 'Avenue de Clichy'),
-   (40, 4.3, 0, 0, 15, 'Rue Oberkampf'),
-   (41, 4.2, 1, 0, 16, 'Rue de Belleville'),
-   (42, 4.7, 0, 0, 17, 'Rue Lepic'),
-   (43, 4.6, 1, 0, 18, 'Rue de la Pompe'),
-   (44, 4.1, 1, 0, 19, 'Rue de Bercy'),
-   (45, 3.9, 0, 1, 20, 'Rue des Rosiers'),
-   (46, 4.0, 1, 0, 21, 'Rue du Bac'),
-   (47, 4.8, 1, 0, 22, 'Avenue Victor Hugo'),
-   (48, 3.7, 0, 1, 23, 'Rue de Sèvres'),
-   (49, 4.5, 1, 0, 24, 'Rue de Passy'),
-   (50, 4.3, 0, 0, 25, 'Rue des Martyrs');
+   (26, 4.7, 1, 0, 2),
+   (28, 4.5, 0, 0, 3),
+   (29, 4.8, 1, 0, 4),
+   (30, 4.3, 1, 0, 5),
+   (31, 4.2, 0, 0, 6),
+   (32, 4.6, 1, 0, 7),
+   (33, 4.0, 1, 0, 8),
+   (34, 4.1, 0, 0, 9),
+   (35, 4.9, 1, 0, 10),
+   (36, 4.4, 1, 0, 11),
+   (37, 4.0, 0, 1, 12),
+   (38, 3.8, 1, 0, 13),
+   (39, 4.5, 1, 0, 14),
+   (40, 4.3, 0, 0, 15),
+   (41, 4.2, 1, 0, 16),
+   (42, 4.7, 0, 0, 17),
+   (43, 4.6, 1, 0, 18),
+   (44, 4.1, 1, 0, 19),
+   (45, 3.9, 0, 1, 20),
+   (46, 4.0, 1, 0, 21),
+   (47, 4.8, 1, 0, 22),
+   (48, 3.7, 0, 1, 23),
+   (49, 4.5, 1, 0, 24),
+   (50, 4.3, 0, 0, 25);
 
 INSERT INTO
-   Transaction (transaction_id, transaction_datetime, account_id)
+   OrderTransaction (transaction_datetime, account_id)
 VALUES
-   (1, '2023-10-01 12:00:00', 1),
-   (2, '2023-10-02 13:00:00', 2),
-   (3, '2023-10-03 14:00:00', 3),
-   (4, '2023-10-04 15:00:00', 4),
-   (5, '2023-10-05 16:00:00', 5),
-   (6, '2023-10-06 17:00:00', 6),
-   (7, '2023-10-07 18:00:00', 7),
-   (8, '2023-10-08 19:00:00', 8),
-   (9, '2023-10-09 20:00:00', 9),
-   (10, '2023-10-10 21:00:00', 10),
-   (11, '2023-10-11 22:00:00', 11),
-   (12, '2023-10-12 23:00:00', 12),
-   (13, '2023-10-13 00:00:00', 13),
-   (14, '2023-10-14 01:00:00', 14),
-   (15, '2023-10-15 02:00:00', 15),
-   (16, '2023-10-16 03:00:00', 16),
-   (17, '2023-10-17 04:00:00', 17),
-   (18, '2023-10-18 05:00:00', 18),
-   (19, '2023-10-19 06:00:00', 19),
-   (20, '2023-10-20 07:00:00', 20);
+   ('2023-10-01 12:00:00', 1),
+   ('2023-10-02 13:00:00', 2),
+   ('2023-10-03 14:00:00', 3),
+   ('2023-10-04 15:00:00', 4),
+   ('2023-10-05 16:00:00', 5),
+   ('2023-10-01 17:00:00', 6),
+   ('2023-10-02 18:00:00', 7),
+   ('2023-10-03 19:00:00', 8),
+   ('2023-10-04 20:00:00', 9),
+   ('2023-10-05 21:00:00', 10),
+   ('2023-10-06 22:00:00', 11),
+   ('2023-10-01 23:00:00', 12),
+   ('2023-10-02 00:00:00', 13),
+   ('2023-10-03 01:00:00', 14),
+   ('2023-10-04 02:00:00', 15),
+   ('2023-10-05 03:00:00', 16),
+   ('2023-10-06 04:00:00', 17),
+   ('2023-10-01 05:00:00', 18),
+   ('2023-10-02 06:00:00', 19),
+   ('2023-10-03 07:00:00', 20);
 
 INSERT INTO
    Company (
@@ -397,230 +385,189 @@ VALUES
 
 INSERT INTO
    OrderLine (
-      order_line_id,
       order_line_datetime,
       duration,
-      status,
+      order_line_status,
       is_eat_in,
-      number,
-      street,
+      address_id,
       transaction_id,
       account_id
    )
 VALUES
    (
-      1,
       '2023-10-01 12:15:00',
       30,
       'delivered',
       FALSE,
       26,
-      'Rue de Charenton',
       1,
       26
    ),
    (
-      3,
       '2023-10-03 14:30:00',
       25,
       'prepared',
       FALSE,
       28,
-      'Boulevard Raspail',
       3,
       28
    ),
    (
-      4,
       '2023-10-04 15:45:00',
       35,
       'pending',
       FALSE,
       29,
-      'Rue Saint-Denis',
       4,
       29
    ),
    (
-      5,
       '2023-10-05 16:50:00',
       40,
       'delivered',
       FALSE,
       30,
-      'Rue du Faubourg Poissonnière',
       5,
       30
    ),
    (
-      6,
-      '2023-10-06 17:55:00',
+      '2023-10-01 17:55:00',
       30,
       'prepared',
       FALSE,
       31,
-      'Avenue de Wagram',
       6,
       31
    ),
    (
-      7,
-      '2023-10-07 18:00:00',
+      '2023-10-02 18:00:00',
       20,
       'in_delivery',
       FALSE,
       32,
-      'Boulevard de Sébastopol',
       7,
       32
    ),
    (
-      8,
-      '2023-10-08 19:10:00',
+      '2023-10-03 19:10:00',
       25,
       'delivered',
       FALSE,
       33,
-      'Rue de Tolbiac',
       8,
       33
    ),
    (
-      9,
-      '2023-10-09 20:20:00',
+      '2023-10-04 20:20:00',
       35,
       'prepared',
       FALSE,
       34,
-      'Rue de la Glacière',
       9,
       34
    ),
    (
-      10,
-      '2023-10-10 21:30:00',
+      '2023-10-05 21:30:00',
       45,
       'in_delivery',
       FALSE,
       35,
-      'Rue de Courcelles',
       10,
       35
    ),
    (
-      11,
-      '2023-10-11 22:40:00',
+      '2023-10-06 22:40:00',
       30,
       'delivered',
       FALSE,
       36,
-      'Rue de Charonne',
       11,
       36
    ),
    (
-      12,
-      '2023-10-12 23:50:00',
+      '2023-10-01 23:50:00',
       25,
       'prepared',
       FALSE,
       37,
-      'Boulevard Beaumarchais',
       12,
       37
    ),
    (
-      13,
-      '2023-10-13 01:00:00',
+      '2023-10-02 01:00:00',
       35,
       'in_delivery',
       FALSE,
       38,
-      'Rue de Cléry',
       13,
       38
    ),
    (
-      14,
-      '2023-10-14 02:10:00',
+      '2023-10-03 02:10:00',
       40,
       'delivered',
       FALSE,
       39,
-      'Rue de Maubeuge',
       14,
       39
    ),
    (
-      15,
-      '2023-10-15 03:20:00',
+      '2023-10-04 03:20:00',
       30,
       'prepared',
       FALSE,
       40,
-      'Rue de Lancry',
       15,
       40
    ),
    (
-      16,
-      '2023-10-16 04:30:00',
+      '2023-10-05 04:30:00',
       25,
       'in_delivery',
       FALSE,
       41,
-      'Rue de la Goutte d’Or',
       16,
       41
    ),
    (
-      17,
-      '2023-10-17 05:40:00',
+      '2023-10-06 05:40:00',
       35,
       'delivered',
       FALSE,
       42,
-      'Avenue Mozart',
       17,
       42
    ),
    (
-      18,
-      '2023-10-18 06:50:00',
+      '2023-10-01 06:50:00',
       40,
       'prepared',
       FALSE,
       43,
-      'Rue de Meaux',
       18,
       43
    ),
    (
-      19,
-      '2023-10-19 08:00:00',
+      '2023-10-02 08:00:00',
       25,
       'in_delivery',
       FALSE,
       44,
-      'Rue Saint-Maur',
       19,
       44
    ),
    (
-      20,
-      '2023-10-20 09:10:00',
+      '2023-10-03 09:10:00',
       30,
       'delivered',
       FALSE,
       45,
-      'Rue de la Convention',
       20,
       45
    );
 
 INSERT INTO
    Review (
-      review_id,
       review_type,
       review_rating,
       comment,
@@ -629,152 +576,133 @@ INSERT INTO
    )
 VALUES
    (
-      1,
-      'client',
+      'customer',
       4.5,
       'The food was delicious and delivered on time!',
       '2023-10-01',
       1
    ),
    (
-      3,
-      'client',
+      'customer',
       4.0,
       'Loved the variety in the menu and the quick delivery.',
       '2023-10-03',
       3
    ),
    (
-      4,
-      'client',
+      'customer',
       2.5,
       'The food quality was not up to the mark.',
       '2023-10-04',
       4
    ),
    (
-      5,
-      'client',
+      'customer',
       5.0,
       'Excellent food and service, will order again!',
       '2023-10-05',
       5
    ),
    (
-      6,
-      'cuisinier',
+      'chef',
       3.7,
-      'The client was polite and provided clear instructions.',
+      'The customer was polite and provided clear instructions.',
       '2023-10-06',
       6
    ),
    (
-      7,
-      'client',
+      'customer',
       4.2,
       'Great taste and timely delivery.',
       '2023-10-07',
       7
    ),
    (
-      8,
-      'client',
+      'customer',
       4.9,
       'Amazing food quality and very friendly delivery person.',
       '2023-10-08',
       8
    ),
    (
-      9,
-      'cuisinier',
+      'chef',
       3.5,
-      'The client was easy to work with and appreciated the meal.',
+      'The customer was easy to work with and appreciated the meal.',
       '2023-10-09',
       9
    ),
    (
-      10,
-      'client',
+      'customer',
       4.1,
       'A bit pricey but the food was worth it.',
       '2023-10-10',
       10
    ),
    (
-      11,
-      'client',
+      'customer',
       3.3,
       'The food was okay, but the delivery was late.',
       '2023-10-11',
       11
    ),
    (
-      12,
-      'client',
+      'customer',
       4.7,
       'Everything was perfect, from order to delivery!',
       '2023-10-12',
       12
    ),
    (
-      13,
-      'cuisinier',
+      'chef',
       3.9,
-      'The client was satisfied with the customization request.',
+      'The customer was satisfied with the customization request.',
       '2023-10-13',
       13
    ),
    (
-      14,
-      'client',
+      'customer',
       4.3,
       'I enjoyed the variety and the freshness of the food.',
       '2023-10-14',
       14
    ),
    (
-      15,
-      'client',
+      'customer',
       2.8,
       'Disappointed with the cold food upon delivery.',
       '2023-10-15',
       15
    ),
    (
-      16,
-      'client',
+      'customer',
       4.6,
       'Highly recommend this service for quick and tasty meals.',
       '2023-10-16',
       16
    ),
    (
-      17,
-      'cuisinier',
+      'chef',
       3.2,
-      'The client requested a last-minute change, which was challenging.',
+      'The customer requested a last-minute change, which was challenging.',
       '2023-10-17',
       17
    ),
    (
-      18,
-      'client',
+      'customer',
       4.0,
       'Good food and the delivery was on time.',
       '2023-10-18',
       18
    ),
    (
-      19,
-      'client',
+      'customer',
       3.6,
       'The food was good, but the delivery was a bit slow.',
       '2023-10-19',
       19
    ),
    (
-      20,
-      'client',
+      'customer',
       4.8,
       'One of the best food delivery experiences I’ve had.',
       '2023-10-20',
@@ -787,105 +715,561 @@ INSERT INTO
       is_vegetarian,
       is_vegan,
       is_gluten_free,
+      is_lactose_free,
       is_halal,
-      is_kosher
+      is_kosher,
+      product_origin
    )
 VALUES
-   ('Tomate', TRUE, TRUE, TRUE, TRUE, TRUE),
+   (
+      'Tomate',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
    (
       'Poitrine de poulet',
       FALSE,
       FALSE,
       TRUE,
       TRUE,
-      FALSE
+      TRUE,
+      FALSE,
+      'france'
    ),
-   ('Saumon', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Tofu', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Aubergine', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Farine de blé', TRUE, TRUE, FALSE, TRUE, TRUE),
-   ('Lait', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Fromage', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Œufs', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Beurre', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Huile d’olive', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Ail', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Oignon', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Champignons', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Riz', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Lentilles', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Pois chiches', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Concombre', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Carotte', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Bœuf', FALSE, FALSE, TRUE, FALSE, FALSE),
-   ('Porc', FALSE, FALSE, TRUE, FALSE, FALSE),
-   ('Crevettes', FALSE, FALSE, TRUE, TRUE, FALSE),
-   ('Homard', FALSE, FALSE, TRUE, TRUE, FALSE),
-   ('Miel', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Avocat', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Cacahuètes', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Amandes', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Noix de cajou', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Sauce soja', TRUE, TRUE, FALSE, TRUE, TRUE),
-   ('Lait de coco', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Maïs', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Épinards', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Chou frisé', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Courgette', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Poivron', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Pomme de terre', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Patate douce', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Potiron', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Avoine', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Yaourt', TRUE, FALSE, TRUE, TRUE, TRUE),
-   ('Basilic', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Coriandre', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Thym', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Menthe', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Céleri', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Citron', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Citron vert', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Gingembre', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Curcuma', TRUE, TRUE, TRUE, TRUE, TRUE);
-
-INSERT INTO
-   Ingredient (
-      ingredient_name,
-      is_vegetarian,
-      is_vegan,
-      is_gluten_free,
-      is_halal,
-      is_kosher
-   )
-VALUES
-   ('Steak haché', FALSE, FALSE, TRUE, FALSE, FALSE),
+   (
+      'Saumon',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Tofu',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Aubergine',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Farine de blé',
+      TRUE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Lait',
+      TRUE,
+      FALSE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Fromage',
+      TRUE,
+      FALSE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Œufs',
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Beurre',
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Huile d_olive',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Ail',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Oignon',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Champignons',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Riz',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Lentilles',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Pois chiches',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Concombre',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Carotte',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Bœuf',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      FALSE,
+      FALSE,
+      'france'
+   ),
+   (
+      'Agneau',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      FALSE,
+      FALSE,
+      'france'
+   ),
+   (
+      'Dinde',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      FALSE,
+      'france'
+   ),
+   (
+      'Poisson',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Crevettes',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      FALSE,
+      'france'
+   ),
+   (
+      'Porc',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      FALSE,
+      FALSE,
+      'other'
+   ),
+   (
+      'Homard',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      FALSE,
+      'other'
+   ),
+   (
+      'Miel',
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Avocat',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Cacahuètes',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Amandes',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Noix de cajou',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Sauce soja',
+      TRUE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Lait de coco',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Maïs',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'other'
+   ),
+   (
+      'Épinards',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Chou frisé',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Courgette',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Poivron',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Pomme de terre',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Patate douce',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Potiron',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Avoine',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Yaourt',
+      TRUE,
+      FALSE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Basilic',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Coriandre',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Thym',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Menthe',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Céleri',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Citron',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'france'
+   ),
+   (
+      'Citron vert',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Gingembre',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ),
+   (
+      'Curcuma',
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      TRUE,
+      'europe'
+   ) (
+      'Steak haché',
+      FALSE,
+      FALSE,
+      TRUE,
+      TRUE,
+      FALSE,
+      FALSE,
+      'other'
+   ),
    (
       'Fromage cheddar',
       TRUE,
       FALSE,
       TRUE,
       FALSE,
-      FALSE
+      TRUE,
+      FALSE,
+      'other'
    ),
    (
       'Pain à hamburger',
       TRUE,
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE
-   ),
-   (
-      'Porc mariné (en fines tranches)',
-      FALSE,
-      FALSE,
       TRUE,
       FALSE,
-      FALSE
+      TRUE,
+      TRUE,
+      FALSE,
+      'europe'
    ),
-   ('Tortillas de maïs', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Ananas', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Frites', TRUE, TRUE, TRUE, TRUE, TRUE), -- Vérifier l'huile de cuisson pour le végane
    (
       'Fromage en grains',
       TRUE,
@@ -893,178 +1277,24 @@ VALUES
       TRUE,
       FALSE,
       FALSE
-   ),
-   ('Sauce brune', FALSE, FALSE, FALSE, FALSE, FALSE), -- Contient souvent du bouillon de viande et de la farine de blé
-   ('Haricots noirs', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Diverses coupes de porc',
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
-   ),
-   (
-      'Diverses coupes de bœuf',
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
-   ),
-   (
-      'Poisson blanc cru',
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   ('Piments', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Mozzarella', TRUE, FALSE, TRUE, FALSE, FALSE),
-   ('Basilic frais', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Safran', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Mélange de fruits de mer',
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   ('Poulet grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Porc grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Agneau grillé', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Pain pita', TRUE, TRUE, FALSE, TRUE, FALSE),
-   ('Sauce tzatziki', TRUE, FALSE, TRUE, TRUE, TRUE), -- Contient du yaourt
-   (
-      'Viande hachée (porc/bœuf)',
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
-   ),
-   ('Chou', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Huile de sésame', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Vinaigre', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Nouilles de riz', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Germes de soja', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Poulet cuit en sauce',
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   ('Épices diverses', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Pain naan', TRUE, TRUE, FALSE, TRUE, FALSE),
-   ('Légumes variés', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Gochujang (pâte de piment)',
-      TRUE,
-      TRUE,
-      FALSE,
-      TRUE,
-      TRUE
-   ), -- Contient souvent du blé
-   ('Agneau mijoté', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Fruits secs', TRUE, TRUE, TRUE, TRUE, TRUE),
-   ('Poulet mijoté', FALSE, FALSE, TRUE, TRUE, TRUE),
-   ('Farine de teff', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Ragoût (avec viande/légumes)',
-      FALSE,
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE
-   ), -- Dépend des ingrédients
-   (
-      'Viande hachée (bœuf/agneau)',
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
-   ),
-   (
-      'Sauce de viande',
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE
-   ),
-   (
-      'Pommes de terre cuites sous terre',
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   (
-      'Kumara (patate douce)',
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   ('Fèves', TRUE, TRUE, TRUE, TRUE, TRUE),
-   (
-      'Tahini (pâte de sésame)',
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   (
-      'Agneau grillé sur brochette',
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   (
-      'Poulet grillé sur brochette',
-      FALSE,
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE
-   ),
-   (
-      'Bœuf grillé sur brochette',
-      FALSE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
    );
 
 INSERT INTO
    Dish (
       dish_name,
       dish_type,
-      preparation_date,
-      expiration_date,
+      expiry_time,
       cuisine_nationality,
       quantity,
       price,
-      photo
+      photo_path
    )
 VALUES
    (
       'Ratatouille',
       'main_course',
-      '2025-04-01',
-      '2025-04-03',
-      'Française',
+      2,
+      'french',
       10,
       15.99,
       NULL
@@ -1072,9 +1302,8 @@ VALUES
    (
       'Bœuf Bourguignon',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      2,
+      'french',
       8,
       22.50,
       NULL
@@ -1082,19 +1311,17 @@ VALUES
    (
       'Coq au Vin',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      3,
+      'french',
       6,
       19.99,
       NULL
    ),
    (
-      'Soupe à l’Oignon',
+      'Soupe à l_Oignon',
       'starter',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      4,
+      'french',
       12,
       9.50,
       NULL
@@ -1102,9 +1329,8 @@ VALUES
    (
       'Poulet Basquaise',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      3,
+      'french',
       8,
       17.99,
       NULL
@@ -1112,9 +1338,8 @@ VALUES
    (
       'Salade Niçoise',
       'starter',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      1,
+      'french',
       15,
       12.99,
       NULL
@@ -1122,9 +1347,8 @@ VALUES
    (
       'Quiche Lorraine',
       'main_course',
-      '2025-04-01',
-      '2025-04-03',
-      'Française',
+      2,
+      'french',
       10,
       14.99,
       NULL
@@ -1132,9 +1356,8 @@ VALUES
    (
       'Tartiflette',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      3,
+      'french',
       7,
       18.99,
       NULL
@@ -1142,9 +1365,8 @@ VALUES
    (
       'Gratin Dauphinois',
       'main_course',
-      '2025-04-01',
-      '2025-04-03',
-      'Française',
+      2,
+      'french',
       9,
       11.99,
       NULL
@@ -1152,9 +1374,8 @@ VALUES
    (
       'Bouillabaisse',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      4,
+      'french',
       6,
       24.99,
       NULL
@@ -1162,29 +1383,17 @@ VALUES
    (
       'Cassoulet',
       'main_course',
-      '2025-04-01',
-      '2025-04-03',
-      'Française',
+      3,
+      'arabic',
       7,
       20.99,
       NULL
    ),
    (
-      'Tarte Tatin',
-      'dessert',
-      '2025-04-01',
-      '2025-04-04',
-      'Française',
-      12,
-      8.99,
-      NULL
-   ),
-   (
       'Mousse au Chocolat',
       'dessert',
-      '2025-04-01',
-      '2025-04-05',
-      'Française',
+      1,
+      'french',
       15,
       6.99,
       NULL
@@ -1192,9 +1401,8 @@ VALUES
    (
       'Crêpes',
       'dessert',
-      '2025-04-01',
-      '2025-04-03',
-      'Française',
+      1,
+      'french',
       20,
       7.99,
       NULL
@@ -1202,32 +1410,17 @@ VALUES
    (
       'Soufflé au Fromage',
       'main_course',
-      '2025-04-01',
-      '2025-04-02',
-      'Française',
+      2,
+      'french',
       6,
       13.99,
       NULL
-   );
-
-INSERT INTO
-   Dish (
-      dish_name,
-      dish_type,
-      preparation_date,
-      expiration_date,
-      cuisine_nationality,
-      quantity,
-      price,
-      photo
-   )
-VALUES
+   ),
    (
-      'Cheeseburger and Fries',
+      'Hamburger',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'American',
+      2,
+      'german',
       15,
       9.99,
       NULL
@@ -1235,9 +1428,8 @@ VALUES
    (
       'Tacos al Pastor',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Mexican',
+      2,
+      'mexican',
       20,
       12.50,
       NULL
@@ -1245,9 +1437,8 @@ VALUES
    (
       'Poutine',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Canadian',
+      2,
+      'canadian',
       12,
       8.75,
       NULL
@@ -1255,9 +1446,8 @@ VALUES
    (
       'Feijoada',
       'main_course',
-      '2025-04-04',
-      '2025-04-06',
-      'Brazilian',
+      2,
+      'brazilian',
       10,
       16.25,
       NULL
@@ -1265,204 +1455,174 @@ VALUES
    (
       'Ceviche',
       'starter',
-      '2025-04-04',
-      '2025-04-04',
-      'Peruvian',
-      18,
+      2,
+      'peruvian',
+      6,
       11.00,
       NULL
    ),
    (
       'Pizza Margherita',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Italian',
-      25,
+      2,
+      'italian',
+      2,
       14.00,
       NULL
    ),
    (
       'Paella',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
+      1,
       'Spanish',
       8,
       25.50,
       NULL
    ),
    (
-      'Souvlaki',
-      'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Greek',
-      16,
-      10.50,
-      NULL
-   ),
-   (
-      'Dumplings (Jiaozi)',
-      'starter',
-      '2025-04-04',
-      '2025-04-05',
-      'Chinese',
-      30,
-      7.99,
-      NULL
-   ),
-   (
       'Sushi (Nigiri)',
       'main_course',
-      '2025-04-04',
-      '2025-04-04',
-      'Japanese',
+      1,
+      'japanese',
       14,
       18.00,
       NULL
    ),
    (
-      'Butter Chicken',
-      'main_course',
-      '2025-04-04',
-      '2025-04-06',
-      'Indian',
-      11,
-      15.75,
-      NULL
-   ),
-   (
-      'Pad Thai',
-      'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Thai',
-      22,
-      13.25,
-      NULL
-   ),
-   (
       'Bibimbap',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Korean',
+      3,
+      'korean',
       17,
       14.50,
       NULL
    ),
    (
-      'Tagine',
+      'Tajine',
       'main_course',
-      '2025-04-04',
-      '2025-04-06',
-      'Moroccan',
+      4,
+      'arabic',
       9,
       17.00,
       NULL
    ),
    (
-      'Jollof Rice',
-      'main_course',
-      '2025-04-04',
-      '2025-04-06',
-      'Nigerian',
-      13,
-      12.00,
-      NULL
-   ),
-   (
-      'Injera with Wat',
-      'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Ethiopian',
-      7,
-      16.50,
-      NULL
-   ),
-   (
-      'Meat Pie',
-      'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Australian',
-      19,
-      6.99,
-      NULL
-   ),
-   (
-      'Hangi',
-      'main_course',
-      '2025-04-04',
-      '2025-04-06',
-      'New Zealander',
-      5,
-      28.00,
-      NULL
-   ),
-   (
       'Falafel',
       'starter',
-      '2025-04-04',
-      '2025-04-05',
-      'Lebanese',
-      28,
+      2,
+      'arabic',
+      3,
       9.25,
       NULL
    ),
    (
       'Kebab',
       'main_course',
-      '2025-04-04',
-      '2025-04-05',
-      'Turkish',
-      21,
+      1,
+      'arabic',
+      1,
       11.75,
       NULL
    );
 
 INSERT INTO
-   MenuProposal (account_id, proposal_date, dish_name)
+   MenuProposal (account_id, proposal_date, dish_id)
 VALUES
-   (26, '2025-04-01', 'Ratatouille'),
-   (28, '2025-04-02', 'Bœuf Bourguignon'),
-   (29, '2025-04-03', 'Coq au Vin'),
-   (30, '2025-04-04', 'Soupe à l’Oignon'),
-   (31, '2025-04-05', 'Poulet Basquaise'),
-   (32, '2025-04-06', 'Salade Niçoise'),
-   (33, '2025-04-07', 'Quiche Lorraine'),
-   (34, '2025-04-08', 'Tartiflette'),
-   (35, '2025-04-09', 'Gratin Dauphinois'),
-   (36, '2025-04-10', 'Bouillabaisse'),
-   (37, '2025-04-11', 'Cassoulet'),
-   (38, '2025-04-12', 'Tarte Tatin'),
-   (39, '2025-04-13', 'Mousse au Chocolat'),
-   (40, '2025-04-14', 'Crêpes'),
-   (41, '2025-04-15', 'Soufflé au Fromage');
+   (26, '2023-10-01', 1),
+   (28, '2023-10-01', 2),
+   (29, '2023-10-01', 3),
+   (30, '2023-10-01', 4),
+   (31, '2023-10-01', 5),
+   (32, '2023-10-01', 6),
+   (33, '2023-10-01', 7),
+   (34, '2023-10-01', 8),
+   (35, '2023-10-01', 9),
+   (36, '2023-10-01', 10),
+   (37, '2023-10-01', 23),
+   (38, '2023-10-01', 24),
+   (39, '2023-10-01', 25),
+   (40, '2023-10-01', 26),
+   (41, '2023-10-01', 27),
+   (26, '2023-10-02', 5),
+   (28, '2023-10-02', 6),
+   (29, '2023-10-02', 7),
+   (30, '2023-10-02', 8),
+   (31, '2023-10-02', 9),
+   (32, '2023-10-02', 10),
+   (33, '2023-10-02', 23),
+   (34, '2023-10-02', 24),
+   (35, '2023-10-02', 25),
+   (36, '2023-10-02', 26),
+   (37, '2023-10-02', 27),
+   (38, '2023-10-02', 1),
+   (39, '2023-10-02', 2),
+   (40, '2023-10-02', 3),
+   (41, '2023-10-02', 4),
+   (26, '2023-10-03', 1),
+   (28, '2023-10-03', 2),
+   (29, '2023-10-03', 3),
+   (30, '2023-10-03', 4),
+   (31, '2023-10-03', 5),
+   (32, '2023-10-03', 6),
+   (33, '2023-10-03', 7),
+   (34, '2023-10-03', 8),
+   (35, '2023-10-03', 9),
+   (36, '2023-10-03', 10),
+   (37, '2023-10-03', 23),
+   (38, '2023-10-03', 24),
+   (39, '2023-10-03', 25),
+   (40, '2023-10-03', 26),
+   (41, '2023-10-03', 27),
+   (26, '2023-10-04', 5),
+   (28, '2023-10-04', 6),
+   (29, '2023-10-04', 7),
+   (30, '2023-10-04', 8),
+   (31, '2023-10-04', 9),
+   (32, '2023-10-04', 10),
+   (33, '2023-10-04', 23),
+   (34, '2023-10-04', 24),
+   (35, '2023-10-04', 25),
+   (36, '2023-10-04', 26),
+   (37, '2023-10-04', 27),
+   (38, '2023-10-04', 1),
+   (39, '2023-10-04', 2),
+   (40, '2023-10-04', 3),
+   (41, '2023-10-04', 4),
+   (26, '2023-10-05', 1),
+   (28, '2023-10-05', 2),
+   (29, '2023-10-05', 3),
+   (30, '2023-10-05', 4),
+   (31, '2023-10-05', 5),
+   (32, '2023-10-05', 6),
+   (33, '2023-10-05', 7),
+   (34, '2023-10-05', 8),
+   (35, '2023-10-05', 9),
+   (36, '2023-10-05', 10),
+   (37, '2023-10-05', 23),
+   (38, '2023-10-05', 24),
+   (39, '2023-10-05', 25),
+   (40, '2023-10-05', 26),
+   (41, '2023-10-05', 27),
+   (26, '2023-10-06', 5),
+   (28, '2023-10-06', 6),
+   (29, '2023-10-06', 7),
+   (30, '2023-10-06', 8),
+   (31, '2023-10-06', 9),
+   (32, '2023-10-06', 10),
+   (33, '2023-10-06', 23),
+   (34, '2023-10-06', 24),
+   (35, '2023-10-06', 25),
+   (36, '2023-10-06', 26),
+   (37, '2023-10-06', 27),
+   (38, '2023-10-06', 1),
+   (39, '2023-10-06', 2),
+   (40, '2023-10-06', 3),
+   (41, '2023-10-06', 4);
+
+//FIXME: Contains avec Id
 
 INSERT INTO
-   MenuProposal (account_id, proposal_date, dish_name)
-VALUES
-   (26, '2025-04-16', 'Cheeseburger and Fries'),
-   (28, '2025-04-18', 'Poutine'),
-   (29, '2025-04-19', 'Feijoada'),
-   (30, '2025-04-20', 'Ceviche'),
-   (31, '2025-04-21', 'Pizza Margherita'),
-   (32, '2025-04-22', 'Paella'),
-   (33, '2025-04-23', 'Souvlaki'),
-   (34, '2025-04-24', 'Dumplings (Jiaozi)'),
-   (35, '2025-04-25', 'Sushi (Nigiri)'),
-   (36, '2025-04-26', 'Butter Chicken'),
-   (37, '2025-04-27', 'Pad Thai'),
-   (38, '2025-04-28', 'Bibimbap'),
-   (39, '2025-04-29', 'Tagine'),
-   (40, '2025-04-30', 'Jollof Rice'),
-   (41, '2025-05-01', 'Injera with Wat');
-
-INSERT INTO
-   Contains (dish_name, ingredient_name)
+   Contains (dish_id, ingredient_id)
 VALUES
    ('Ratatouille', 'Tomate'),
    ('Ratatouille', 'Aubergine'),
@@ -1477,9 +1637,9 @@ VALUES
    ('Coq au Vin', 'Vin rouge'),
    ('Coq au Vin', 'Champignons'),
    ('Coq au Vin', 'Oignon'),
-   ('Soupe à l’Oignon', 'Oignon'),
-   ('Soupe à l’Oignon', 'Beurre'),
-   ('Soupe à l’Oignon', 'Fromage'),
+   ('Soupe à l_Oignon', 'Oignon'),
+   ('Soupe à l_Oignon', 'Beurre'),
+   ('Soupe à l_Oignon', 'Fromage'),
    ('Poulet Basquaise', 'Poitrine de poulet'),
    ('Poulet Basquaise', 'Poivron'),
    ('Poulet Basquaise', 'Tomate'),
@@ -1517,81 +1677,41 @@ VALUES
    ('Crêpes', 'Œufs'),
    ('Soufflé au Fromage', 'Fromage'),
    ('Soufflé au Fromage', 'Lait'),
-   ('Soufflé au Fromage', 'Œufs');
-
--- Cheeseburger and Fries
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Soufflé au Fromage', 'Œufs'),
    ('Steak haché', 'Cheeseburger and Fries'),
    ('Fromage cheddar', 'Cheeseburger and Fries'),
    ('Pain à hamburger', 'Cheeseburger and Fries'),
    ('Tomate', 'Cheeseburger and Fries'),
    ('Oignon', 'Cheeseburger and Fries'),
-   ('Frites', 'Cheeseburger and Fries');
-
--- Poutine
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Frites', 'Cheeseburger and Fries'),
    ('Frites', 'Poutine'),
    ('Fromage en grains', 'Poutine'),
-   ('Sauce brune', 'Poutine');
-
--- Feijoada
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Sauce brune', 'Poutine'),
    ('Haricots noirs', 'Feijoada'),
    ('Diverses coupes de porc', 'Feijoada'),
    ('Oignon', 'Feijoada'),
-   ('Ail', 'Feijoada');
-
--- Ceviche
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Ail', 'Feijoada'),
    ('Poisson blanc cru', 'Ceviche'),
    ('Citron vert', 'Ceviche'),
    ('Oignon', 'Ceviche'),
    ('Coriandre', 'Ceviche'),
-   ('Piments', 'Ceviche');
-
--- Pizza Margherita
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Piments', 'Ceviche'),
    ('Farine de blé', 'Pizza Margherita'),
    ('Tomate', 'Pizza Margherita'),
    ('Mozzarella', 'Pizza Margherita'),
    ('Basilic frais', 'Pizza Margherita'),
-   ('Huile d’olive', 'Pizza Margherita');
-
--- Paella
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Huile d_olive', 'Pizza Margherita'),
    ('Riz', 'Paella'),
    ('Mélange de fruits de mer', 'Paella'),
    ('Safran', 'Paella'),
    ('Poivron', 'Paella'),
    ('Tomate', 'Paella'),
-   ('Oignon', 'Paella');
-
--- Souvlaki
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Oignon', 'Paella'),
    ('Poulet grillé sur brochette', 'Souvlaki'),
    ('Pain pita', 'Souvlaki'),
    ('Sauce tzatziki', 'Souvlaki'),
    ('Tomate', 'Souvlaki'),
-   ('Oignon', 'Souvlaki');
-
--- Dumplings (Jiaozi)
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Oignon', 'Souvlaki'),
    ('Farine de blé', 'Dumplings (Jiaozi)'),
    ('Chou', 'Dumplings (Jiaozi)'),
    ('Viande hachée (porc/bœuf)', 'Dumplings (Jiaozi)'),
@@ -1599,110 +1719,42 @@ VALUES
    ('Coriandre', 'Dumplings (Jiaozi)'),
    ('Ail', 'Dumplings (Jiaozi)'),
    ('Sauce soja', 'Dumplings (Jiaozi)'),
-   ('Huile de sésame', 'Dumplings (Jiaozi)');
-
--- Sushi (Nigiri)
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Huile de sésame', 'Dumplings (Jiaozi)'),
    ('Riz', 'Sushi (Nigiri)'),
    ('Saumon', 'Sushi (Nigiri)'),
-   ('Vinaigre', 'Sushi (Nigiri)');
-
--- Butter Chicken
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Vinaigre', 'Sushi (Nigiri)'),
    ('Poulet cuit en sauce', 'Butter Chicken'),
    ('Tomate', 'Butter Chicken'),
    ('Crème', 'Butter Chicken'),
    ('Épices diverses', 'Butter Chicken'),
-   ('Beurre', 'Butter Chicken');
-
--- Pad Thai
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Beurre', 'Butter Chicken'),
    ('Nouilles de riz', 'Pad Thai'),
    ('Crevettes', 'Pad Thai'),
    ('Germes de soja', 'Pad Thai'),
    ('Cacahuètes', 'Pad Thai'),
    ('Œufs', 'Pad Thai'),
    ('Sauce soja', 'Pad Thai'),
-   ('Coriandre', 'Pad Thai');
-
--- Bibimbap
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Coriandre', 'Pad Thai'),
    ('Riz', 'Bibimbap'),
    ('Légumes variés', 'Bibimbap'),
    ('Œufs', 'Bibimbap'),
    ('Gochujang (pâte de piment)', 'Bibimbap'),
-   ('Viande hachée (bœuf/agneau)', 'Bibimbap');
-
--- Tagine
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Viande hachée (bœuf/agneau)', 'Bibimbap'),
    ('Agneau mijoté', 'Tagine'),
    ('Fruits secs', 'Tagine'),
    ('Épices diverses', 'Tagine'),
    ('Amandes', 'Tagine'),
-   ('Carotte', 'Tagine');
-
--- Jollof Rice
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
-   ('Riz', 'Jollof Rice'),
-   ('Tomate', 'Jollof Rice'),
-   ('Poivron', 'Jollof Rice'),
-   ('Oignon', 'Jollof Rice'),
-   ('Épices diverses', 'Jollof Rice');
-
--- Injera with Wat
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Carotte', 'Tagine'),
    ('Farine de teff', 'Injera with Wat'),
    ('Ragoût (avec viande/légumes)', 'Injera with Wat'),
    ('Oignon', 'Injera with Wat'),
    ('Ail', 'Injera with Wat'),
-   ('Épices diverses', 'Injera with Wat');
-
--- Meat Pie
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
-   ('Farine de blé', 'Meat Pie'),
-   ('Beurre', 'Meat Pie'),
-   ('Viande hachée (bœuf/agneau)', 'Meat Pie'),
-   ('Oignon', 'Meat Pie');
-
--- Hangi
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
-   ('Pommes de terre cuites sous terre', 'Hangi'),
-   ('Viande hachée (bœuf/agneau)', 'Hangi'),
-   ('Légumes variés', 'Hangi'),
-   ('Kumara (patate douce)', 'Hangi');
-
--- Falafel
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Épices diverses', 'Injera with Wat'),
    ('Pois chiches', 'Falafel'),
    ('Ail', 'Falafel'),
    ('Coriandre', 'Falafel'),
    ('Persil', 'Falafel'),
-   ('Tahini (pâte de sésame)', 'Falafel');
-
--- Kebab
-INSERT INTO
-   Contains (ingredient_name, dish_name)
-VALUES
+   ('Tahini (pâte de sésame)', 'Falafel'),
    ('Agneau grillé sur brochette', 'Kebab'),
    ('Pain pita', 'Kebab'),
    ('Oignon', 'Kebab'),
