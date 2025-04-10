@@ -3,12 +3,7 @@ using LivinParisRoussilleTeynier.Data.Services;
 
 namespace LivinParisRoussilleTeynier.Data;
 
-//TODO: visu
-
-//TODO: peuplement de la base de données
-
-//TODO: unit tests
-
+//TODO: create, read etc avec les models
 public static class Repository
 {
     #region Fields
