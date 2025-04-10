@@ -320,30 +320,30 @@ INSERT INTO
       address_id
    )
 VALUES
-   (26, 4.7, 1, 0, 2),
-   (28, 4.5, 0, 0, 3),
-   (29, 4.8, 1, 0, 4),
-   (30, 4.3, 1, 0, 5),
-   (31, 4.2, 0, 0, 6),
-   (32, 4.6, 1, 0, 7),
-   (33, 4.0, 1, 0, 8),
-   (34, 4.1, 0, 0, 9),
-   (35, 4.9, 1, 0, 10),
-   (36, 4.4, 1, 0, 11),
-   (37, 4.0, 0, 1, 12),
-   (38, 3.8, 1, 0, 13),
-   (39, 4.5, 1, 0, 14),
-   (40, 4.3, 0, 0, 15),
-   (41, 4.2, 1, 0, 16),
-   (42, 4.7, 0, 0, 17),
-   (43, 4.6, 1, 0, 18),
-   (44, 4.1, 1, 0, 19),
-   (45, 3.9, 0, 1, 20),
-   (46, 4.0, 1, 0, 21),
-   (47, 4.8, 1, 0, 22),
-   (48, 3.7, 0, 1, 23),
-   (49, 4.5, 1, 0, 24),
-   (50, 4.3, 0, 0, 25);
+   (26, 4.7, TRUE, FALSE, 2),
+   (28, 4.5, FALSE, FALSE, 3),
+   (29, 4.8, TRUE, FALSE, 4),
+   (30, 4.3, TRUE, FALSE, 5),
+   (31, 4.2, FALSE, FALSE, 6),
+   (32, 4.6, TRUE, FALSE, 7),
+   (33, 4.0, TRUE, FALSE, 8),
+   (34, 4.1, FALSE, FALSE, 9),
+   (35, 4.9, TRUE, FALSE, 10),
+   (36, 4.4, TRUE, FALSE, 11),
+   (37, 4.0, FALSE, TRUE, 12),
+   (38, 3.8, TRUE, FALSE, 13),
+   (39, 4.5, TRUE, FALSE, 14),
+   (40, 4.3, FALSE, FALSE, 15),
+   (41, 4.2, TRUE, FALSE, 16),
+   (42, 4.7, FALSE, FALSE, 17),
+   (43, 4.6, TRUE, FALSE, 18),
+   (44, 4.1, TRUE, FALSE, 19),
+   (45, 3.9, FALSE, TRUE, 20),
+   (46, 4.0, TRUE, FALSE, 21),
+   (47, 4.8, TRUE, FALSE, 22),
+   (48, 3.7, FALSE, TRUE, 23),
+   (49, 4.5, TRUE, FALSE, 24),
+   (50, 4.3, FALSE, FALSE, 25);
 
 INSERT INTO
    OrderTransaction (transaction_datetime, account_id)
@@ -442,7 +442,7 @@ VALUES
    (
       '2023-10-02 18:00:00',
       20,
-      'in_delivery',
+      'delivering',
       FALSE,
       32,
       7,
@@ -469,7 +469,7 @@ VALUES
    (
       '2023-10-05 21:30:00',
       45,
-      'in_delivery',
+      'delivering',
       FALSE,
       35,
       10,
@@ -496,7 +496,7 @@ VALUES
    (
       '2023-10-02 01:00:00',
       35,
-      'in_delivery',
+      'delivering',
       FALSE,
       38,
       13,
@@ -523,7 +523,7 @@ VALUES
    (
       '2023-10-05 04:30:00',
       25,
-      'in_delivery',
+      'delivering',
       FALSE,
       41,
       16,
@@ -550,7 +550,7 @@ VALUES
    (
       '2023-10-02 08:00:00',
       25,
-      'in_delivery',
+      'delivering',
       FALSE,
       44,
       19,
@@ -704,9 +704,9 @@ VALUES
    (
       'customer',
       4.8,
-      'One of the best food delivery experiences I’ve had.',
+      'One of the best food delivery experiences Ive had.',
       '2023-10-20',
-      20
+      17
    );
 
 INSERT INTO
@@ -1240,7 +1240,8 @@ VALUES
       TRUE,
       TRUE,
       'europe'
-   ) (
+   ),
+   (
       'Steak haché',
       FALSE,
       FALSE,
@@ -1269,14 +1270,6 @@ VALUES
       TRUE,
       FALSE,
       'europe'
-   ),
-   (
-      'Fromage en grains',
-      TRUE,
-      FALSE,
-      TRUE,
-      FALSE,
-      FALSE
    );
 
 INSERT INTO
@@ -1398,15 +1391,7 @@ VALUES
       6.99,
       NULL
    ),
-   (
-      'Crêpes',
-      'dessert',
-      1,
-      'french',
-      20,
-      7.99,
-      NULL
-   ),
+   ('Crêpes', 'dessert', 1, 'french', 20, 7.99, NULL),
    (
       'Soufflé au Fromage',
       'main_course',
@@ -1506,15 +1491,7 @@ VALUES
       17.00,
       NULL
    ),
-   (
-      'Falafel',
-      'starter',
-      2,
-      'arabic',
-      3,
-      9.25,
-      NULL
-   ),
+   ('Falafel', 'starter', 2, 'arabic', 3, 9.25, NULL),
    (
       'Kebab',
       'main_course',
@@ -1542,7 +1519,7 @@ VALUES
    (38, '2023-10-01', 24),
    (39, '2023-10-01', 25),
    (40, '2023-10-01', 26),
-   (41, '2023-10-01', 27),
+   (41, '2023-10-01', 26),
    (26, '2023-10-02', 5),
    (28, '2023-10-02', 6),
    (29, '2023-10-02', 7),
@@ -1553,7 +1530,7 @@ VALUES
    (34, '2023-10-02', 24),
    (35, '2023-10-02', 25),
    (36, '2023-10-02', 26),
-   (37, '2023-10-02', 27),
+   (37, '2023-10-02', 24),
    (38, '2023-10-02', 1),
    (39, '2023-10-02', 2),
    (40, '2023-10-02', 3),
@@ -1572,7 +1549,7 @@ VALUES
    (38, '2023-10-03', 24),
    (39, '2023-10-03', 25),
    (40, '2023-10-03', 26),
-   (41, '2023-10-03', 27),
+   (41, '2023-10-03', 23),
    (26, '2023-10-04', 5),
    (28, '2023-10-04', 6),
    (29, '2023-10-04', 7),
@@ -1583,7 +1560,7 @@ VALUES
    (34, '2023-10-04', 24),
    (35, '2023-10-04', 25),
    (36, '2023-10-04', 26),
-   (37, '2023-10-04', 27),
+   (37, '2023-10-04', 22),
    (38, '2023-10-04', 1),
    (39, '2023-10-04', 2),
    (40, '2023-10-04', 3),
@@ -1602,7 +1579,7 @@ VALUES
    (38, '2023-10-05', 24),
    (39, '2023-10-05', 25),
    (40, '2023-10-05', 26),
-   (41, '2023-10-05', 27),
+   (41, '2023-10-05', 21),
    (26, '2023-10-06', 5),
    (28, '2023-10-06', 6),
    (29, '2023-10-06', 7),
@@ -1613,150 +1590,66 @@ VALUES
    (34, '2023-10-06', 24),
    (35, '2023-10-06', 25),
    (36, '2023-10-06', 26),
-   (37, '2023-10-06', 27),
+   (37, '2023-10-06', 26),
    (38, '2023-10-06', 1),
    (39, '2023-10-06', 2),
    (40, '2023-10-06', 3),
    (41, '2023-10-06', 4);
 
-//FIXME: Contains avec Id
-
 INSERT INTO
    Contains (dish_id, ingredient_id)
 VALUES
-   ('Ratatouille', 'Tomate'),
-   ('Ratatouille', 'Aubergine'),
-   ('Ratatouille', 'Courgette'),
-   ('Ratatouille', 'Poivron'),
-   ('Ratatouille', 'Oignon'),
-   ('Bœuf Bourguignon', 'Bœuf'),
-   ('Bœuf Bourguignon', 'Vin rouge'),
-   ('Bœuf Bourguignon', 'Oignon'),
-   ('Bœuf Bourguignon', 'Carotte'),
-   ('Coq au Vin', 'Poitrine de poulet'),
-   ('Coq au Vin', 'Vin rouge'),
-   ('Coq au Vin', 'Champignons'),
-   ('Coq au Vin', 'Oignon'),
-   ('Soupe à l_Oignon', 'Oignon'),
-   ('Soupe à l_Oignon', 'Beurre'),
-   ('Soupe à l_Oignon', 'Fromage'),
-   ('Poulet Basquaise', 'Poitrine de poulet'),
-   ('Poulet Basquaise', 'Poivron'),
-   ('Poulet Basquaise', 'Tomate'),
-   ('Poulet Basquaise', 'Oignon'),
-   ('Salade Niçoise', 'Tomate'),
-   ('Salade Niçoise', 'Œufs'),
-   ('Salade Niçoise', 'Olives'),
-   ('Salade Niçoise', 'Thon'),
-   ('Salade Niçoise', 'Concombre'),
-   ('Quiche Lorraine', 'Œufs'),
-   ('Quiche Lorraine', 'Lait'),
-   ('Quiche Lorraine', 'Fromage'),
-   ('Quiche Lorraine', 'Farine de blé'),
-   ('Tartiflette', 'Pommes de terre'),
-   ('Tartiflette', 'Fromage'),
-   ('Tartiflette', 'Crème fraîche'),
-   ('Gratin Dauphinois', 'Pommes de terre'),
-   ('Gratin Dauphinois', 'Lait'),
-   ('Gratin Dauphinois', 'Beurre'),
-   ('Bouillabaisse', 'Saumon'),
-   ('Bouillabaisse', 'Crevettes'),
-   ('Bouillabaisse', 'Homard'),
-   ('Bouillabaisse', 'Tomate'),
-   ('Cassoulet', 'Haricots blancs'),
-   ('Cassoulet', 'Bœuf'),
-   ('Cassoulet', 'Carotte'),
-   ('Cassoulet', 'Oignon'),
-   ('Tarte Tatin', 'Pommes'),
-   ('Tarte Tatin', 'Beurre'),
-   ('Tarte Tatin', 'Farine de blé'),
-   ('Mousse au Chocolat', 'Chocolat'),
-   ('Mousse au Chocolat', 'Œufs'),
-   ('Crêpes', 'Farine de blé'),
-   ('Crêpes', 'Lait'),
-   ('Crêpes', 'Œufs'),
-   ('Soufflé au Fromage', 'Fromage'),
-   ('Soufflé au Fromage', 'Lait'),
-   ('Soufflé au Fromage', 'Œufs'),
-   ('Steak haché', 'Cheeseburger and Fries'),
-   ('Fromage cheddar', 'Cheeseburger and Fries'),
-   ('Pain à hamburger', 'Cheeseburger and Fries'),
-   ('Tomate', 'Cheeseburger and Fries'),
-   ('Oignon', 'Cheeseburger and Fries'),
-   ('Frites', 'Cheeseburger and Fries'),
-   ('Frites', 'Poutine'),
-   ('Fromage en grains', 'Poutine'),
-   ('Sauce brune', 'Poutine'),
-   ('Haricots noirs', 'Feijoada'),
-   ('Diverses coupes de porc', 'Feijoada'),
-   ('Oignon', 'Feijoada'),
-   ('Ail', 'Feijoada'),
-   ('Poisson blanc cru', 'Ceviche'),
-   ('Citron vert', 'Ceviche'),
-   ('Oignon', 'Ceviche'),
-   ('Coriandre', 'Ceviche'),
-   ('Piments', 'Ceviche'),
-   ('Farine de blé', 'Pizza Margherita'),
-   ('Tomate', 'Pizza Margherita'),
-   ('Mozzarella', 'Pizza Margherita'),
-   ('Basilic frais', 'Pizza Margherita'),
-   ('Huile d_olive', 'Pizza Margherita'),
-   ('Riz', 'Paella'),
-   ('Mélange de fruits de mer', 'Paella'),
-   ('Safran', 'Paella'),
-   ('Poivron', 'Paella'),
-   ('Tomate', 'Paella'),
-   ('Oignon', 'Paella'),
-   ('Poulet grillé sur brochette', 'Souvlaki'),
-   ('Pain pita', 'Souvlaki'),
-   ('Sauce tzatziki', 'Souvlaki'),
-   ('Tomate', 'Souvlaki'),
-   ('Oignon', 'Souvlaki'),
-   ('Farine de blé', 'Dumplings (Jiaozi)'),
-   ('Chou', 'Dumplings (Jiaozi)'),
-   ('Viande hachée (porc/bœuf)', 'Dumplings (Jiaozi)'),
-   ('Gingembre', 'Dumplings (Jiaozi)'),
-   ('Coriandre', 'Dumplings (Jiaozi)'),
-   ('Ail', 'Dumplings (Jiaozi)'),
-   ('Sauce soja', 'Dumplings (Jiaozi)'),
-   ('Huile de sésame', 'Dumplings (Jiaozi)'),
-   ('Riz', 'Sushi (Nigiri)'),
-   ('Saumon', 'Sushi (Nigiri)'),
-   ('Vinaigre', 'Sushi (Nigiri)'),
-   ('Poulet cuit en sauce', 'Butter Chicken'),
-   ('Tomate', 'Butter Chicken'),
-   ('Crème', 'Butter Chicken'),
-   ('Épices diverses', 'Butter Chicken'),
-   ('Beurre', 'Butter Chicken'),
-   ('Nouilles de riz', 'Pad Thai'),
-   ('Crevettes', 'Pad Thai'),
-   ('Germes de soja', 'Pad Thai'),
-   ('Cacahuètes', 'Pad Thai'),
-   ('Œufs', 'Pad Thai'),
-   ('Sauce soja', 'Pad Thai'),
-   ('Coriandre', 'Pad Thai'),
-   ('Riz', 'Bibimbap'),
-   ('Légumes variés', 'Bibimbap'),
-   ('Œufs', 'Bibimbap'),
-   ('Gochujang (pâte de piment)', 'Bibimbap'),
-   ('Viande hachée (bœuf/agneau)', 'Bibimbap'),
-   ('Agneau mijoté', 'Tagine'),
-   ('Fruits secs', 'Tagine'),
-   ('Épices diverses', 'Tagine'),
-   ('Amandes', 'Tagine'),
-   ('Carotte', 'Tagine'),
-   ('Farine de teff', 'Injera with Wat'),
-   ('Ragoût (avec viande/légumes)', 'Injera with Wat'),
-   ('Oignon', 'Injera with Wat'),
-   ('Ail', 'Injera with Wat'),
-   ('Épices diverses', 'Injera with Wat'),
-   ('Pois chiches', 'Falafel'),
-   ('Ail', 'Falafel'),
-   ('Coriandre', 'Falafel'),
-   ('Persil', 'Falafel'),
-   ('Tahini (pâte de sésame)', 'Falafel'),
-   ('Agneau grillé sur brochette', 'Kebab'),
-   ('Pain pita', 'Kebab'),
-   ('Oignon', 'Kebab'),
-   ('Tomate', 'Kebab'),
-   ('Sauce de viande', 'Kebab');
+   (1, 1), -- Ratatouille, Tomate
+   (1, 5), -- Ratatouille, Aubergine
+   (1, 36), -- Ratatouille, Courgette
+   (1, 37), -- Ratatouille, Poivron
+   (1, 13), -- Ratatouille, Oignon
+   (2, 20), -- Bœuf Bourguignon, Bœuf
+   (2, 51), -- Bœuf Bourguignon, Vin rouge
+   (2, 13), -- Bœuf Bourguignon, Oignon
+   (2, 19), -- Bœuf Bourguignon, Carotte
+   (3, 2), -- Coq au Vin, Poitrine de poulet
+   (3, 51), -- Coq au Vin, Vin rouge
+   (3, 14), -- Coq au Vin, Champignons
+   (3, 13), -- Coq au Vin, Oignon
+   (4, 13), -- Soupe à l'Oignon, Oignon
+   (4, 10), -- Soupe à l'Oignon, Beurre
+   (4, 8), -- Soupe à l'Oignon, Fromage
+   (5, 2), -- Poulet Basquaise, Poitrine de poulet
+   (5, 37), -- Poulet Basquaise, Poivron
+   (5, 1), -- Poulet Basquaise, Tomate
+   (5, 13), -- Poulet Basquaise, Oignon
+   (6, 1), -- Salade Niçoise, Tomate
+   (6, 9), -- Salade Niçoise, Œufs
+   (6, 52), -- Salade Niçoise, Olives
+   (6, 53), -- Salade Niçoise, Thon
+   (6, 18), -- Salade Niçoise, Concombre
+   (7, 9), -- Quiche Lorraine, Œufs
+   (7, 7), -- Quiche Lorraine, Lait
+   (7, 8), -- Quiche Lorraine, Fromage
+   (7, 6), -- Quiche Lorraine, Farine de blé
+   (8, 40), -- Tartiflette, Pommes de terre
+   (8, 8), -- Tartiflette, Fromage
+   (8, 54), -- Tartiflette, Crème fraîche
+   (9, 40), -- Gratin Dauphinois, Pommes de terre
+   (9, 7), -- Gratin Dauphinois, Lait
+   (9, 10), -- Gratin Dauphinois, Beurre
+   (10, 3), -- Bouillabaisse, Saumon
+   (10, 24), -- Bouillabaisse, Crevettes
+   (10, 26), -- Bouillabaisse, Homard
+   (10, 1), -- Bouillabaisse, Tomate
+   (11, 55), -- Cassoulet, Haricots blancs
+   (11, 20), -- Cassoulet, Bœuf
+   (11, 19), -- Cassoulet, Carotte
+   (11, 13), -- Cassoulet, Oignon
+   (12, 10), -- Tarte Tatin, Beurre
+   (12, 6), -- Tarte Tatin, Farine de blé
+   (13, 9), -- Mousse au Chocolat, Œufs
+   (14, 6), -- Crêpes, Farine de blé
+   (14, 7), -- Crêpes, Lait
+   (14, 9), -- Crêpes, Œufs
+   (15, 8), -- Soufflé au Fromage, Fromage
+   (15, 7), -- Soufflé au Fromage, Lait
+   (15, 9), -- Soufflé au Fromage, Œufs
+   (16, 1), -- Cheeseburger and Fries, Tomate
+   (16, 13); -- Cheeseburger and Fries, Oignon
