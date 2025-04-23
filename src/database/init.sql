@@ -3,23 +3,24 @@
 CREATE TABLE
    Account (
       account_id INT AUTO_INCREMENT,
-      account_email VARCHAR(100) NOT NULL UNIQUE,
-      account_password VARCHAR(50),
-      PRIMARY KEY (account_id)
+      account_email VARCHAR(100) NOT NULL,
+      account_password VARCHAR(50) NOT NULL,
+      PRIMARY KEY (account_id),
+      UNIQUE (account_email)
    );
 
 CREATE TABLE
    Ingredient (
       ingredient_id INT AUTO_INCREMENT,
       ingredient_name VARCHAR(50) NOT NULL,
-      is_vegetarian BOOLEAN,
-      is_vegan BOOLEAN,
-      is_gluten_free BOOLEAN,
-      is_lactose_free BOOLEAN,
-      is_halal BOOLEAN,
-      is_kosher BOOLEAN,
-      product_origin ENUM ('france', 'europe', 'other'),
-      PRIMARY KEY (ingredient_id)
+      is_vegetarian BOOLEAN NOT NULL,
+      is_vegan BOOLEAN NOT NULL,
+      is_gluten_free BOOLEAN NOT NULL,
+      is_lactose_free BOOLEAN NOT NULL,
+      is_halal BOOLEAN NOT NULL,
+      is_kosher BOOLEAN NOT NULL,
+      PRIMARY KEY (ingredient_id),
+      UNIQUE (ingredient_name)
    );
 
 CREATE TABLE
@@ -27,7 +28,6 @@ CREATE TABLE
       address_id INT AUTO_INCREMENT,
       address_number INT NOT NULL,
       street VARCHAR(50) NOT NULL,
-      postal_code INT,
       nearest_metro VARCHAR(50),
       PRIMARY KEY (address_id),
       UNIQUE (address_number, street)
@@ -38,30 +38,30 @@ CREATE TABLE
       dish_id INT AUTO_INCREMENT,
       dish_name VARCHAR(50) NOT NULL,
       dish_type ENUM ('starter', 'main_course', 'dessert'),
-      expiry_time INT,
-      cuisine_nationality VARCHAR(50),
-      quantity INT CHECK (quantity >= 0),
-      price DECIMAL(15, 2) CHECK (price >= 0),
-      photo_path VARCHAR(50),
+      expiry_time INT NOT NULL,
+      cuisine_nationality VARCHAR(50) NOT NULL,
+      quantity INT NOT NULL CHECK (quantity >= 0),
+      price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
+      product_origin ENUM ('france', 'europe', 'other') NOT NULL,
+      photo_path VARCHAR(255),
       PRIMARY KEY (dish_id)
    );
 
 CREATE TABLE
    Customer (
-      account_id INT AUTO_INCREMENT,
+      account_id INT,
       customer_rating DECIMAL(2, 1) CHECK (customer_rating BETWEEN 1 AND 5),
-      loyalty_rank ENUM ('classic', 'bronze', 'silver', 'gold'),
-      customer_is_banned BOOLEAN,
+      customer_is_banned BOOLEAN NOT NULL,
       PRIMARY KEY (account_id),
       FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
    Chef (
-      account_id INT AUTO_INCREMENT,
+      account_id INT,
       chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
-      eats_on_site BOOLEAN,
-      chef_is_banned BOOLEAN,
+      eats_on_site BOOLEAN NOT NULL,
+      chef_is_banned BOOLEAN NOT NULL,
       address_id INT NOT NULL,
       PRIMARY KEY (account_id),
       FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE,
@@ -71,7 +71,7 @@ CREATE TABLE
 CREATE TABLE
    OrderTransaction (
       transaction_id INT AUTO_INCREMENT,
-      transaction_datetime DATETIME,
+      transaction_datetime DATETIME NOT NULL,
       account_id INT NOT NULL,
       PRIMARY KEY (transaction_id),
       FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE
@@ -79,23 +79,25 @@ CREATE TABLE
 
 CREATE TABLE
    Company (
-      account_id INT AUTO_INCREMENT,
-      company_name VARCHAR(50) UNIQUE,
+      account_id INT,
+      company_name VARCHAR(50) NOT NULL,
       contact_first_name VARCHAR(50),
       contact_last_name VARCHAR(50),
       PRIMARY KEY (account_id),
+      UNIQUE (company_name),
       FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
    Individual (
-      account_id INT AUTO_INCREMENT,
-      last_name VARCHAR(50),
-      first_name VARCHAR(50),
-      personal_email VARCHAR(100),
-      phone_number VARCHAR(50),
+      account_id INT,
+      last_name VARCHAR(50) NOT NULL,
+      first_name VARCHAR(50) NOT NULL,
+      personal_email VARCHAR(100) NOT NULL,
+      phone_number VARCHAR(50) NOT NULL,
       address_id INT NOT NULL,
       PRIMARY KEY (account_id),
+      UNIQUE (phone_number),
       FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE,
       FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE RESTRICT
    );
@@ -103,29 +105,28 @@ CREATE TABLE
 CREATE TABLE
    OrderLine (
       order_line_id INT AUTO_INCREMENT,
-      order_line_datetime DATETIME,
-      duration INT,
+      order_line_datetime DATETIME NOT NULL,
       order_line_status ENUM (
          'pending',
          'prepared',
          'delivering',
          'delivered',
          'canceled'
-      ),
-      is_eat_in BOOLEAN,
-      address_id INT,
-      transaction_id INT,
-      account_id INT,
+      ) NOT NULL,
+      is_eat_in BOOLEAN NOT NULL,
+      address_id INT NOT NULL,
+      transaction_id INT NOT NULL,
+      account_id INT NOT NULL,
       PRIMARY KEY (order_line_id),
-      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE SET NULL,
-      FOREIGN KEY (transaction_id) REFERENCES OrderTransaction (transaction_id) ON DELETE SET NULL,
-      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE SET NULL
+      FOREIGN KEY (address_id) REFERENCES Address (address_id) ON DELETE RESTRICT,
+      FOREIGN KEY (transaction_id) REFERENCES OrderTransaction (transaction_id) ON DELETE CASCADE,
+      FOREIGN KEY (account_id) REFERENCES Chef (account_id) ON DELETE CASCADE
    );
 
 CREATE TABLE
    Review (
       review_id INT AUTO_INCREMENT,
-      review_type ENUM ('customer', 'chef'),
+      review_type ENUM ('customer', 'chef') NOT NULL,
       review_rating DECIMAL(2, 1) CHECK (review_rating BETWEEN 1 AND 5),
       comment VARCHAR(500),
       review_date DATE,
