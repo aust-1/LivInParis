@@ -42,7 +42,7 @@ CREATE TABLE
       cuisine_nationality VARCHAR(50) NOT NULL,
       quantity INT NOT NULL CHECK (quantity >= 0),
       price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-      product_origin ENUM ('france', 'europe', 'other') NOT NULL,
+      products_origin ENUM ('france', 'europe', 'other') NOT NULL,
       photo_path VARCHAR(255),
       PRIMARY KEY (dish_id)
    );
@@ -60,7 +60,6 @@ CREATE TABLE
    Chef (
       account_id INT,
       chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
-      eats_on_site BOOLEAN NOT NULL,
       chef_is_banned BOOLEAN NOT NULL,
       address_id INT NOT NULL,
       PRIMARY KEY (account_id),
@@ -113,7 +112,6 @@ CREATE TABLE
          'delivered',
          'canceled'
       ) NOT NULL,
-      is_eat_in BOOLEAN NOT NULL,
       address_id INT NOT NULL,
       transaction_id INT NOT NULL,
       account_id INT NOT NULL,
