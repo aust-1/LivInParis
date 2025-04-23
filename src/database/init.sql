@@ -124,7 +124,7 @@ CREATE TABLE
 CREATE TABLE
    Review (
       review_id INT AUTO_INCREMENT,
-      review_type ENUM ('customer', 'chef') NOT NULL,
+      reviewer_type ENUM ('customer', 'chef') NOT NULL,
       review_rating DECIMAL(2, 1) CHECK (review_rating BETWEEN 1 AND 5),
       comment VARCHAR(500),
       review_date DATE,
