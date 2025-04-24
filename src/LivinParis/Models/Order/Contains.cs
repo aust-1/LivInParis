@@ -3,15 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LivinParisRoussilleTeynier.Models.Order;
 
-[Table("MenuProposal")]
-public class MenuProposal
+[Table("Contains")]
+public class Contains
 {
-    public int AccountId { get; set; }
+    public int IngredientId { get; set; }
 
-    [ForeignKey("AccountId")]
-    public Chef Chef { get; set; }
-
-    public DateTime ProposalDate { get; set; }
+    [ForeignKey("IngredientId")]
+    public Ingredient Ingredient { get; set; }
 
     public int DishId { get; set; }
 
