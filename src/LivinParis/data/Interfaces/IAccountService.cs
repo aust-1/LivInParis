@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Data.Interfaces;
+namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
 /// <summary>
 /// Provides methods for managing user accounts in the system.

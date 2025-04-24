@@ -3,7 +3,7 @@ using Castle.DynamicProxy;
 using DotNetEnv;
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Data.Attributes;
+namespace LivInParisRoussilleTeynier.Data.Attributes;
 
 /// <summary>
 /// Interceptor that manages MySQL connection lifecycle for methods marked with <see cref="ConnectionControlAttribute"/>.

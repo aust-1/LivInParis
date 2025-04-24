@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Maps;
+namespace LivInParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a station in the Paris intra-muros metro network.

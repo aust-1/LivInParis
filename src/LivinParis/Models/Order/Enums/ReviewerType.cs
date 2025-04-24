@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Order.Enums;
+namespace LivInParisRoussilleTeynier.Models.Order.Enums;
 
 /// <summary>
 /// Represents the type of reviewer for a review.

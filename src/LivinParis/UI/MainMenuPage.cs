@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.UI;
+namespace LivInParisRoussilleTeynier.UI;
 
 /// <summary>
 /// Main menu page for navigating between application modules.

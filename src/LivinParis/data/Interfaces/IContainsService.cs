@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Data.Interfaces;
+namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
 /// <summary>
 /// Provides methods to manage the association between dishes and ingredients.

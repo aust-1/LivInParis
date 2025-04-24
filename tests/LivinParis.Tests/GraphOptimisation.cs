@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Aspose.Cells;
 
-namespace LivinParisRoussilleTeynier.Tests
+namespace LivInParisRoussilleTeynier.Tests
 {
     [TestClass]
     public class GraphOptimisation
@@ -51,7 +51,7 @@ namespace LivinParisRoussilleTeynier.Tests
                     station,
                     longitude,
                     latitude,
-                    station.ColorLine,
+                    station.LineColor,
                     stationName
                 );
                 adjacencyList[node] = [];
@@ -131,7 +131,7 @@ namespace LivinParisRoussilleTeynier.Tests
                     station,
                     longitude,
                     latitude,
-                    station.ColorLine,
+                    station.LineColor,
                     stationName
                 );
             }
@@ -182,13 +182,6 @@ namespace LivinParisRoussilleTeynier.Tests
             return adjacencyMatrix;
         }
 
-        [TestInitialize]
-        [TestCleanup]
-        public void Clean()
-        {
-            Node<Station>.Clean();
-        }
-
         #region Temps en fonction de l'initialisation
 
         [TestMethod]
@@ -197,7 +190,6 @@ namespace LivinParisRoussilleTeynier.Tests
             long total = 0;
             for (int i = 0; i < 20; i++)
             {
-                Node<Station>.Clean();
                 Stopwatch sw = new();
                 sw.Start();
                 var adjacencyList = XlsxToAdjacencyList("MetroParis");
@@ -216,7 +208,6 @@ namespace LivinParisRoussilleTeynier.Tests
             long total = 0;
             for (int i = 0; i < 20; i++)
             {
-                Node<Station>.Clean();
                 Stopwatch sw = new();
                 sw.Start();
                 var adjacencyMatrix = XlsxToAdjacencyMatrix("MetroParis");
@@ -243,7 +234,7 @@ namespace LivinParisRoussilleTeynier.Tests
             {
                 Stopwatch sw = new();
                 sw.Start();
-                var result = graph.Dijkstra(start);
+                var result = graph.ComputeDijkstra(start);
                 sw.Stop();
                 long elapsedMilliseconds = sw.ElapsedMilliseconds;
                 total += elapsedMilliseconds;
@@ -262,7 +253,7 @@ namespace LivinParisRoussilleTeynier.Tests
             {
                 Stopwatch sw = new();
                 sw.Start();
-                var result = graph.BellmanFord(start);
+                var result = graph.ComputeBellmanFord(start);
                 sw.Stop();
                 long elapsedMilliseconds = sw.ElapsedMilliseconds;
                 total += elapsedMilliseconds;
@@ -281,7 +272,7 @@ namespace LivinParisRoussilleTeynier.Tests
             {
                 Stopwatch sw = new();
                 sw.Start();
-                var result = graph.RoyFloydWarshall();
+                var result = graph.ComputeRoyFloydWarshall();
                 sw.Stop();
                 long elapsedMilliseconds = sw.ElapsedMilliseconds;
                 total += elapsedMilliseconds;

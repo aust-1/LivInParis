@@ -1,8 +1,8 @@
 using System.Text;
-using LivinParisRoussilleTeynier.Data.Interfaces;
+using LivInParisRoussilleTeynier.Data.Interfaces;
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Data.Services;
+namespace LivInParisRoussilleTeynier.Data.Services;
 
 /// <summary>
 /// Provides implementation for customer-related operations in the database.

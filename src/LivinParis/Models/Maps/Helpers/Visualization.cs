@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
+namespace LivInParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Provides functionality to visualize a generic <see cref="Graph{T}"/>

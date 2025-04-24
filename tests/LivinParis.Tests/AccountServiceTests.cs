@@ -1,7 +1,7 @@
-using LivinParisRoussilleTeynier.Data.Services;
+using LivInParisRoussilleTeynier.Data.Services;
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Tests;
+namespace LivInParisRoussilleTeynier.Tests;
 
 [TestClass]
 public class AccountServiceTests

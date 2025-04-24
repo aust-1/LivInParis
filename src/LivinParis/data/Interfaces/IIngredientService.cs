@@ -1,6 +1,6 @@
 using MySql.Data.MySqlClient;
 
-namespace LivinParisRoussilleTeynier.Data.Interfaces;
+namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
 public interface IIngredientService
 {

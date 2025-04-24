@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier
+namespace LivInParisRoussilleTeynier
 {
     public static class Program
     {

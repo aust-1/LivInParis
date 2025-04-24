@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Order.Enums;
+namespace LivInParisRoussilleTeynier.Models.Order.Enums;
 
 /// <summary>
 /// Represents the largest origin of the products used in the dish.

@@ -1,6 +1,6 @@
-using LivinParisRoussilleTeynier.Models.Maps.Helpers;
+using LivInParisRoussilleTeynier.Models.Maps.Helpers;
 
-namespace LivinParisRoussilleTeynier.Models.Maps;
+namespace LivInParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a generic graph containing nodes and edges,
@@ -609,3 +609,6 @@ public class Graph<T>
 
     #endregion Private Helpers - Edge Building
 }
+
+
+//TODO: coloration de graphe
