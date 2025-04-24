@@ -37,7 +37,7 @@ CREATE TABLE
    Dish (
       dish_id INT AUTO_INCREMENT,
       dish_name VARCHAR(50) NOT NULL,
-      dish_type ENUM ('starter', 'main_course', 'dessert'),
+      dish_type ENUM ('starter', 'main_course', 'dessert') NOT NULL,
       expiry_time INT NOT NULL,
       cuisine_nationality VARCHAR(50) NOT NULL,
       quantity INT NOT NULL CHECK (quantity >= 0),
