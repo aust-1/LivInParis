@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LivInParisRoussilleTeynier.Models.Order.Enums;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Review")]
 public class Review
@@ -11,18 +12,20 @@ public class Review
     public int ReviewId { get; set; }
 
     [Required]
-    public ReviewType ReviewType { get; set; }
+    public ReviewerType ReviewType { get; set; }
 
     [Range(1.0, 5.0)]
     public decimal? ReviewRating { get; set; }
 
     [MaxLength(500)]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
-    public DateTime? ReviewDate { get; set; }
+    public required DateTime? ReviewDate { get; set; }
 
     public int OrderLineId { get; set; }
 
     [ForeignKey("OrderLineId")]
-    public OrderLine OrderLine { get; set; }
+    public required OrderLine OrderLine { get; set; }
 }
+
+//TODO: add doc

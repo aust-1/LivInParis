@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Company")]
+[Index(nameof(CompanyName), IsUnique = true, Name = "IX_Company_CompanyName")]
 public class Company
 {
     [Key]
@@ -11,14 +13,16 @@ public class Company
 
     [Required]
     [MaxLength(50)]
-    public string CompanyName { get; set; }
+    public required string CompanyName { get; set; }
 
     [MaxLength(50)]
-    public string ContactFirstName { get; set; }
+    public string? ContactFirstName { get; set; }
 
     [MaxLength(50)]
-    public string ContactLastName { get; set; }
+    public string? ContactLastName { get; set; }
 
     [ForeignKey("AccountId")]
-    public Customer Customer { get; set; }
+    public required Customer Customer { get; set; }
 }
+
+//TODO: add doc

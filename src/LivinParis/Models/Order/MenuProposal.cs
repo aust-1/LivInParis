@@ -1,20 +1,29 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("MenuProposal")]
+[Index(
+    nameof(AccountId),
+    nameof(ProposalDate),
+    IsUnique = true,
+    Name = "IX_MenuProposal_AccountId_ProposalDate"
+)]
 public class MenuProposal
 {
     public int AccountId { get; set; }
 
     [ForeignKey("AccountId")]
-    public Chef Chef { get; set; }
+    public required Chef Chef { get; set; }
 
-    public DateTime ProposalDate { get; set; }
+    public required DateTime ProposalDate { get; set; }
 
     public int DishId { get; set; }
 
     [ForeignKey("DishId")]
-    public Dish Dish { get; set; }
+    public required Dish Dish { get; set; }
 }
+
+//TODO: add doc

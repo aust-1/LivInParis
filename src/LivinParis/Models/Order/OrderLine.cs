@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LivInParisRoussilleTeynier.Models.Order.Enums;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("OrderLine")]
 public class OrderLine
@@ -11,25 +12,27 @@ public class OrderLine
     public int OrderLineId { get; set; }
 
     [Required]
-    public DateTime OrderLineDatetime { get; set; }
+    public required DateTime OrderLineDatetime { get; set; }
 
     [Required]
-    public OrderLineStatus OrderLineStatus { get; set; }
-
-    public bool IsEatIn { get; set; }
+    public required OrderLineStatus OrderLineStatus { get; set; }
 
     public int AddressId { get; set; }
 
     [ForeignKey("AddressId")]
-    public Address Address { get; set; }
+    public required Address Address { get; set; }
 
     public int TransactionId { get; set; }
 
     [ForeignKey("TransactionId")]
-    public OrderTransaction OrderTransaction { get; set; }
+    public required OrderTransaction OrderTransaction { get; set; }
 
     public int AccountId { get; set; }
 
     [ForeignKey("AccountId")]
-    public Chef Chef { get; set; }
+    public required Chef Chef { get; set; }
+
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
+
+//TODO: add doc

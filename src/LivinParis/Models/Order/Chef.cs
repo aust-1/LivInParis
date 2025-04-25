@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Chef")]
 public class Chef
@@ -12,17 +12,22 @@ public class Chef
     [Range(1.0, 5.0)]
     public decimal? ChefRating { get; set; }
 
-    public bool EatsOnSite { get; set; }
     public bool ChefIsBanned { get; set; }
 
     public int AddressId { get; set; }
 
     [ForeignKey("AddressId")]
-    public Address Address { get; set; }
+    public required Address Address { get; set; }
 
     [ForeignKey("AccountId")]
-    public Account Account { get; set; }
+    public required Account Account { get; set; }
 
-    public ICollection<OrderLine> OrderLines { get; set; }
-    public ICollection<MenuProposal> MenuProposals { get; set; }
+    public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
+    public ICollection<MenuProposal> MenuProposals { get; set; } = new List<MenuProposal>();
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
+
+
+//QUESTION: pertinence reviews ?
+
+//TODO: add doc

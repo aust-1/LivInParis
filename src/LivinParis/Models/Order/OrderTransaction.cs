@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("OrderTransaction")]
 public class OrderTransaction
@@ -11,12 +11,14 @@ public class OrderTransaction
     public int TransactionId { get; set; }
 
     [Required]
-    public DateTime TransactionDatetime { get; set; }
+    public required DateTime TransactionDatetime { get; set; }
 
     public int AccountId { get; set; }
 
     [ForeignKey("AccountId")]
-    public Customer Customer { get; set; }
+    public required Customer Customer { get; set; }
 
-    public ICollection<OrderLine> OrderLines { get; set; }
+    public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }
+
+//TODO: add doc
