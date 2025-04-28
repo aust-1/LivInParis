@@ -25,6 +25,7 @@ public static class Visualization<T>
     /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato").</param>
     /// <param name="shape">The node shape (e.g., "circle", "point", "square").</param>
     /// <param name="fontsize">The font size for node labels.</param>
+    /// <param name="penwidth">The pen width for nodes.</param>
     /// <remarks>
     /// This method alters the current thread's culture to <c>en-US</c> to ensure consistent numeric formats.
     /// </remarks>
@@ -33,7 +34,8 @@ public static class Visualization<T>
         string outputImageName,
         string layout,
         string shape,
-        float fontsize
+        float fontsize,
+        float penwidth
     )
     {
         CultureInfo culture = new("en-US");
@@ -44,7 +46,7 @@ public static class Visualization<T>
         string outputImagePath =
             $"../output_graphs/{outputImageName}_{DateTime.Now:yyyyMMdd_HH-mm-ss}.png";
 
-        GenerateDotFile(graph, dotFilePath, layout, shape, fontsize);
+        GenerateDotFile(graph, dotFilePath, layout, shape, fontsize, penwidth);
         RenderToPng(dotFilePath, outputImagePath);
         File.Delete(dotFilePath);
     }
@@ -115,12 +117,14 @@ public static class Visualization<T>
     /// <param name="layout">The GraphViz layout algorithm (e.g., "dot", "fdp", "neato").</param>
     /// <param name="shape">The shape of the nodes (e.g., "circle", "square", "point").</param>
     /// <param name="fontsize">The font size for node labels.</param>
+    /// <param name="penwidth">The pen width for nodes.</param>
     private static void GenerateDotFile(
         Graph<T> graph,
         string filePath,
         string layout,
         string shape,
-        float fontsize
+        float fontsize,
+        float penwidth
     )
     {
         var dotBuilder = new StringBuilder();
@@ -129,7 +133,9 @@ public static class Visualization<T>
         dotBuilder.AppendLine(graph.IsDirected ? "digraph G {" : "graph G {");
         dotBuilder.AppendLine($"    layout={layout};");
         dotBuilder.AppendLine("    ratio=0.6438356164;");
-        dotBuilder.AppendLine($"    node [shape={shape}, fontsize=\"{fontsize}\"];");
+        dotBuilder.AppendLine(
+            $"    node [shape={shape}, fontsize=\"{fontsize}\", penwidth={penwidth}];"
+        );
 
         foreach (var node in graph.Nodes)
         {
@@ -138,6 +144,7 @@ public static class Visualization<T>
             if (
                 processedLabels.Contains(node.VisualizationParameters.Label)
                 && (layout == "neato" || layout == "fdp")
+                && penwidth < 3.5f
             )
             {
                 dotBuilder.Append(", penwidth=3.5");
@@ -150,6 +157,11 @@ public static class Visualization<T>
                     dotBuilder.Append($", fontcolor=\"{node.VisualizationParameters.Color}\"");
                 }
                 processedLabels.Add(node.VisualizationParameters.Label);
+            }
+
+            if (penwidth > 3.5f)
+            {
+                dotBuilder.Append($", color=\"{node.VisualizationParameters.Color}\"");
             }
 
             dotBuilder.AppendLine("];");

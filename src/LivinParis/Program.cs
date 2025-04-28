@@ -61,20 +61,23 @@ namespace LivinParisRoussilleTeynier
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            // var metro = new Metro("MetroParis");
+            var metro = new Metro("MetroParis");
 
-            // var st = await metro.GetNearestStation("68 avenue des Champs Elysées");
+            var st = await metro.GetNearestStation("36 avenue Foch");
 
-            // Console.WriteLine($"La station la plus proche est : {st}");
+            Console.WriteLine($"La station la plus proche est : {st}");
 
-            // var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
+            var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
 
-            // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
-            // metro.Graph.DisplayGraph();
+            djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
+            metro.Graph.DisplayGraph();
 
-            Window.Open();
-            new MainMenuPage().Display();
-            Window.Close();
+            metro.Graph.ComputeWelshPowell();
+            metro.Graph.DisplayGraph("welshpowell", "fdp", penwidth: 15f, fontsize: 9);
+
+            // Window.Open();
+            // new MainMenuPage().Display();
+            // Window.Close();
         }
     }
 }

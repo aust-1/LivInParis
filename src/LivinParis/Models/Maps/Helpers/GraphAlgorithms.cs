@@ -480,7 +480,83 @@ public static class GraphAlgorithms<T>
 
     #endregion Public Methods - Pathfinding
 
+    #region Public Methods - Graph coloring
+
+    /// <summary>
+    /// Computes the Welsh-Powell graph coloring algorithm.
+    /// </summary>
+    /// <param name="graph">The graph to color.</param>
+    /// <returns>The number of colors used to color the graph.</returns>
+    public static int ComputeWelshPowell(Graph<T> graph)
+    {
+        //TODO: tests
+        var sortedNodes = graph
+            .Nodes.OrderByDescending(node => GetNodeDegree(graph, node))
+            .ToList();
+
+        var colorMap = new Dictionary<Node<T>, int>();
+        var color = 0;
+
+        while (sortedNodes.Count > 0)
+        {
+            color++;
+            var currentNode = sortedNodes[0];
+            colorMap[currentNode] = color;
+            sortedNodes.RemoveAt(0);
+
+            var neighbors = graph.AdjacencyList[currentNode].Keys.ToList();
+
+            foreach (var node in sortedNodes)
+            {
+                if (!neighbors.Contains(node))
+                {
+                    colorMap[node] = color;
+                    neighbors.AddRange([.. graph.AdjacencyList[node].Keys]);
+                }
+            }
+            sortedNodes.RemoveAll(node => colorMap.ContainsKey(node));
+        }
+
+        ColorizeNodes(colorMap);
+
+        return color;
+    }
+
+    #endregion Public Methods - Graph coloring
+
     #region Private Methods
+
+    /// <summary>
+    /// Colorizes the nodes of the graph based on the provided color map.
+    /// Each node is assigned a color based on its corresponding value in the map.
+    /// </summary>
+    /// <param name="colorMap">A dictionary mapping nodes to color values.</param>
+    private static void ColorizeNodes(Dictionary<Node<T>, int> colorMap)
+    {
+        foreach (var kvp in colorMap)
+        {
+            var node = kvp.Key;
+            var color = kvp.Value;
+            node.VisualizationParameters.Color = color switch
+            {
+                1 => "#FFCE00",
+                2 => "#0064B0",
+                3 => "#9F9825",
+                4 => "#C04191",
+                5 => "#F28E42",
+                6 => "#83C491",
+                7 => "#F3A4BA",
+                8 => "#CEADD2",
+                9 => "#D5C900",
+                10 => "#E3B32A",
+                11 => "#8D5E2A",
+                12 => "#00814F",
+                13 => "#98D4E2",
+                14 => "#662483",
+                _ => "#000000",
+            };
+        }
+    }
 
     /// <summary>
     /// Recursively performs DFS from the specified node, adding
@@ -529,6 +605,39 @@ public static class GraphAlgorithms<T>
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Returns the degree of the specified node in the graph.
+    /// For directed graphs, this counts both incoming and outgoing edges.
+    /// </summary>
+    /// <typeparam name="TU">The type of the node (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).</typeparam>
+    /// <param name="graph">The graph containing the node.</param>
+    /// <param name="node">The node whose degree is to be determined.</param>
+    /// <returns>The degree of the node.</returns>
+    /// <exception cref="ArgumentException">Thrown when the node is not part of the graph.</exception>
+    private static int GetNodeDegree<TU>(Graph<T> graph, TU node)
+        where TU : notnull
+    {
+        var nodeObj = ResolveNode(node);
+
+        if (!graph.Nodes.Contains(nodeObj))
+        {
+            throw new ArgumentException(
+                "The specified node is not present in the graph.",
+                nameof(node)
+            );
+        }
+
+        int degree = 0;
+        foreach (var edge in graph.Edges)
+        {
+            if (edge.SourceNode.Equals(node) || edge.TargetNode.Equals(node))
+            {
+                degree++;
+            }
+        }
+        return degree;
     }
 
     /// <summary>

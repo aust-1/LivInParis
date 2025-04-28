@@ -481,19 +481,37 @@ public class Graph<T>
     /// <param name="layout">The GraphViz layout algorithm (e.g. "dot", "neato", "fdp"). Default is "neato".</param>
     /// <param name="nodeShape">The shape to use for the nodes (e.g. "point", "circle"). Default is "point".</param>
     /// <param name="fontsize">The font size for node labels. Default is 10.0f.</param>
+    /// <param name="penwidth">The pen width for nodes. Default is 1.0f.</param>
     public void DisplayGraph(
         string outputImageName = "graph",
         string layout = "neato",
         string nodeShape = "point",
-        float fontsize = 10.0f
+        float fontsize = 10.0f,
+        float penwidth = 1.0f
     )
     {
-        Visualization<T>.DisplayGraph(this, outputImageName, layout, nodeShape, fontsize);
+        Visualization<T>.DisplayGraph(this, outputImageName, layout, nodeShape, fontsize, penwidth);
     }
 
     #endregion Public Methods - Rendering
 
-    #region Private Methods
+    #region Public Methods - Graph coloring
+
+    /// <summary>
+    /// Computes the Welsh-Powell algorithm for graph coloring.
+    /// Modifies the <see cref="Node{T}.VisualizationParameters.Color"/> property of each node in the graph.
+    /// </summary>
+    /// <returns>
+    /// The number of colors used in the graph coloring.
+    /// </returns>
+    public int ComputeWelshPowell()
+    {
+        return GraphAlgorithms<T>.ComputeWelshPowell(this);
+    }
+
+    #endregion Public Methods - Graph coloring
+
+    #region Private Methods - Matrix Symmetry
 
     /// <summary>
     /// Determines whether the given adjacency matrix is symmetric,
