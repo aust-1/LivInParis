@@ -5,26 +5,8 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 /// <summary>
 /// Provides methods for managing customer data in the system.
 /// </summary>
-public interface ICustomerService
+public interface ICustomerRepository : IRepository<Customer>
 {
-    #region CRUD
-
-    /// <summary>
-    /// Creates a new customer account.
-    /// </summary>
-    /// <param name="customerAccountId">The account ID of the customer (linked to the Account table).</param>
-    /// <param name="customerRating">The rating of the customer.</param>
-    /// <param name="loyaltyRank">The loyalty rank of the customer.</param>
-    /// <param name="customerIsBanned">Indicates whether the customer is banned.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Create(
-        int? customerAccountId,
-        decimal customerRating,
-        LoyaltyRank loyaltyRank,
-        bool customerIsBanned,
-        MySqlCommand? command = null
-    );
-
     /// <summary>
     /// Retrieves a list of customers with optional filters.
     /// </summary>
@@ -47,49 +29,6 @@ public interface ICustomerService
         bool? orderDirection = null,
         MySqlCommand? command = null
     );
-
-    /// <summary>
-    /// Updates the rating of a customer.
-    /// </summary>
-    /// <param name="customerAccountId">The account ID of the customer.</param>
-    /// <param name="customerRating">The new rating of the customer.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void UpdateRating(int customerAccountId, decimal customerRating, MySqlCommand? command = null);
-
-    /// <summary>
-    /// Updates the loyalty rank of a customer.
-    /// </summary>
-    /// <param name="customerAccountId">The account ID of the customer.</param>
-    /// <param name="loyaltyRank">The new loyalty rank of the customer.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void UpdateLoyaltyRank(
-        int customerAccountId,
-        LoyaltyRank loyaltyRank,
-        MySqlCommand? command = null
-    );
-
-    /// <summary>
-    /// Updates the ban status of a customer.
-    /// </summary>
-    /// <param name="customerAccountId">The account ID of the customer.</param>
-    /// <param name="customerIsBanned">Indicates whether the customer is banned.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void UpdateBanStatus(
-        int customerAccountId,
-        bool customerIsBanned,
-        MySqlCommand? command = null
-    );
-
-    /// <summary>
-    /// Deletes a customer from the system.
-    /// </summary>
-    /// <param name="customerAccountId">The account ID of the customer.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Delete(int customerAccountId, MySqlCommand? command = null);
-
-    #endregion CRUD
-
-    #region Statistics
 
     /// <summary>
     /// Retrieves the top customers by order count from the database.
@@ -132,6 +71,4 @@ public interface ICustomerService
         DateTime to,
         MySqlCommand? command = null
     );
-
-    #endregion Statistics
 }

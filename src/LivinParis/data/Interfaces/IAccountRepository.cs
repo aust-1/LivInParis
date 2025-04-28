@@ -5,7 +5,6 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 /// </summary>
 public interface IAccountRepository : IRepository<Account>
 {
-    #region CRUD
     //TODO:Check Password
 
     /// <summary>
@@ -14,6 +13,4 @@ public interface IAccountRepository : IRepository<Account>
     /// <param name="email">The email of the account to find.</param>
     /// <returns>A task that represents the asynchronous operation, containing the found account or null if not found.</returns>
     Task<Account?> FindByEmailAsync(string email);
-
-    #endregion CRUD
 }
