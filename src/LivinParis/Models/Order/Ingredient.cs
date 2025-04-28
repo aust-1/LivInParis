@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace LivInParisRoussilleTeynier.Models.Order;
 
@@ -7,6 +8,7 @@ namespace LivInParisRoussilleTeynier.Models.Order;
 /// Represents an ingredient used in one or more dishes.
 /// </summary>
 [Table("Ingredient")]
+[Index(nameof(IngredientName), IsUnique = true, Name = "IX_Ingredient_Name")]
 public class Ingredient
 {
     /// <summary>

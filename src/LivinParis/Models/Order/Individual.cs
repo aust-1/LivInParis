@@ -6,11 +6,8 @@ namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Individual")]
 [Index(nameof(PhoneNumber), IsUnique = true, Name = "IX_Individual_PhoneNumber")]
-public class Individual
+public class Individual : Customer
 {
-    [Key]
-    public int AccountId { get; set; }
-
     [Required]
     [MaxLength(50)]
     public required string LastName { get; set; }
@@ -27,13 +24,11 @@ public class Individual
     [MaxLength(50)]
     public required string PhoneNumber { get; set; }
 
+    [Required]
     public int AddressId { get; set; }
 
     [ForeignKey("AddressId")]
     public required Address Address { get; set; }
-
-    [ForeignKey("AccountId")]
-    public required Customer Customer { get; set; }
 }
 
 //TODO: add docs

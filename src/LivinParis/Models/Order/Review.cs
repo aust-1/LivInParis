@@ -20,8 +20,10 @@ public class Review
     [MaxLength(500)]
     public string? Comment { get; set; }
 
-    public required DateTime? ReviewDate { get; set; }
+    [Required]
+    public required DateOnly? ReviewDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
+    [Required]
     public int OrderLineId { get; set; }
 
     [ForeignKey("OrderLineId")]

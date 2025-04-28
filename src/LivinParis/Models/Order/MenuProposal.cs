@@ -13,14 +13,17 @@ namespace LivInParisRoussilleTeynier.Models.Order;
 )]
 public class MenuProposal
 {
-    public int AccountId { get; set; }
+    [Required]
+    public required int AccountId { get; set; }
+
+    [Required]
+    public required DateOnly ProposalDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+    [Required]
+    public required int DishId { get; set; }
 
     [ForeignKey("AccountId")]
     public required Chef Chef { get; set; }
-
-    public required DateTime ProposalDate { get; set; }
-
-    public int DishId { get; set; }
 
     [ForeignKey("DishId")]
     public required Dish Dish { get; set; }

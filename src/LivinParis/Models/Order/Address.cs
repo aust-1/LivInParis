@@ -26,7 +26,7 @@ public class Address
     public required int AddressNumber { get; set; }
 
     [Required]
-    [MaxLength(50)]
+    [MaxLength(100)]
     public required string Street { get; set; }
 
     [MaxLength(50)]

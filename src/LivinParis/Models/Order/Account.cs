@@ -9,10 +9,6 @@ namespace LivInParisRoussilleTeynier.Models.Order;
 /// </summary>
 [Table("Account")]
 [Index(nameof(AccountEmail), IsUnique = true, Name = "IX_Account_Email")]
-[Index(nameof(Customer), IsUnique = true, Name = "IX_Account_Customer")]
-[Index(nameof(Chef), IsUnique = true, Name = "IX_Account_Chef")]
-[Index(nameof(Company), IsUnique = true, Name = "IX_Account_Company")]
-[Index(nameof(Individual), IsUnique = true, Name = "IX_Account_Individual")]
 public class Account
 {
     /// <summary>
@@ -38,24 +34,4 @@ public class Account
     [Required]
     [MaxLength(50)]
     public required string AccountPassword { get; set; }
-
-    /// <summary>
-    /// Customer profile associated with the account (if any).
-    /// </summary>
-    public Customer? Customer { get; set; }
-
-    /// <summary>
-    /// Chef profile associated with the account (if any).
-    /// </summary>
-    public Chef? Chef { get; set; }
-
-    /// <summary>
-    /// Company profile associated with the account (if any).
-    /// </summary>
-    public Company? Company { get; set; }
-
-    /// <summary>
-    /// Individual profile associated with the account (if any).
-    /// </summary>
-    public Individual? Individual { get; set; }
 }
