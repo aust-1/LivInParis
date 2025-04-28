@@ -5,8 +5,6 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 /// </summary>
 public interface IChefRepository : IRepository<Chef>
 {
-    //TODO: stat argent gagné
-
     /// <summary>
     /// Retrieves a list of chefs, optionally filtered by rating, ban status, or eating-on-site option.
     /// </summary>
@@ -14,7 +12,7 @@ public interface IChefRepository : IRepository<Chef>
     /// <param name="maxRating">Optional maximum rating to filter chefs.</param>
     /// <param name="isBanned">Optional filter to select chefs who are banned or not.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of chefs.</returns>
-    List<List<string>> ReadAsync(
+    Task<IEnumerable<Chef>> ReadAsync(
         decimal? minRating = null,
         decimal? maxRating = null,
         bool? isBanned = null
@@ -46,7 +44,7 @@ public interface IChefRepository : IRepository<Chef>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order counts.</returns>
-    Task<IEnumerable<(Chef, int)>> GetDeliveryCountByChefAsync(
+    Task<Dictionary<Chef, int>> GetDeliveryCountByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     );
@@ -57,7 +55,7 @@ public interface IChefRepository : IRepository<Chef>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order values.</returns>
-    Task<IEnumerable<(Chef, int)>> GetDeliveryCountValueByChefAsync(
+    Task<Dictionary<Chef, decimal>> GetDeliveryCountValueByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     );
