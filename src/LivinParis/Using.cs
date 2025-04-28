@@ -5,4 +5,5 @@ global using ConsoleAppVisuals.PassiveElements;
 global using LivInParisRoussilleTeynier.Data;
 global using LivInParisRoussilleTeynier.Data.Attributes;
 global using LivInParisRoussilleTeynier.Models.Maps;
+global using LivInParisRoussilleTeynier.Models.Order;
 global using LivInParisRoussilleTeynier.UI;

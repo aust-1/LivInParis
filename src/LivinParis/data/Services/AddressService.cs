@@ -17,7 +17,7 @@ public class AddressService : IAddressService
         int addressNumber,
         string street,
         int postalCode,
-        string nearestMetro,
+        string nearestStation,
         MySqlCommand? command = null
     )
     {
@@ -30,7 +30,7 @@ public class AddressService : IAddressService
         command.Parameters.AddWithValue("@nb", addressNumber);
         command.Parameters.AddWithValue("@street", street);
         command.Parameters.AddWithValue("@postalCode", postalCode);
-        command.Parameters.AddWithValue("@metro", nearestMetro);
+        command.Parameters.AddWithValue("@metro", nearestStation);
         command.ExecuteNonQuery();
     }
 

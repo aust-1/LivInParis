@@ -5,7 +5,7 @@ CREATE TABLE
       address_id INT AUTO_INCREMENT,
       address_number INT NOT NULL,
       street VARCHAR(100) NOT NULL,
-      nearest_metro VARCHAR(50),
+      nearest_station VARCHAR(50),
       PRIMARY KEY (address_id),
       UNIQUE (address_number, street)
    );
