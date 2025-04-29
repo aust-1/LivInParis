@@ -48,7 +48,7 @@ public class AccountPage : Page
         }
 
         Repository.Account.Create(null, promptResponses[0], promptResponses[1]);
-        Repository.Customer.Create(null, 0m, LoyaltyRank.classic, false);
+        //Repository.Customer.Create(null, 0m, LoyaltyRank.classic, false);
         Window.AddElement(new Text(["Client ajouté avec succès."]));
         Window.Render();
         Thread.Sleep(1000);

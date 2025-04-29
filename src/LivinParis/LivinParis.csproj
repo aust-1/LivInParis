@@ -5,7 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>LivinParisRoussilleTeynier</RootNamespace>
+    <RootNamespace>LivInParisRoussilleTeynier</RootNamespace>
     <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
   </PropertyGroup>
 
@@ -14,8 +14,10 @@
     <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="ConsoleAppVisuals" Version="3.5.4" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
     <PackageReference Include="MySql.Data" Version="9.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
   </ItemGroup>
 
 </Project>
