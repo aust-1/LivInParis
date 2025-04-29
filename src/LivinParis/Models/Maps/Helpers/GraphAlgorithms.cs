@@ -10,7 +10,6 @@ namespace LivInParisRoussilleTeynier.Models.Maps.Helpers;
 public static class GraphAlgorithms<T>
     where T : notnull
 {
-    //FIXME: nearest station avec correspondances
     #region Public Methods - Traversals
 
     /// <summary>
@@ -130,6 +129,52 @@ public static class GraphAlgorithms<T>
     }
 
     /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier
+    /// to find the shortest path to another node or identifier,
+    /// returning the path taken and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/>.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public static List<Node<T>> GetPath<TU, TV>(Graph<T> graph, TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        var resolvedStartNode = ResolveNode(start);
+        var resolvedEndNode = ResolveNode(end);
+        if (!graph.Nodes.Contains(resolvedStartNode) || !graph.Nodes.Contains(resolvedEndNode))
+        {
+            throw new ArgumentException("Invalid start or end node.");
+        }
+
+        var (startNode, endNode) = GetOptimalNodePairForCorrespondance(
+            graph,
+            resolvedStartNode,
+            resolvedEndNode
+        );
+
+        var result = BellmanFord(graph, startNode);
+        var paths = BuildPaths(result);
+
+        return paths[endNode];
+    }
+
+    /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
     /// </summary>
@@ -145,7 +190,7 @@ public static class GraphAlgorithms<T>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByDijkstra<TU>(
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathsByDijkstra<TU>(
         Graph<T> graph,
         TU start
     )
@@ -175,7 +220,7 @@ public static class GraphAlgorithms<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByBellmanFord<TU>(
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathsByBellmanFord<TU>(
         Graph<T> graph,
         TU start
     )
@@ -234,8 +279,6 @@ public static class GraphAlgorithms<T>
 
         return BuildGraph(graph, result);
     }
-
-    //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
     /// Uses the Roy-Floyd-Warshall algorithm to compute shortest paths
@@ -469,6 +512,52 @@ public static class GraphAlgorithms<T>
             }
         }
         return degree;
+    }
+
+    /// <summary>
+    /// Finds the optimal pair of nodes for correspondance based on their labels.
+    /// The pair with the minimum distance in the graph is returned.
+    /// </summary>
+    /// <param name="graph">The graph containing the nodes.</param>
+    /// <param name="start">The first node to compare.</param>
+    /// <param name="end">The second node to compare.</param>
+    /// <returns>A tuple containing the optimal pair of nodes.</returns>
+    private static (Node<T>, Node<T>) GetOptimalNodePairForCorrespondance(
+        Graph<T> graph,
+        Node<T> start,
+        Node<T> end
+    )
+    {
+        var node1PossibleCorrespondances = graph
+            .Nodes.Where(n =>
+                n.VisualizationParameters.Label == start.VisualizationParameters.Label
+            )
+            .ToList();
+
+        var node2PossibleCorrespondances = graph
+            .Nodes.Where(n => n.VisualizationParameters.Label == end.VisualizationParameters.Label)
+            .ToList();
+
+        var minDistance = double.MaxValue;
+        var optimalNode1 = start;
+        var optimalNode2 = end;
+        foreach (var nodes1 in node1PossibleCorrespondances)
+        {
+            foreach (var nodes2 in node2PossibleCorrespondances)
+            {
+                var distance = graph.DistanceMatrix[
+                    graph.NodeIndexMap[nodes1],
+                    graph.NodeIndexMap[nodes2]
+                ];
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    optimalNode1 = nodes1;
+                    optimalNode2 = nodes2;
+                }
+            }
+        }
+        return (optimalNode1, optimalNode2);
     }
 
     /// <summary>

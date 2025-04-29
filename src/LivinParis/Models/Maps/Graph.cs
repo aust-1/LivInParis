@@ -145,7 +145,7 @@ public class Graph<T>
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
 
         _distanceMatrix = new double[_order, _order];
-        var royFloydWarshallResult = GraphAlgorithms<T>.RoyFloydWarshall(this);
+        var royFloydWarshallResult = ComputeRoyFloydWarshall();
         for (int i = 0; i < _order; i++)
         {
             for (int j = 0; j < _order; j++)
@@ -207,7 +207,7 @@ public class Graph<T>
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
 
         _distanceMatrix = new double[_order, _order];
-        var royFloydWarshallResult = GraphAlgorithms<T>.RoyFloydWarshall(this);
+        var royFloydWarshallResult = ComputeRoyFloydWarshall();
         for (int i = 0; i < _order; i++)
         {
             for (int j = 0; j < _order; j++)
@@ -438,6 +438,35 @@ public class Graph<T>
     }
 
     /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier
+    /// to find the shortest path to another node or identifier,
+    /// returning the path taken and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/>.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public List<Node<T>> GetPath<TU, TV>(TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        return GraphAlgorithms<T>.GetPath(this, start, end);
+    }
+
+    /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
     /// </summary>
@@ -455,7 +484,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeDijkstra<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.GetPathByDijkstra(this, start);
+        return GraphAlgorithms<T>.GetPathsByDijkstra(this, start);
     }
 
     /// <summary>
@@ -479,7 +508,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFord<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.GetPathByBellmanFord(this, start);
+        return GraphAlgorithms<T>.GetPathsByBellmanFord(this, start);
     }
 
     /// <summary>
