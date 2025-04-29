@@ -33,7 +33,7 @@ public class VisualizationParameters
 
     private readonly double? _x;
     private readonly double? _y;
-    private readonly string _color;
+    private string _color;
     private readonly string _label;
 
     #endregion Fields
@@ -52,23 +52,17 @@ public class VisualizationParameters
     /// The <paramref name="longitude"/> and <paramref name="latitude"/> values
     /// are scaled by 1e9 to map them into a [X_MIN, X_MAX] or [Y_MIN, Y_MAX] range, respectively.
     /// </remarks>
-    public VisualizationParameters(double longitude, double latitude, string color, string label)
+    public VisualizationParameters(
+        double? longitude = null,
+        double? latitude = null,
+        string color = "#000000",
+        string label = ""
+    )
     {
         _x = ((longitude * 10e9) - X_MIN) / (X_MAX - X_MIN) * 25;
         _y = ((latitude * 10e9) - Y_MIN) / (Y_MAX - Y_MIN) * 10.7218953475;
         _color = color;
         _label = label;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VisualizationParameters"/> struct with default values.
-    /// </summary>
-    public VisualizationParameters()
-    {
-        _x = null;
-        _y = null;
-        _color = "#000000";
-        _label = string.Empty;
     }
 
     #endregion Constructors
@@ -81,6 +75,7 @@ public class VisualizationParameters
     public string Color
     {
         get { return _color; }
+        set { _color = value; }
     }
 
     /// <summary>
@@ -102,7 +97,10 @@ public class VisualizationParameters
     /// <returns>A string describing node position and style.</returns>
     public override string ToString()
     {
-        return $"pos=\"{_x:F4},{_y:F4}!\", style=filled, fillcolor=\"{_color}\"";
+        var position =
+            _x.HasValue && _y.HasValue ? $"pos=\"{_x.Value:F4},{_y.Value:F4}!\", " : string.Empty;
+
+        return position + $"style=filled, fillcolor=\"{_color}\"";
     }
 
     #endregion Methods
