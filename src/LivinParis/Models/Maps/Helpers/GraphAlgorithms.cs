@@ -98,7 +98,36 @@ public static class GraphAlgorithms<T>
 
     #region Public Methods - Pathfinding
 
-    //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
+    /// <summary>
+    /// Calculates the shortest distance between two nodes or identifiers in the graph.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// The shortest distance between the two nodes, or <see cref="double.MaxValue"/> if unreachable.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    public static double GetDistanceBetween<TU, TV>(Graph<T> graph, TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        var startNode = ResolveNode(start);
+        var endNode = ResolveNode(end);
+        if (!graph.Nodes.Contains(startNode) || !graph.Nodes.Contains(endNode))
+        {
+            throw new ArgumentException("Invalid start or end node.");
+        }
+
+        return graph.DistanceMatrix[graph.NodeIndexMap[startNode], graph.NodeIndexMap[endNode]];
+    }
 
     /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,

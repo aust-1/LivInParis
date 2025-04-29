@@ -43,6 +43,11 @@ public class Graph<T>
     private readonly SortedDictionary<Node<T>, int> _nodeIndexMap;
 
     /// <summary>
+    /// The distance matrix, where <c>_distanceMatrix[i, j]</c> indicates the shortest distance from <c>i</c> to <c>j</c>.
+    /// </summary>
+    private readonly double[,] _distanceMatrix;
+
+    /// <summary>
     /// Indicates whether this graph is directed (<c>true</c>) or undirected (<c>false</c>).
     /// </summary>
     private readonly bool _isDirected;
@@ -138,6 +143,23 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
+
+        _distanceMatrix = new double[_order, _order];
+        var royFloydWarshallResult = GraphAlgorithms<T>.RoyFloydWarshall(this);
+        for (int i = 0; i < _order; i++)
+        {
+            for (int j = 0; j < _order; j++)
+            {
+                if (royFloydWarshallResult[i, j] == null)
+                {
+                    _distanceMatrix[i, j] = double.MaxValue;
+                }
+                else
+                {
+                    _distanceMatrix[i, j] = royFloydWarshallResult[i, j].Count - 1;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -183,6 +205,23 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
+
+        _distanceMatrix = new double[_order, _order];
+        var royFloydWarshallResult = GraphAlgorithms<T>.RoyFloydWarshall(this);
+        for (int i = 0; i < _order; i++)
+        {
+            for (int j = 0; j < _order; j++)
+            {
+                if (royFloydWarshallResult[i, j] == null)
+                {
+                    _distanceMatrix[i, j] = double.MaxValue;
+                }
+                else
+                {
+                    _distanceMatrix[i, j] = royFloydWarshallResult[i, j].Count - 1;
+                }
+            }
+        }
     }
 
     #endregion Constructors
@@ -228,6 +267,15 @@ public class Graph<T>
     public SortedDictionary<Node<T>, int> NodeIndexMap
     {
         get { return _nodeIndexMap; }
+    }
+
+    /// <summary>
+    /// Gets the distance matrix for the graph,
+    /// where <see cref="double.MaxValue"/> indicates no path between nodes.
+    /// </summary>
+    public double[,] DistanceMatrix
+    {
+        get { return _distanceMatrix; }
     }
 
     /// <summary>
@@ -364,6 +412,30 @@ public class Graph<T>
     #endregion Public Methods - Traversals
 
     #region Public Methods - Pathfinding
+
+    /// <summary>
+    /// Calculates the shortest distance between two nodes or identifiers in the graph.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// The shortest distance between the two nodes, or <see cref="double.MaxValue"/> if unreachable.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    public double GetDistanceBetween<TU, TV>(TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        return GraphAlgorithms<T>.GetDistanceBetween(this, start, end);
+    }
 
     /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
