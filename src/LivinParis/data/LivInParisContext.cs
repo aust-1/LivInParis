@@ -103,7 +103,7 @@ namespace LivInParisRoussilleTeynier.Data
                 e.Property(a => a.AddressNumber).IsRequired();
                 e.HasCheckConstraint("CK_Address_Number_Positive", "`AddressNumber` > 0");
                 e.Property(a => a.Street).IsRequired().HasMaxLength(100);
-                e.Property(a => a.NearestMetro).HasConversion<string>().HasMaxLength(50);
+                e.Property(a => a.NearestStation).HasConversion<string>().HasMaxLength(50);
 
                 e.HasIndex(x => new { x.AddressNumber, x.Street })
                     .IsUnique()
@@ -136,7 +136,6 @@ namespace LivInParisRoussilleTeynier.Data
                     .WithOne()
                     .HasForeignKey<Chef>(c => c.AccountId)
                     .OnDelete(DeleteBehavior.Cascade);
-
                 e.HasOne(c => c.Address)
                     .WithMany(a => a.Chefs)
                     .HasForeignKey(c => c.AddressId)

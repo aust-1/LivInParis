@@ -20,7 +20,6 @@ public class Chef : Account
 
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
     public ICollection<MenuProposal> MenuProposals { get; set; } = new List<MenuProposal>();
-    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
 
 

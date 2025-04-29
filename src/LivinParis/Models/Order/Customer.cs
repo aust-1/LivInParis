@@ -14,7 +14,6 @@ public class Customer : Account
 
     public ICollection<OrderTransaction> OrderTransactions { get; set; } =
         new List<OrderTransaction>();
-    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
 
 //TODO: add docs
