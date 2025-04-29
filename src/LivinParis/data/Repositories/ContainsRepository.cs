@@ -9,17 +9,21 @@ public class ContainsRepository(LivInParisContext context)
 {
     public async Task<IEnumerable<Ingredient>> GetIngredientsByDishAsync(Dish dish)
     {
-        return await _context
+        var query = _context
             .Contains.Where(c => c.Dish == dish)
             .Select(c => c.Ingredient)
             .ToListAsync();
+
+        return await query;
     }
 
     public async Task<IEnumerable<Dish>> GetDishesByIngredientAsync(Ingredient ingredient)
     {
-        return await _context
+        var query = _context
             .Contains.Where(c => c.Ingredient == ingredient)
             .Select(c => c.Dish)
             .ToListAsync();
+
+        return await query;
     }
 }

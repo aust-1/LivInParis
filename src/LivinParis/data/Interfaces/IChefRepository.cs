@@ -21,7 +21,7 @@ public interface IChefRepository : IRepository<Chef>
     /// <summary>
     /// Retrieves customers served by a specific chef within a date range.
     /// </summary>
-    /// <param name="chefId">The chef.</param>
+    /// <param name="chef">The chef.</param>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of customers.</returns>
@@ -34,7 +34,7 @@ public interface IChefRepository : IRepository<Chef>
     /// <summary>
     /// Retrieves the dish proposed by a specific chef for today.
     /// </summary>
-    /// <param name="chefId">The chef.</param>
+    /// <param name="chef">The chef.</param>
     /// <returns>A task that represents the asynchronous operation, containing the dish if found; otherwise, null.</returns>
     Task<Dish?> GetTodayDishByChefAsync(Chef chef);
 
