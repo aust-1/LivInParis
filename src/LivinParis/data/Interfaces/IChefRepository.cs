@@ -59,18 +59,19 @@ public interface IChefRepository : IRepository<Chef>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order counts.</returns>
-    Task<Dictionary<Chef, int>> GetDeliveryCountByChefAsync(
+    Task<IEnumerable<(Chef Chef, int OrderCount)>> GetDeliveryCountByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     );
 
+    //TODO: implement les deux
     /// <summary>
     /// Retrieves the value of orders made by the chefs, ordered by the value of orders.
     /// </summary>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order values.</returns>
-    Task<Dictionary<Chef, decimal>> GetDeliveryCountValueByChefAsync(
+    Task<IEnumerable<(Chef Chef, decimal TotalSpent)>> GetDeliveryCountValueByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     );

@@ -1,4 +1,4 @@
-using MySql.Data.MySqlClient;
+using LivInParisRoussilleTeynier.Models.Order.Enums;
 
 namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
@@ -10,65 +10,46 @@ public interface ICustomerRepository : IRepository<Customer>
     /// <summary>
     /// Retrieves a list of customers with optional filters.
     /// </summary>
-    /// <param name="limit">The maximum number of rows to return.</param>
-    /// <param name="minRating">Minimum rating filter.</param>
-    /// <param name="maxRating">Maximum rating filter.</param>
+    /// <param name="minRating"></param>
+    /// <param name="maxRating"></param>
+    /// <param name="isBanned"></param>
     /// <param name="loyaltyRank">Loyalty rank filter.</param>
     /// <param name="customerIsBanned">Filter for banned or non-banned customers.</param>
-    /// <param name="orderBy">Column to order the result set by.</param>
-    /// <param name="orderDirection">True for ascending, false for descending ordering.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of lists of strings representing customer rows.</returns>
-    List<List<string>> Read(
-        int limit,
+    /// <returns>A task that represents the asynchronous operation, containing a list of customers.</returns>
+    Task<IEnumerable<Customer>> ReadAsync(
         decimal? minRating = null,
         decimal? maxRating = null,
+        bool? isBanned = null,
         LoyaltyRank? loyaltyRank = null,
-        bool? customerIsBanned = null,
-        string? orderBy = null,
-        bool? orderDirection = null,
-        MySqlCommand? command = null
+        bool? customerIsBanned = null
     );
 
     /// <summary>
     /// Retrieves the top customers by order count from the database.
     /// </summary>
-    /// <param name="limit">The maximum number of customers to retrieve.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of customers sorted by order count.</returns>
-    List<List<string>> GetCustomersByOrderCount(int limit, MySqlCommand? command = null);
+    /// <returns>A task that represents the asynchronous operation, containing a list of customers sorted by order count.</returns>
+    Task<IEnumerable<(Account Account, int OrderCount)>> GetCustomersByOrderCountAsync();
 
     /// <summary>
     /// Retrieves the top customers by spending from the database.
     /// </summary>
-    /// <param name="limit">The maximum number of customers to retrieve.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of customers sorted by spending.</returns>
-    List<List<string>> GetCustomersBySpending(int limit, MySqlCommand? command = null);
+    /// <returns>A task that represents the asynchronous operation, containing a list of customers sorted by spending.</returns>
+    Task<IEnumerable<(Account Account, decimal TotalSpent)>> GetCustomersBySpendingAsync();
 
     /// <summary>
-    /// Retrieves the average price per customer order.
+    /// Retrieves the average price per customer order from the database.
     /// </summary>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>The average price per customer order.</returns>
-    decimal GetAveragePricePerCustomerOrder(MySqlCommand? command = null);
+    /// <returns>A task that represents the asynchronous operation, containing the average price per customer order.</returns>
+    Task<decimal> GetAveragePricePerCustomerOrderAsync();
 
     /// <summary>
-    /// Retrieves orders in a specific cuisine nationality made by a specific customer within a date range.
+    /// Retrieves how many times each cuisine was ordered by a customer.
     /// </summary>
-    /// <param name="limit">The maximum number of results to return.</param>
-    /// <param name="customerId">The unique identifier for the customer.</param>
-    /// <param name="cuisineNationality">The nationality of the cuisine.</param>
+    /// <param name="customer">The customer.</param>
     /// <param name="from">The start date of the range.</param>
     /// <param name="to">The end date of the range.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    /// <returns>A list of lists of strings representing customer orders.</returns>
-    List<List<string>> GetCustomerOrdersByNationalityAndPeriod(
-        int limit,
-        int customerId,
-        string cuisineNationality,
-        DateTime from,
-        DateTime to,
-        MySqlCommand? command = null
-    );
+    /// <returns>A task that represents the asynchronous operation, containing a list of cuisine nationalities and their order counts.</returns>
+    Task<
+        IEnumerable<(string CuisineNationality, int OrderCount)>
+    > GetCustomerCuisinePreferencesAsync(Customer customer, DateTime? from, DateTime? to);
 }

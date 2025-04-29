@@ -5,30 +5,8 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 /// <summary>
 /// Provides methods for managing individual customer profiles.
 /// </summary>
-public interface IIndividualService
+public interface IIndividualRepository : IRepository<Individual>
 {
-    #region CRUD
-
-    /// <summary>
-    /// Creates a new individual customer profile.
-    /// </summary>
-    /// <param name="individualCustomerAccountId">The account ID of the individual customer.</param>
-    /// <param name="lastName">The last name of the individual customer.</param>
-    /// <param name="firstName">The first name of the individual customer.</param>
-    /// <param name="personalEmail">The personal email of the individual customer.</param>
-    /// <param name="phoneNumber">The phone number of the individual customer.</param>
-    /// <param name="addressId">The ID of the address associated with the individual customer.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Create(
-        int? individualCustomerAccountId,
-        string lastName,
-        string firstName,
-        string personalEmail,
-        string phoneNumber,
-        int addressId,
-        MySqlCommand? command = null
-    );
-
     /// <summary>
     /// Retrieves individual profiles with optional filters.
     /// </summary>
@@ -53,33 +31,11 @@ public interface IIndividualService
     );
 
     /// <summary>
-    /// Updates fields of an individual profile.
-    /// </summary>
-    /// <param name="individualCustomerAccountId">The account ID of the individual customer.</param>
-    /// <param name="lastName">The last name of the individual customer.</param>
-    /// <param name="firstName">The first name of the individual customer.</param>
-    /// <param name="personalEmail">The personal email of the individual customer.</param>
-    /// <param name="phoneNumber">The phone number of the individual customer.</param>
-    /// <param name="addressId">The ID of the address associated with the individual customer.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
-    void Update(
-        int individualCustomerAccountId,
-        string? lastName = null,
-        string? firstName = null,
-        string? personalEmail = null,
-        string? phoneNumber = null,
-        int? addressId = null,
-        MySqlCommand? command = null
-    );
-
-    /// <summary>
     /// Deletes an individual profile.
     /// </summary>
     /// <param name="individualCustomerAccountId">The account ID of the individual customer.</param>
     /// <param name="command">An optional MySQL command to execute within a transaction.</param>
     void Delete(int individualCustomerAccountId, MySqlCommand? command = null);
-
-    #endregion CRUD
 
     #region Statistics
 
