@@ -32,6 +32,37 @@ namespace LivInParisRoussilleTeynier.Data.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<Review>> GetReviewsByChefAsync(
+            Chef chef,
+            DateTime? from = null,
+            DateTime? to = null,
+            decimal? rating = null
+        )
+        {
+            if (!from.HasValue)
+            {
+                from = DateTime.MinValue;
+            }
+            if (!to.HasValue)
+            {
+                to = DateTime.MaxValue;
+            }
+
+            var query = _context
+                .Reviews.Include(r => r.OrderLine)
+                .Where(r => r.OrderLine.Chef == chef)
+                .Where(r => r.OrderLine.OrderLineDatetime >= from.Value)
+                .Where(r => r.OrderLine.OrderLineDatetime <= to.Value)
+                .Where(r => r.ReviewType == ReviewerType.Customer);
+
+            if (rating.HasValue)
+            {
+                query = query.Where(r => r.ReviewRating == rating.Value);
+            }
+
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<Customer>> GetCustomersServedByChefAsync(
             Chef chef,
             DateTime? from = null,
