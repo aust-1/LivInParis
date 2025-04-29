@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
+namespace LivInParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Provides functionality for detecting cycles and extracting strongly connected components

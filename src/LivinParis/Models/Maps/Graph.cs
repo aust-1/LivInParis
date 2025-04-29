@@ -1,6 +1,6 @@
-using LivinParisRoussilleTeynier.Models.Maps.Helpers;
+using LivInParisRoussilleTeynier.Models.Maps.Helpers;
 
-namespace LivinParisRoussilleTeynier.Models.Maps;
+namespace LivInParisRoussilleTeynier.Models.Maps;
 
 /// <summary>
 /// Represents a generic graph containing nodes and edges,
@@ -383,7 +383,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeDijkstra<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.Dijkstra(this, start);
+        return GraphAlgorithms<T>.GetPathByDijkstra(this, start);
     }
 
     /// <summary>
@@ -407,7 +407,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFord<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.BellmanFord(this, start);
+        return GraphAlgorithms<T>.GetPathByBellmanFord(this, start);
     }
 
     /// <summary>
@@ -429,8 +429,6 @@ public class Graph<T>
     {
         return GraphAlgorithms<T>.GetPartialGraphByDijkstra(this, start);
     }
-
-    //TODO: A*
 
     /// <summary>
     /// Executes the Bellman-Ford algorithm from the specified node or identifier,
@@ -454,8 +452,6 @@ public class Graph<T>
     {
         return GraphAlgorithms<T>.GetPartialGraphByBellmanFord(this, start);
     }
-
-    //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
 
     /// <summary>
     /// Executes the Roy-Floyd-Warshall algorithm to compute shortest paths
@@ -506,7 +502,7 @@ public class Graph<T>
     /// </returns>
     public int ComputeWelshPowell()
     {
-        return GraphAlgorithms<T>.ComputeWelshPowell(this);
+        return GraphAlgorithms<T>.WelshPowell(this);
     }
 
     #endregion Public Methods - Graph coloring

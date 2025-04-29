@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Order;
+namespace LivInParisRoussilleTeynier.Models.Order;
 
 public class Ingredient(
     string name,

@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.UI;
+namespace LivInParisRoussilleTeynier.UI;
 
 public class OrderPage : Page
 {

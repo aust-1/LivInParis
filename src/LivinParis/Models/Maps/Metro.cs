@@ -1,7 +1,7 @@
 using Aspose.Cells;
 using Newtonsoft.Json.Linq;
 
-namespace LivinParisRoussilleTeynier.Models.Maps;
+namespace LivInParisRoussilleTeynier.Models.Maps;
 
 public class Metro
 {

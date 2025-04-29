@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Data.Attributes;
+namespace LivInParisRoussilleTeynier.Data.Attributes;
 
 /// <summary>
 /// Indicates that the method or class requires automatic connection control.

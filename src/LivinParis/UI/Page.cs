@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.UI;
+namespace LivInParisRoussilleTeynier.UI;
 
 /// <summary>
 /// Abstract base class for all pages.

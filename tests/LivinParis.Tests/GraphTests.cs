@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Tests;
+namespace LivInParisRoussilleTeynier.Tests;
 
 [TestClass]
 public class GraphTests

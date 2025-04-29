@@ -1,4 +1,4 @@
-namespace LivinParisRoussilleTeynier.Models.Maps.Helpers;
+namespace LivInParisRoussilleTeynier.Models.Maps.Helpers;
 
 /// <summary>
 /// Provides various graph algorithms, including BFS, DFS,
@@ -116,59 +116,13 @@ public static class GraphAlgorithms<T>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> Dijkstra<TU>(Graph<T> graph, TU start)
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByDijkstra<TU>(
+        Graph<T> graph,
+        TU start
+    )
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!graph.Nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        foreach (var node in graph.Nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        while (visited.Count < graph.Order)
-        {
-            var current = result
-                .Where(kvp => !visited.Contains(kvp.Key))
-                .OrderBy(kvp => kvp.Value.Distance)
-                .FirstOrDefault()
-                .Key;
-
-            if (current == null || double.IsPositiveInfinity(result[current].Distance))
-            {
-                break;
-            }
-
-            visited.Add(current);
-
-            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
-            {
-                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
-                {
-                    var altDistance =
-                        result[current].Distance
-                        + graph.AdjacencyMatrix[
-                            graph.NodeIndexMap[current],
-                            graph.NodeIndexMap[neighbor]
-                        ];
-
-                    if (altDistance < result[neighbor].Distance)
-                    {
-                        result[neighbor].Distance = altDistance;
-                        result[neighbor].Predecessor = current;
-                    }
-                }
-            }
-        }
+        var result = Dijkstra(graph, start);
 
         return BuildPaths(result);
     }
@@ -192,63 +146,13 @@ public static class GraphAlgorithms<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> BellmanFord<TU>(Graph<T> graph, TU start)
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByBellmanFord<TU>(
+        Graph<T> graph,
+        TU start
+    )
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!graph.Nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        foreach (var node in graph.Nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        bool relaxed = false;
-        for (int i = 0; i < graph.Order; i++)
-        {
-            relaxed = false;
-            foreach (var edge in graph.Edges)
-            {
-                var source = edge.SourceNode;
-                var target = edge.TargetNode;
-                var weight = edge.Weight;
-
-                double altDist = result[source].Distance + weight;
-                if (altDist < result[target].Distance)
-                {
-                    result[target].Distance = altDist;
-                    result[target].Predecessor = source;
-                    relaxed = true;
-                }
-
-                if (!edge.IsDirected)
-                {
-                    double altDistReverse = result[target].Distance + weight;
-                    if (altDistReverse < result[source].Distance)
-                    {
-                        result[source].Distance = altDistReverse;
-                        result[source].Predecessor = target;
-                        relaxed = true;
-                    }
-                }
-            }
-
-            if (!relaxed)
-            {
-                break;
-            }
-        }
-
-        if (relaxed)
-        {
-            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
-        }
+        var result = BellmanFord(graph, start);
 
         return BuildPaths(result);
     }
@@ -271,56 +175,7 @@ public static class GraphAlgorithms<T>
     public static Graph<T> GetPartialGraphByDijkstra<TU>(Graph<T> graph, TU start)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!graph.Nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        var visited = new HashSet<Node<T>>();
-
-        foreach (var node in graph.Nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        while (visited.Count < graph.Order)
-        {
-            var current = result
-                .Where(kvp => !visited.Contains(kvp.Key))
-                .OrderBy(kvp => kvp.Value.Distance)
-                .FirstOrDefault()
-                .Key;
-
-            if (current == null || double.IsPositiveInfinity(result[current].Distance))
-            {
-                break;
-            }
-
-            visited.Add(current);
-
-            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
-            {
-                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
-                {
-                    var altDistance =
-                        result[current].Distance
-                        + graph.AdjacencyMatrix[
-                            graph.NodeIndexMap[current],
-                            graph.NodeIndexMap[neighbor]
-                        ];
-
-                    if (altDistance < result[neighbor].Distance)
-                    {
-                        result[neighbor].Distance = altDistance;
-                        result[neighbor].Predecessor = current;
-                    }
-                }
-            }
-        }
+        var result = Dijkstra(graph, start);
 
         return BuildGraph(graph, result);
     }
@@ -346,60 +201,7 @@ public static class GraphAlgorithms<T>
     public static Graph<T> GetPartialGraphByBellmanFord<TU>(Graph<T> graph, TU start)
         where TU : notnull
     {
-        var startNode = ResolveNode(start);
-
-        if (!graph.Nodes.Contains(startNode))
-        {
-            throw new ArgumentException("Invalid start node.");
-        }
-
-        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
-        foreach (var node in graph.Nodes)
-        {
-            result[node] = new PathfindingResult<T>(double.MaxValue, null);
-        }
-        result[startNode].Distance = 0;
-
-        bool relaxed = false;
-        for (int i = 0; i < graph.Order; i++)
-        {
-            relaxed = false;
-            foreach (var edge in graph.Edges)
-            {
-                var source = edge.SourceNode;
-                var target = edge.TargetNode;
-                var weight = edge.Weight;
-
-                double altDist = result[source].Distance + weight;
-                if (altDist < result[target].Distance)
-                {
-                    result[target].Distance = altDist;
-                    result[target].Predecessor = source;
-                    relaxed = true;
-                }
-
-                if (!edge.IsDirected)
-                {
-                    double altDistReverse = result[target].Distance + weight;
-                    if (altDistReverse < result[source].Distance)
-                    {
-                        result[source].Distance = altDistReverse;
-                        result[source].Predecessor = target;
-                        relaxed = true;
-                    }
-                }
-            }
-
-            if (!relaxed)
-            {
-                break;
-            }
-        }
-
-        if (relaxed)
-        {
-            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
-        }
+        var result = BellmanFord(graph, start);
 
         return BuildGraph(graph, result);
     }
@@ -487,7 +289,7 @@ public static class GraphAlgorithms<T>
     /// </summary>
     /// <param name="graph">The graph to color.</param>
     /// <returns>The number of colors used to color the graph.</returns>
-    public static int ComputeWelshPowell(Graph<T> graph)
+    public static int WelshPowell(Graph<T> graph)
     {
         //TODO: tests
         var sortedNodes = graph
@@ -638,6 +440,164 @@ public static class GraphAlgorithms<T>
             }
         }
         return degree;
+    }
+
+    /// <summary>
+    /// Executes Dijkstra's algorithm from the specified node or identifier.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Dijkstra's algorithm.</param>
+    /// <returns>
+    /// A dictionary mapping each reachable node to its <see cref="PathfindingResult{T}"/>,
+    /// which includes distance and predecessor data.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    private static SortedDictionary<Node<T>, PathfindingResult<T>> Dijkstra<TU>(
+        Graph<T> graph,
+        TU start
+    )
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        var visited = new HashSet<Node<T>>();
+
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        while (visited.Count < graph.Order)
+        {
+            var current = result
+                .Where(kvp => !visited.Contains(kvp.Key))
+                .OrderBy(kvp => kvp.Value.Distance)
+                .FirstOrDefault()
+                .Key;
+
+            if (current == null || double.IsPositiveInfinity(result[current].Distance))
+            {
+                break;
+            }
+
+            visited.Add(current);
+
+            if (graph.AdjacencyList.TryGetValue(current, out var neighbors))
+            {
+                foreach (var neighbor in neighbors.Keys.Where(n => !visited.Contains(n)))
+                {
+                    var altDistance =
+                        result[current].Distance
+                        + graph.AdjacencyMatrix[
+                            graph.NodeIndexMap[current],
+                            graph.NodeIndexMap[neighbor]
+                        ];
+
+                    if (altDistance < result[neighbor].Distance)
+                    {
+                        result[neighbor].Distance = altDistance;
+                        result[neighbor].Predecessor = current;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier
+    /// and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <returns>
+    /// A dictionary mapping each reachable node to its <see cref="PathfindingResult{T}"/>,
+    /// which includes distance and predecessor data.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    private static SortedDictionary<Node<T>, PathfindingResult<T>> BellmanFord<TU>(
+        Graph<T> graph,
+        TU start
+    )
+        where TU : notnull
+    {
+        var startNode = ResolveNode(start);
+
+        if (!graph.Nodes.Contains(startNode))
+        {
+            throw new ArgumentException("Invalid start node.");
+        }
+
+        var result = new SortedDictionary<Node<T>, PathfindingResult<T>>();
+        foreach (var node in graph.Nodes)
+        {
+            result[node] = new PathfindingResult<T>(double.MaxValue, null);
+        }
+        result[startNode].Distance = 0;
+
+        bool relaxed = false;
+        for (int i = 0; i < graph.Order; i++)
+        {
+            relaxed = false;
+            foreach (var edge in graph.Edges)
+            {
+                var source = edge.SourceNode;
+                var target = edge.TargetNode;
+                var weight = edge.Weight;
+
+                double altDist = result[source].Distance + weight;
+                if (altDist < result[target].Distance)
+                {
+                    result[target].Distance = altDist;
+                    result[target].Predecessor = source;
+                    relaxed = true;
+                }
+
+                if (!edge.IsDirected)
+                {
+                    double altDistReverse = result[target].Distance + weight;
+                    if (altDistReverse < result[source].Distance)
+                    {
+                        result[source].Distance = altDistReverse;
+                        result[source].Predecessor = target;
+                        relaxed = true;
+                    }
+                }
+            }
+
+            if (!relaxed)
+            {
+                break;
+            }
+        }
+
+        if (relaxed)
+        {
+            throw new InvalidOperationException("Graph contains a negative-weight cycle.");
+        }
+
+        return result;
     }
 
     /// <summary>

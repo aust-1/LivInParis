@@ -1,7 +1,7 @@
 using Castle.DynamicProxy;
-using LivinParisRoussilleTeynier.Data.Services;
+using LivInParisRoussilleTeynier.Data.Services;
 
-namespace LivinParisRoussilleTeynier.Data;
+namespace LivInParisRoussilleTeynier.Data;
 
 //TODO: create, read etc avec les models
 public static class Repository
