@@ -3,16 +3,16 @@ using Newtonsoft.Json.Linq;
 
 namespace LivInParisRoussilleTeynier.Models.Maps;
 
-public class Metro
+public static class Metro
 {
     private const string dataDirectory = "../resources/";
-    private readonly Graph<Station> _graph;
+    private static Graph<Station>? _graph;
 
     /// <summary>
     /// XlsxToAdjacencyMatrix
     /// </summary>
     /// <param name="fileName"></param>
-    public Metro(string fileName)
+    public static void InitializeMetro(string fileName)
     {
         var file = dataDirectory + fileName + ".xlsx";
         var wb = new Workbook(file);
@@ -87,9 +87,9 @@ public class Metro
         _graph = new Graph<Station>(adjacencyMatrix);
     }
 
-    public Graph<Station> Graph
+    public static Graph<Station> Graph
     {
-        get { return _graph; }
+        get { return _graph!; }
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class Metro
     /// </summary>
     /// <param name="address">The address of the target point.</param>
     /// <returns>The nearest station.</returns>
-    public async Task<Station> GetNearestStation(string address)
+    public static async Task<Station> GetNearestStation(string address)
     {
         (double Lon, double Lat)? coordonnees = await GetCoordinatesFromAddress(address);
 
@@ -107,15 +107,25 @@ public class Metro
     /// <summary>
     /// Finds the nearest station to the given coordinates (longitude, latitude).
     /// </summary>
+    /// <param name="address">The address of the target point.</param>
+    /// <returns>The nearest station.</returns>
+    public static async Task<Station> GetNearestStation(Address address)
+    {
+        return await GetNearestStation($"{address.AddressNumber} {address.Street}");
+    }
+
+    /// <summary>
+    /// Finds the nearest station to the given coordinates (longitude, latitude).
+    /// </summary>
     /// <param name="longitude">The longitude of the target point in degrees.</param>
     /// <param name="latitude">The latitude of the target point in degrees.</param>
     /// <returns>The nearest station.</returns>
-    private Station GetNearestStation(double longitude, double latitude)
+    private static Station GetNearestStation(double longitude, double latitude)
     {
         var nearestStation = Node<Station>.GetNode(0).Data;
         var minDistance = double.MaxValue;
 
-        foreach (var station in Graph.Nodes.Select(n => n.Data))
+        foreach (var station in _graph!.Nodes.Select(n => n.Data))
         {
             var distance = station.GetDistanceTo(longitude, latitude);
 
@@ -165,3 +175,6 @@ public class Metro
         return null;
     }
 }
+
+
+//TODO: add doc
