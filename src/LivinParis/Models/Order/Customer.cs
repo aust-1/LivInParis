@@ -4,13 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Customer")]
-public class Customer : Account
+public class Customer
 {
+    [Key]
+    public int AccountId { get; set; }
+
     [Range(1.0, 5.0)]
     public decimal? CustomerRating { get; set; }
 
     [Required]
     public bool CustomerIsBanned { get; set; }
+
+    [ForeignKey("AccountId")]
+    public Account? Account { get; set; }
 
     public ICollection<OrderTransaction> OrderTransactions { get; set; } =
         new List<OrderTransaction>();

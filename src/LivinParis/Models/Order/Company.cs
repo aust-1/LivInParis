@@ -6,8 +6,11 @@ namespace LivInParisRoussilleTeynier.Models.Order;
 
 [Table("Company")]
 [Index(nameof(CompanyName), IsUnique = true, Name = "IX_Company_CompanyName")]
-public class Company : Customer
+public class Company
 {
+    [Key]
+    public int AccountId { get; set; }
+
     [Required]
     [MaxLength(50)]
     public required string CompanyName { get; set; }
@@ -17,6 +20,9 @@ public class Company : Customer
 
     [MaxLength(50)]
     public string? ContactLastName { get; set; }
+
+    [ForeignKey("AccountId")]
+    public Account? Account { get; set; }
 }
 
 //TODO: add doc
