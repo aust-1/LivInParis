@@ -133,13 +133,26 @@ namespace LivInParisRoussilleTeynier
                 var ChefIsBanned = chefs[i, 2].BoolValue;
                 var addressId = chefs[i, 3].IntValue;
 
-                //FIXME: héritage de Account ?
                 new Chef
                 {
                     AccountId = accountId,
                     ChefRating = chefRating,
                     ChefIsBanned = ChefIsBanned,
                     AddressId = addressId,
+                };
+            }
+
+            for (int i = 1; i <= customers.MaxDataRow; i++)
+            {
+                var accountId = customers[i, 0].IntValue;
+                var customerRating = Convert.ToDecimal(customers[i, 1].DoubleValue);
+                var customerIsBanned = customers[i, 2].BoolValue;
+
+                new Customer
+                {
+                    AccountId = accountId,
+                    CustomerRating = customerRating,
+                    CustomerIsBanned = customerIsBanned,
                 };
             }
         }
