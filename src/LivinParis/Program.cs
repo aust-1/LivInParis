@@ -1,7 +1,12 @@
+using Aspose.Cells;
+using Newtonsoft.Json.Linq;
+
 namespace LivInParisRoussilleTeynier
 {
     public static class Program
     {
+        private const string dataDirectory = "../resources/";
+
         static async Task Main(string[] args)
         {
             // string fileName = "soc-karate";
@@ -61,23 +66,82 @@ namespace LivInParisRoussilleTeynier
 
             // Console.WriteLine("\nGraphiques générés et sauvegardés dans le dossier data/output.");
 
-            var metro = new Metro("MetroParis");
+            // var metro = new Metro("MetroParis");
 
-            var st = await metro.GetNearestStation("36 avenue Foch");
+            // var st = await metro.GetNearestStation("36 avenue Foch");
 
-            Console.WriteLine($"La station la plus proche est : {st}");
+            // Console.WriteLine($"La station la plus proche est : {st}");
 
-            var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
+            // var djresult = metro.Graph.GetPartialGraphByDijkstra(st);
 
-            djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
-            metro.Graph.DisplayGraph();
+            // djresult.DisplayGraph("dijkstraresult", "dot", fontsize: 9);
+            // metro.Graph.DisplayGraph();
 
-            metro.Graph.ComputeWelshPowell();
-            metro.Graph.DisplayGraph("welshpowell", "fdp", penwidth: 15f, fontsize: 9);
+            // metro.Graph.ComputeWelshPowell();
+            // metro.Graph.DisplayGraph("welshpowell", "fdp", penwidth: 15f, fontsize: 9);
 
             // Window.Open();
             // new MainMenuPage().Display();
             // Window.Close();
+        }
+
+        private static void LoadPeuplement()
+        {
+            var file = dataDirectory + "Peuplement" + ".xlsx";
+            var wb = new Workbook(file);
+            var addresses = wb.Worksheets[0].Cells;
+            var accounts = wb.Worksheets[1].Cells;
+            var chefs = wb.Worksheets[2].Cells;
+            var companies = wb.Worksheets[3].Cells;
+            var contains = wb.Worksheets[4].Cells;
+            var customers = wb.Worksheets[5].Cells;
+            var dishes = wb.Worksheets[6].Cells;
+            var individuals = wb.Worksheets[7].Cells;
+            var ingredients = wb.Worksheets[8].Cells;
+            var menuProposals = wb.Worksheets[9].Cells;
+            var orderLines = wb.Worksheets[10].Cells;
+            var orderTransactions = wb.Worksheets[11].Cells;
+            var reviews = wb.Worksheets[12].Cells;
+
+            for (int i = 1; i <= addresses.MaxDataRow; i++)
+            {
+                var addressNumber = addresses[i, 0].IntValue;
+                var street = addresses[i, 1].StringValue;
+
+                var nearestStation = Metro.GetNearestStation($"{addressNumber} {street}").Result;
+
+                new Address
+                {
+                    AddressNumber = addressNumber,
+                    Street = street,
+                    NearestStation = nearestStation,
+                };
+            }
+
+            for (int i = 1; i <= accounts.MaxDataRow; i++)
+            {
+                var email = accounts[i, 0].StringValue;
+                var password = accounts[i, 1].StringValue;
+
+                new Account { AccountEmail = email, AccountPassword = password };
+            }
+
+            for (int i = 1; i <= chefs.MaxDataRow; i++)
+            {
+                var accountId = chefs[i, 0].IntValue;
+                var chefRating = Convert.ToDecimal(chefs[i, 1].DoubleValue);
+                var ChefIsBanned = chefs[i, 2].BoolValue;
+                var addressId = chefs[i, 3].IntValue;
+
+                //FIXME: héritage de Account ?
+                new Chef
+                {
+                    AccountId = accountId,
+                    ChefRating = chefRating,
+                    ChefIsBanned = ChefIsBanned,
+                    AddressId = addressId,
+                };
+            }
         }
     }
 }
