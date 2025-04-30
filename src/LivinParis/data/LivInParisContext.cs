@@ -16,8 +16,13 @@ namespace LivInParisRoussilleTeynier.Data
         {
             Env.Load(Path.Combine("..", "database", ".env"));
 
+            var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+            var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+            var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+            var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+
             var connectionString =
-                $"SERVER={Environment.GetEnvironmentVariable("DB_HOST")};PORT={Environment.GetEnvironmentVariable("DB_PORT")};DATABASE={Environment.GetEnvironmentVariable("DB_NAME")};UID={Environment.GetEnvironmentVariable("DB_USER")};PASSWORD={Environment.GetEnvironmentVariable("DB_PASSWORD")}";
+                $"SERVER={dbHost};PORT={dbPort};DATABASE={dbName};UID={dbUser};PASSWORD={Environment.GetEnvironmentVariable("DB_PASSWORD")}";
             optionsBuilder.UseMySql(
                 connectionString,
                 new MySqlServerVersion(new Version(8, 0, 32))
