@@ -2,13 +2,10 @@ namespace LivInParisRoussilleTeynier.UI;
 
 public class GraphPage : Page
 {
-    private Metro? _metro;
-    private Graph<Station>? _graph;
+    private readonly Graph<Station>? _graph = Metro.Graph;
 
     public override void Display()
     {
-        LoadGraph();
-
         while (true)
         {
             var menu = new ScrollingMenu(
@@ -72,12 +69,6 @@ public class GraphPage : Page
                     break;
             }
         }
-    }
-
-    private void LoadGraph()
-    {
-        _metro = new Metro("MetroParis");
-        _graph = _metro.Graph;
     }
 
     private void ShowGraphInfo()
@@ -209,7 +200,7 @@ public class GraphPage : Page
         ShowText("Image générée : pcc_visual_*.png");
     }
 
-    private void ShowText(string message)
+    private static void ShowText(string message)
     {
         var text = new EmbedText([message]);
         Window.AddElement(text);
@@ -219,14 +210,16 @@ public class GraphPage : Page
         Window.Render();
     }
 
-    private void ShowList(string title, List<string> lines)
+    private static void ShowList(string title, List<string> lines)
     {
+        var header = new EmbedText([title]);
+        Window.AddElement(header);
         var liness = new List<List<string>> { lines };
         var scrollable = new TableView(lines: liness);
         Window.AddElement(scrollable);
         Window.Render();
 
-        Prompt wait = new Prompt("Appuyez sur Entrée pour continuer...");
+        Prompt wait = new("Appuyez sur Entrée pour continuer...");
         Window.AddElement(wait);
         Window.ActivateElement(wait);
         wait.GetResponse();

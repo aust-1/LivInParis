@@ -1,5 +1,4 @@
 using LivInParisRoussilleTeynier.Data.Interfaces;
-using LivInParisRoussilleTeynier.Models.Order.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace LivInParisRoussilleTeynier.Data.Repositories
@@ -53,7 +52,7 @@ namespace LivInParisRoussilleTeynier.Data.Repositories
                 .Where(r => r.OrderLine.Chef == chef)
                 .Where(r => r.OrderLine.OrderLineDatetime >= from.Value)
                 .Where(r => r.OrderLine.OrderLineDatetime <= to.Value)
-                .Where(r => r.ReviewType == ReviewerType.Customer);
+                .Where(r => r.ReviewerType == ReviewerType.Customer);
 
             if (rating.HasValue)
             {

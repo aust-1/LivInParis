@@ -62,7 +62,7 @@ public class DishService : IDishService
         bool? isLactoseFree = null,
         bool? isHalal = null,
         bool? isKosher = null,
-        ProductOrigin? productOrigin = null,
+        ProductsOrigin? productsOrigin = null,
         MySqlCommand? command = null
     )
     {
@@ -139,7 +139,7 @@ public class DishService : IDishService
             restrictionConditions.Add("i.is_kosher = FALSE");
         }
 
-        if (productOrigin is not null)
+        if (productsOrigin is not null)
         {
             restrictionConditions.Add("i.product_origin != @origin");
         }
@@ -192,9 +192,9 @@ public class DishService : IDishService
         {
             command.Parameters.AddWithValue("@maxPrice", maxPrice);
         }
-        if (productOrigin is not null)
+        if (productsOrigin is not null)
         {
-            command.Parameters.AddWithValue("@origin", productOrigin.ToString());
+            command.Parameters.AddWithValue("@origin", productsOrigin.ToString());
         }
 
         command.Parameters.AddWithValue("@limit", limit);

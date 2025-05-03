@@ -23,10 +23,10 @@ public class MenuProposal
     public required int DishId { get; set; }
 
     [ForeignKey("AccountId")]
-    public required Chef Chef { get; set; }
+    public Chef? Chef { get; set; }
 
     [ForeignKey("DishId")]
-    public required Dish Dish { get; set; }
+    public Dish? Dish { get; set; }
 }
 
 //TODO: add doc

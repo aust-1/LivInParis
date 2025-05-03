@@ -22,7 +22,7 @@ public class IngredientService : IIngredientService
         bool isLactoseFree,
         bool isHalal,
         bool isKosher,
-        ProductOrigin productOrigin,
+        ProductsOrigin productsOrigin,
         MySqlCommand? command = null
     )
     {
@@ -47,7 +47,7 @@ public class IngredientService : IIngredientService
         command.Parameters.AddWithValue("@lactoseFree", isLactoseFree);
         command.Parameters.AddWithValue("@halal", isHalal);
         command.Parameters.AddWithValue("@kosher", isKosher);
-        command.Parameters.AddWithValue("@origin", productOrigin.ToString());
+        command.Parameters.AddWithValue("@origin", productsOrigin.ToString());
         command.ExecuteNonQuery();
     }
 
@@ -61,7 +61,7 @@ public class IngredientService : IIngredientService
         bool? isLactoseFree = null,
         bool? isHalal = null,
         bool? isKosher = null,
-        ProductOrigin? productOrigin = null,
+        ProductsOrigin? productsOrigin = null,
         MySqlCommand? command = null
     )
     {
@@ -104,7 +104,7 @@ public class IngredientService : IIngredientService
             conditions.Add("is_kosher = @kosher");
         }
 
-        if (productOrigin is not null)
+        if (productsOrigin is not null)
         {
             conditions.Add("product_origin = @origin");
         }
@@ -147,9 +147,9 @@ public class IngredientService : IIngredientService
         {
             command.Parameters.AddWithValue("@kosher", isKosher);
         }
-        if (productOrigin is not null)
+        if (productsOrigin is not null)
         {
-            command.Parameters.AddWithValue("@origin", productOrigin.ToString());
+            command.Parameters.AddWithValue("@origin", productsOrigin.ToString());
         }
 
         command.Parameters.AddWithValue("@limit", limit);

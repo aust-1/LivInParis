@@ -15,7 +15,7 @@ public class ReviewService : IReviewService
     /// <inheritdoc/>
     public virtual void Create(
         int? reviewId,
-        ReviewType reviewType,
+        ReviewerType reviewerType,
         decimal rating,
         string comment,
         DateOnly reviewDate,
@@ -35,7 +35,7 @@ public class ReviewService : IReviewService
                 )";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@id", reviewId);
-        command.Parameters.AddWithValue("@type", reviewType.ToString());
+        command.Parameters.AddWithValue("@type", reviewerType.ToString());
         command.Parameters.AddWithValue("@rating", rating);
         command.Parameters.AddWithValue("@comment", comment);
         command.Parameters.AddWithValue("@date", reviewDate.ToDateTime(TimeOnly.MinValue));
@@ -47,7 +47,7 @@ public class ReviewService : IReviewService
     public virtual List<List<string>> Read(
         int limit,
         int? reviewId = null,
-        ReviewType? reviewType = null,
+        ReviewerType? reviewerType = null,
         decimal? minRating = null,
         decimal? maxRating = null,
         int? orderLineId = null,
@@ -62,7 +62,7 @@ public class ReviewService : IReviewService
         {
             conditions.Add("review_id = @id");
         }
-        if (reviewType is not null)
+        if (reviewerType is not null)
         {
             conditions.Add("review_type = @type");
         }
@@ -93,9 +93,9 @@ public class ReviewService : IReviewService
         {
             command.Parameters.AddWithValue("@id", reviewId);
         }
-        if (reviewType is not null)
+        if (reviewerType is not null)
         {
-            command.Parameters.AddWithValue("@type", reviewType.ToString());
+            command.Parameters.AddWithValue("@type", reviewerType.ToString());
         }
         if (minRating is not null)
         {
@@ -190,7 +190,7 @@ public class ReviewService : IReviewService
     public virtual List<List<string>> GetReviewsByAccount(
         int limit,
         int accountId,
-        ReviewType reviewType,
+        ReviewerType reviewerType,
         string? orderBy = "review_rating",
         bool? orderDirection = null,
         MySqlCommand? command = null
@@ -214,7 +214,7 @@ public class ReviewService : IReviewService
 
         command!.CommandText = query.ToString();
         command.Parameters.Clear();
-        command.Parameters.AddWithValue("@type", reviewType.ToString());
+        command.Parameters.AddWithValue("@type", reviewerType.ToString());
         command.Parameters.AddWithValue("@accountId", accountId);
         command.Parameters.AddWithValue("@limit", limit);
 

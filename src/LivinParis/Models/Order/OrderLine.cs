@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using LivInParisRoussilleTeynier.Models.Order.Enums;
 
 namespace LivInParisRoussilleTeynier.Models.Order;
 
@@ -17,20 +16,23 @@ public class OrderLine
     [Required]
     public required OrderLineStatus OrderLineStatus { get; set; }
 
-    public int AddressId { get; set; }
+    [Required]
+    public required int AddressId { get; set; }
+
+    [Required]
+    public required int TransactionId { get; set; }
+
+    [Required]
+    public required int AccountId { get; set; }
 
     [ForeignKey("AddressId")]
-    public required Address Address { get; set; }
-
-    public int TransactionId { get; set; }
+    public Address? Address { get; set; }
 
     [ForeignKey("TransactionId")]
-    public required OrderTransaction OrderTransaction { get; set; }
-
-    public int AccountId { get; set; }
+    public OrderTransaction? OrderTransaction { get; set; }
 
     [ForeignKey("AccountId")]
-    public required Chef Chef { get; set; }
+    public Chef? Chef { get; set; }
 
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

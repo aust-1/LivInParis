@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using LivInParisRoussilleTeynier.Models.Order.Enums;
 
 namespace LivInParisRoussilleTeynier.Models.Order;
 
@@ -40,7 +39,7 @@ public class Dish
     public required ProductsOrigin ProductsOrigin { get; set; }
 
     [MaxLength(255)]
-    public string? PhotoPath { get; set; }
+    public string PhotoPath { get; set; } = "null.png";
 
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
     public ICollection<MenuProposal> MenuProposals { get; set; } = new List<MenuProposal>();

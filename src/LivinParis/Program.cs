@@ -1,5 +1,7 @@
 using Aspose.Cells;
-using Newtonsoft.Json.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace LivInParisRoussilleTeynier
 {
@@ -83,6 +85,26 @@ namespace LivInParisRoussilleTeynier
             // Window.Open();
             // new MainMenuPage().Display();
             // Window.Close();
+
+            // 1. Construire le host console
+            using var host = Host.CreateDefaultBuilder(args)
+                .ConfigureServices(
+                    (hostCtx, services) =>
+                    {
+                        services.AddDbContext<LivInParisContext>();
+                    }
+                )
+                .Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                await DatabaseSeeder.SeedFromExcelAsync(dataDirectory, services);
+            }
+
+            Console.WriteLine("Seed terminé. Appuyez sur une touche pour quitter.");
+            Console.ReadKey();
         }
 
         private static void LoadPeuplement()

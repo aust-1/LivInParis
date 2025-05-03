@@ -1,5 +1,3 @@
-using LivInParisRoussilleTeynier.Models.Order.Enums;
-
 namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
 /// <summary>

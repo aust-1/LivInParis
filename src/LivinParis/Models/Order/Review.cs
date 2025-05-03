@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using LivInParisRoussilleTeynier.Models.Order.Enums;
 
 namespace LivInParisRoussilleTeynier.Models.Order;
 
@@ -12,7 +11,7 @@ public class Review
     public int ReviewId { get; set; }
 
     [Required]
-    public ReviewerType ReviewType { get; set; }
+    public ReviewerType ReviewerType { get; set; }
 
     [Range(1.0, 5.0)]
     public decimal? ReviewRating { get; set; }
@@ -24,10 +23,10 @@ public class Review
     public required DateOnly? ReviewDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     [Required]
-    public int OrderLineId { get; set; }
+    public required int OrderLineId { get; set; }
 
     [ForeignKey("OrderLineId")]
-    public required OrderLine OrderLine { get; set; }
+    public OrderLine? OrderLine { get; set; }
 }
 
 //TODO: add doc

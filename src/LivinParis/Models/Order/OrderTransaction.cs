@@ -13,10 +13,11 @@ public class OrderTransaction
     [Required]
     public required DateTime TransactionDatetime { get; set; }
 
-    public int AccountId { get; set; }
+    [Required]
+    public required int AccountId { get; set; }
 
     [ForeignKey("AccountId")]
-    public required Customer Customer { get; set; }
+    public Customer? Customer { get; set; }
 
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }

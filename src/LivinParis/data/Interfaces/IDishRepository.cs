@@ -1,5 +1,3 @@
-using LivInParisRoussilleTeynier.Models.Order.Enums;
-
 namespace LivInParisRoussilleTeynier.Data.Interfaces;
 
 /// <summary>
@@ -10,7 +8,6 @@ public interface IDishRepository : IRepository<Dish>
     /// <summary>
     /// Retrieves a list of dishes with optional filters.
     /// </summary>
-    /// <param name="limit">The maximum number of rows to return.</param>
     /// <param name="dishName">Filter by dish name.</param>
     /// <param name="dishType">Filter by dish type.</param>
     /// <param name="minExpiryTime">Minimum expiry time filter.</param>
@@ -24,8 +21,7 @@ public interface IDishRepository : IRepository<Dish>
     /// <param name="isLactoseFree">Filter for lactose-free dishes.</param>
     /// <param name="isHalal">Filter for halal dishes.</param>
     /// <param name="isKosher">Filter for kosher dishes.</param>
-    /// <param name="productOrigin">Filter by product origin.</param>
-    /// <param name="command">An optional MySQL command to execute within a transaction.</param>
+    /// <param name="productsOrigin">Filter by product origin.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of dishes.</returns>
     Task<IEnumerable<Dish>> ReadAsync(
         string? dishName = null,
@@ -41,6 +37,6 @@ public interface IDishRepository : IRepository<Dish>
         bool? isLactoseFree = null,
         bool? isHalal = null,
         bool? isKosher = null,
-        ProductsOrigin? productOrigin = null
+        ProductsOrigin? productsOrigin = null
     );
 }

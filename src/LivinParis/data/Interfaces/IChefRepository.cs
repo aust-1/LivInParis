@@ -64,7 +64,7 @@ public interface IChefRepository : IRepository<Chef>
         DateTime? to = null
     );
 
-    //TODO: implement les deux
+    //TODO: implement
     /// <summary>
     /// Retrieves the value of orders made by the chefs, ordered by the value of orders.
     /// </summary>

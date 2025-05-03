@@ -313,7 +313,10 @@ namespace LivInParisRoussilleTeynier.Data
             {
                 e.ToTable("Review");
                 e.HasKey(r => r.ReviewId);
-                e.Property(r => r.ReviewType).IsRequired().HasConversion<string>().HasMaxLength(20);
+                e.Property(r => r.ReviewerType)
+                    .IsRequired()
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
                 e.Property(r => r.ReviewDate).HasColumnType("date").IsRequired();
                 e.Property(r => r.ReviewRating).HasColumnType("decimal(2,1)");
                 e.Property(r => r.Comment).HasMaxLength(500);
