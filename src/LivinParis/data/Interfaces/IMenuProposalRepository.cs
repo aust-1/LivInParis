@@ -20,3 +20,5 @@ public interface IMenuProposalRepository : IRepository<MenuProposal>
         DateTime? to = null
     );
 }
+
+//TODO: to implement

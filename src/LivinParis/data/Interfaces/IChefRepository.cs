@@ -19,21 +19,6 @@ public interface IChefRepository : IRepository<Chef>
     );
 
     /// <summary>
-    /// Retrieves reviews gived at a specific chef within a date range.
-    /// </summary>
-    /// <param name="chef">The chef.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
-    /// <param name="rating">Optional rating filter.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a list of reviews.</returns>
-    Task<IEnumerable<Review>> GetReviewsByChefAsync(
-        Chef chef,
-        DateTime? from = null,
-        DateTime? to = null,
-        decimal? rating = null
-    );
-
-    /// <summary>
     /// Retrieves customers served by a specific chef within a date range.
     /// </summary>
     /// <param name="chef">The chef.</param>

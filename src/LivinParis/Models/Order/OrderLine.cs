@@ -22,6 +22,9 @@ public class OrderLine
     [Required]
     public required int TransactionId { get; set; }
 
+    /// <summary>
+    /// The ID of the chef account that prepared the order.
+    /// </summary>
     [Required]
     public required int AccountId { get; set; }
 

@@ -6,7 +6,6 @@ namespace LivInParisRoussilleTeynier.Data.Repositories;
 /// <summary>
 /// Provides implementation for account-related operations.
 /// </summary>
-[ConnectionControl]
 public class AccountRepository(LivInParisContext context)
     : Repository<Account>(context),
         IAccountRepository

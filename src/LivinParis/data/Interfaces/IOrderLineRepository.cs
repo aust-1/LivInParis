@@ -66,3 +66,6 @@ public interface IOrderLineRepository : IRepository<OrderLine>
     /// <returns>A task that represents the asynchronous operation, containing a list of postal codes and their total order values.</returns>
     Task<IEnumerable<(int postalCode, int TotalSpent)>> GetTotalOrderValueByPostalCodeAsync();
 }
+
+
+//TODO: to implement
