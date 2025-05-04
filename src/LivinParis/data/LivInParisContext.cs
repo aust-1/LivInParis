@@ -1,5 +1,4 @@
 using DotNetEnv;
-using LivInParisRoussilleTeynier.Models.Order;
 using Microsoft.EntityFrameworkCore;
 
 namespace LivInParisRoussilleTeynier.Data
