@@ -6,50 +6,64 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 public interface ICustomerRepository : IRepository<Customer>
 {
     /// <summary>
-    /// Retrieves a list of customers with optional filters.
+    /// Retrieves a list of customers, optionally filtered by rating or ban status.
     /// </summary>
-    /// <param name="minRating"></param>
-    /// <param name="maxRating"></param>
-    /// <param name="isBanned"></param>
-    /// <param name="loyaltyRank">Loyalty rank filter.</param>
-    /// <param name="customerIsBanned">Filter for banned or non-banned customers.</param>
+    /// <param name="minRating">Optional minimum rating to filter customers.</param>
+    /// <param name="maxRating">Optional maximum rating to filter customers.</param>
+    /// <param name="isBanned">Optional filter to select customers who are banned or not.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of customers.</returns>
     Task<IEnumerable<Customer>> ReadAsync(
         decimal? minRating = null,
         decimal? maxRating = null,
-        bool? isBanned = null,
-        LoyaltyRank? loyaltyRank = null,
-        bool? customerIsBanned = null
+        bool? isBanned = null
     );
 
     /// <summary>
     /// Retrieves the top customers by order count from the database.
     /// </summary>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of customers sorted by order count.</returns>
-    Task<IEnumerable<(Account Account, int OrderCount)>> GetCustomersByOrderCountAsync();
+    Task<IEnumerable<(Customer Customer, int OrderCount)>> GetCustomersByOrderCountAsync(
+        DateTime? from = null,
+        DateTime? to = null
+    );
 
     /// <summary>
     /// Retrieves the top customers by spending from the database.
     /// </summary>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of customers sorted by spending.</returns>
-    Task<IEnumerable<(Account Account, decimal TotalSpent)>> GetCustomersBySpendingAsync();
-
-    /// <summary>
-    /// Retrieves the average price per customer order from the database.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing the average price per customer order.</returns>
-    Task<decimal> GetAveragePricePerCustomerOrderAsync();
+    Task<IEnumerable<(Customer Customer, decimal TotalSpent)>> GetCustomersBySpendingAsync(
+        DateTime? from = null,
+        DateTime? to = null
+    );
 
     /// <summary>
     /// Retrieves how many times each cuisine was ordered by a customer.
     /// </summary>
     /// <param name="customer">The customer.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of cuisine nationalities and their order counts.</returns>
     Task<
         IEnumerable<(string CuisineNationality, int OrderCount)>
-    > GetCustomerCuisinePreferencesAsync(Customer customer, DateTime? from, DateTime? to);
+    > GetCustomerCuisinePreferencesAsync(
+        Customer customer,
+        DateTime? from = null,
+        DateTime? to = null
+    );
 }
-
-//TODO: to implement

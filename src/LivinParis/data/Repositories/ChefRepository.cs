@@ -3,24 +3,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LivInParisRoussilleTeynier.Data.Repositories;
 
+/// <summary>
+/// Provides implementation for chef-related operations.
+/// </summary>
+/// <param name="context">The database context.</param>
 public class ChefRepository(LivInParisContext context) : Repository<Chef>(context), IChefRepository
 {
+    /// <inheritdoc/>
     public async Task<IEnumerable<Chef>> ReadAsync(
         decimal? minRating = null,
         decimal? maxRating = null,
         bool? isBanned = null
     )
     {
-        IQueryable<Chef> query = _context.Chefs;
+        var min = minRating ?? 0m;
+        var max = maxRating ?? 5m;
 
-        if (minRating.HasValue)
-        {
-            query = query.Where(c => c.ChefRating >= minRating.Value);
-        }
-        if (maxRating.HasValue)
-        {
-            query = query.Where(c => c.ChefRating <= maxRating.Value);
-        }
+        var query = _context.Chefs.Where(c => c.ChefRating >= min).Where(c => c.ChefRating <= max);
+
         if (isBanned.HasValue)
         {
             query = query.Where(c => c.ChefIsBanned == isBanned.Value);
@@ -29,63 +29,29 @@ public class ChefRepository(LivInParisContext context) : Repository<Chef>(contex
         return await query.ToListAsync();
     }
 
-    public async Task<IEnumerable<Review>> GetReviewsByChefAsync(
-        Chef chef,
-        DateTime? from = null,
-        DateTime? to = null,
-        decimal? rating = null
-    )
-    {
-        if (!from.HasValue)
-        {
-            from = DateTime.MinValue;
-        }
-        if (!to.HasValue)
-        {
-            to = DateTime.MaxValue;
-        }
-
-        var query = _context
-            .Reviews.Include(r => r.OrderLine)
-            .Where(r => r.OrderLine.Chef == chef)
-            .Where(r => r.OrderLine.OrderLineDatetime >= from.Value)
-            .Where(r => r.OrderLine.OrderLineDatetime <= to.Value)
-            .Where(r => r.ReviewerType == ReviewerType.Customer);
-
-        if (rating.HasValue)
-        {
-            query = query.Where(r => r.ReviewRating == rating.Value);
-        }
-
-        return await query.ToListAsync();
-    }
-
-    public async Task<IEnumerable<Customer>> GetCustomersServedByChefAsync(
+    /// <inheritdoc/>
+    public async Task<IEnumerable<Customer?>> GetCustomersServedByChefAsync(
         Chef chef,
         DateTime? from = null,
         DateTime? to = null
     )
     {
-        if (!from.HasValue)
-        {
-            from = DateTime.MinValue;
-        }
-        if (!to.HasValue)
-        {
-            to = DateTime.MaxValue;
-        }
+        var start = from ?? DateTime.MinValue;
+        var end = to ?? DateTime.MaxValue;
 
         var query = _context
             .OrderLines.Include(ol => ol.OrderTransaction)
-            .ThenInclude(ot => ot.Customer)
+            .ThenInclude(ot => ot!.Customer)
             .Where(ol => ol.Chef == chef)
-            .Where(ol => ol.OrderLineDatetime >= from.Value)
-            .Where(ol => ol.OrderLineDatetime <= to.Value)
-            .Select(ol => ol.OrderTransaction.Customer);
+            .Where(ol => ol.OrderLineStatus == OrderLineStatus.Delivered)
+            .Where(ol => ol.OrderLineDatetime >= start)
+            .Where(ol => ol.OrderLineDatetime <= end)
+            .Select(ol => ol.OrderTransaction!.Customer);
 
         return await query.ToListAsync();
     }
 
+    /// <inheritdoc/>
     public async Task<Dish?> GetTodayDishByChefAsync(Chef chef)
     {
         var query = _context
@@ -98,55 +64,50 @@ public class ChefRepository(LivInParisContext context) : Repository<Chef>(contex
         return await query.SingleOrDefaultAsync();
     }
 
-    public async Task<Dictionary<Chef, int>> GetDeliveryCountByChefAsync(
+    /// <inheritdoc/>
+    public async Task<IEnumerable<(Chef Chef, int OrderCount)>> GetDeliveryCountByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     )
     {
-        if (!from.HasValue)
-        {
-            from = DateTime.MinValue;
-        }
-        if (!to.HasValue)
-        {
-            to = DateTime.MaxValue;
-        }
+        var start = from ?? DateTime.MinValue;
+        var end = to ?? DateTime.MaxValue;
 
         var query = _context
-            .OrderLines.Where(
-                (ol) => ol.OrderLineDatetime >= from.Value && ol.OrderLineDatetime <= to.Value
-            )
+            .OrderLines.Where(ol => ol.OrderLineStatus == OrderLineStatus.Delivered)
+            .Where(ol => ol.OrderLineDatetime >= start)
+            .Where(ol => ol.OrderLineDatetime <= end)
             .Include(ol => ol.Chef)
             .GroupBy(ol => ol.Chef)
-            .Select(g => new { Chef = g.Key, Count = g.Count() })
-            .OrderByDescending(g => g.Count);
+            .Select(g => new { Chef = g.Key, OrderCount = g.Count() })
+            .OrderByDescending(g => g.OrderCount);
 
-        return await query.ToDictionaryAsync(g => g.Chef, g => g.Count);
+        var raw = await query.ToListAsync();
+
+        return raw.Select(g => (g.Chef!, g.OrderCount));
     }
 
-    public async Task<Dictionary<Chef, decimal>> GetDeliveryCountValueByChefAsync(
-        DateTime? from = null,
-        DateTime? to = null
-    )
+    /// <inheritdoc/>
+    public async Task<
+        IEnumerable<(Chef Chef, decimal TotalSpent)>
+    > GetDeliveryCountValueByChefAsync(DateTime? from = null, DateTime? to = null)
     {
-        if (!from.HasValue)
-        {
-            from = DateTime.MinValue;
-        }
-        if (!to.HasValue)
-        {
-            to = DateTime.MaxValue;
-        }
+        var start = from ?? DateTime.MinValue;
+        var end = to ?? DateTime.MaxValue;
 
         var query = _context
-            .OrderLines.Where(ol =>
-                ol.OrderLineDatetime >= from.Value && ol.OrderLineDatetime <= to.Value
-            )
+            .OrderLines.Where(ol => ol.OrderLineStatus == OrderLineStatus.Delivered)
+            .Where(ol => ol.OrderLineDatetime >= start)
+            .Where(ol => ol.OrderLineDatetime <= end)
             .Join(_context.Chefs, ol => ol.Chef, c => c, (ol, c) => new { ol, c })
             .Join(
                 _context.MenuProposals,
-                olc => olc.c,
-                mp => mp.Chef,
+                olc => new
+                {
+                    ChefId = olc.c.AccountId,
+                    Date = DateOnly.FromDateTime(olc.ol.OrderLineDatetime),
+                },
+                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
                 (olc, mp) =>
                     new
                     {
@@ -155,14 +116,13 @@ public class ChefRepository(LivInParisContext context) : Repository<Chef>(contex
                         mp,
                     }
             )
-            .Where(olcmp =>
-                olcmp.mp.ProposalDate == DateOnly.FromDateTime(olcmp.ol.OrderLineDatetime)
-            )
             .Join(_context.Dishes, olcmp => olcmp.mp.Dish, d => d, (olcmp, d) => new { olcmp.c, d })
             .GroupBy(cd => cd.c)
-            .Select(g => new { Chef = g.Key, Sum = g.Sum(cd => cd.d.Price) })
-            .OrderByDescending(g => g.Sum);
+            .Select(g => new { Chef = g.Key, TotalSpent = g.Sum(cd => cd.d.Price) })
+            .OrderByDescending(g => g.TotalSpent);
 
-        return await query.ToDictionaryAsync(g => g.Chef, g => g.Sum);
+        var raw = await query.ToListAsync();
+
+        return raw.Select(g => (g.Chef!, g.TotalSpent));
     }
 }

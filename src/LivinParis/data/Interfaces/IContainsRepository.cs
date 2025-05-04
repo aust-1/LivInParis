@@ -19,5 +19,3 @@ public interface IContainsRepository : IRepository<Contains>
     /// <returns>A task that represents the asynchronous operation, containing a list of dishes that use the specified ingredient.</returns>
     Task<IEnumerable<Dish>> GetDishesByIngredientAsync(Ingredient ingredient);
 }
-
-//TODO: to implement

@@ -48,3 +48,5 @@ public class Dish
 
 //HACK: classe allergènes pour simplifier ingrédients + ajouter une ICollection dans Dish qui automatise la fusion de tous les ingrédients
 //TODO: add doc
+
+//QUESTION: Mettre origine pays dans un enum ?

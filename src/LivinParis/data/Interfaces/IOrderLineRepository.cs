@@ -17,12 +17,18 @@ public interface IOrderLineRepository : IRepository<OrderLine>
     /// </summary>
     /// <param name="chef">The chef to filter by.</param>
     /// <param name="customer">The customer to filter by.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
+    /// <param name="status">The status of the order line to filter by.</param>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of order lines.</returns>
     Task<IEnumerable<OrderLine>> ReadAsync(
         Chef? chef = null,
         Customer? customer = null,
+        OrderLineStatus? status = null,
         DateTime? from = null,
         DateTime? to = null
     );
@@ -32,40 +38,19 @@ public interface IOrderLineRepository : IRepository<OrderLine>
     /// </summary>
     /// <param name="chef">The chef to filter by.</param>
     /// <param name="customer">The customer to filter by.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
+    /// <param name="status">The status of the order line to filter by.</param>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>>A task that represents the asynchronous operation, containing the average order price.</returns>
     Task<decimal> GetAverageOrderPriceAsync(
         Chef? chef = null,
         Customer? customer = null,
+        OrderLineStatus? status = null,
         DateTime? from = null,
         DateTime? to = null
     );
-
-    /// <summary>
-    /// Retrieves the count of orders grouped by street name.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a list of street names and their order counts.</returns>
-    Task<IEnumerable<(string street, int OrderCount)>> GetCommandCountByStreetAsync();
-
-    /// <summary>
-    /// Retrieves the count of orders grouped by postal code.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a list of postal codes and their order counts.</returns>
-    Task<IEnumerable<(int postalCode, int OrderCount)>> GetCommandCountByPostalCodeAsync();
-
-    /// <summary>
-    /// Retrieves the total order value grouped by street name.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a list of street names and their total order values.</returns>
-    Task<IEnumerable<(string street, int TotalSpent)>> GetTotalOrderValueByStreetAsync();
-
-    /// <summary>
-    /// Retrieves the total order value grouped by postal code.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a list of postal codes and their total order values.</returns>
-    Task<IEnumerable<(int postalCode, int TotalSpent)>> GetTotalOrderValueByPostalCodeAsync();
 }
-
-
-//TODO: to implement

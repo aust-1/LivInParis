@@ -3,7 +3,7 @@ using LivInParisRoussilleTeynier.Data.Services;
 
 namespace LivInParisRoussilleTeynier.Data;
 
-//TODO: create, read etc avec les models
+//TODO: Implementer le pattern Repository pour chaque service
 public static class Repository
 {
     #region Fields

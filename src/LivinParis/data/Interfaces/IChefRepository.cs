@@ -6,7 +6,7 @@ namespace LivInParisRoussilleTeynier.Data.Interfaces;
 public interface IChefRepository : IRepository<Chef>
 {
     /// <summary>
-    /// Retrieves a list of chefs, optionally filtered by rating, ban status, or eating-on-site option.
+    /// Retrieves a list of chefs, optionally filtered by rating or ban status.
     /// </summary>
     /// <param name="minRating">Optional minimum rating to filter chefs.</param>
     /// <param name="maxRating">Optional maximum rating to filter chefs.</param>
@@ -22,10 +22,14 @@ public interface IChefRepository : IRepository<Chef>
     /// Retrieves customers served by a specific chef within a date range.
     /// </summary>
     /// <param name="chef">The chef.</param>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of customers.</returns>
-    Task<IEnumerable<Customer>> GetCustomersServedByChefAsync(
+    Task<IEnumerable<Customer?>> GetCustomersServedByChefAsync(
         Chef chef,
         DateTime? from = null,
         DateTime? to = null
@@ -39,23 +43,34 @@ public interface IChefRepository : IRepository<Chef>
     Task<Dish?> GetTodayDishByChefAsync(Chef chef);
 
     /// <summary>
-    /// Retrieves the number of orders made by the chefs, ordered by the number of orders.
+    /// Retrieves the number of orders made by each chef in the specified period,
+    /// ordered descending by delivery count.
     /// </summary>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order counts.</returns>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
+    /// <returns>A task that represents the asynchronous operation, containing a sequence of tuples where each tuple contains a <see cref="Chef"/> and
+    /// the count of deliveries they made in the specified period.</returns>
     Task<IEnumerable<(Chef Chef, int OrderCount)>> GetDeliveryCountByChefAsync(
         DateTime? from = null,
         DateTime? to = null
     );
 
-    //TODO: implement
     /// <summary>
-    /// Retrieves the value of orders made by the chefs, ordered by the value of orders.
+    /// Retrieves the value of orders made by each chef in the specified period,
+    /// ordered descending by delivery value.
     /// </summary>
-    /// <param name="from">The start date of the range.</param>
-    /// <param name="to">The end date of the range.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a list of chefs and their order values.</returns>
+    /// <param name="from">
+    /// The start of the period to include. If null, includes all deliveries from the beginning of time.
+    /// </param>
+    /// <param name="to">
+    /// The end of the period to include. If null, includes all deliveries up to the end of time.
+    /// </param>
+    /// <returns>A task that represents the asynchronous operation, containing sequence of tuples where each tuple contains a <see cref="Chef"/> and
+    /// the total value of deliveries they made in the specified period.</returns>
     Task<IEnumerable<(Chef Chef, decimal TotalSpent)>> GetDeliveryCountValueByChefAsync(
         DateTime? from = null,
         DateTime? to = null
