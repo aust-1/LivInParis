@@ -225,7 +225,31 @@ LivInParis
    │     ├─ Repository.cs
    │     └─ ReviewRepository.cs
    ├─ LivInParis.Services
-   │  └─ LivInParis.Services.csproj
+   │  ├─ LivInParis.Services.csproj
+   │  ├── Interfaces/
+   │  │   ├── IAccountService.cs
+   │  │   ├── IAddressService.cs
+   │  │   ├── IChefService.cs
+   │  │   ├── IContainsService.cs
+   │  │   ├── ICustomerService.cs
+   │  │   ├── IDishService.cs
+   │  │   ├── IGraphService.cs
+   │  │   ├── IMenuProposalService.cs
+   │  │   ├── IOrderService.cs
+   │  │   ├── IReviewService.cs
+   │  │   └── IStatisticsService.cs
+   │  └── Services/
+   │     ├── AccountService.cs
+   │     ├── AddressService.cs
+   │     ├── ChefService.cs
+   │     ├── ContainsService.cs
+   │     ├── CustomerService.cs
+   │     ├── DishService.cs
+   │     ├── GraphService.cs
+   │     ├── MenuProposalService.cs
+   │     ├── OrderService.cs
+   │     ├── ReviewService.cs
+   │     └── StatisticsService.cs
    └─ LivInParis.Tests
       ├─ LivInParis.Tests.csproj
       ├─ MSTestSettings.cs

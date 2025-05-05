@@ -40,6 +40,6 @@ public class Customer
         new List<OrderTransaction>();
 }
 
-TODO: delete rating
+//TODO: delete rating
 
 //TODO: check if a company already exists before creating an individual
