@@ -32,7 +32,7 @@ public class OrderTransactionRepository(LivInParisContext context)
                 _context.MenuProposals,
                 ol => new
                 {
-                    ChefId = ol.Chef!.AccountId,
+                    ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
                 mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
@@ -70,7 +70,7 @@ public class OrderTransactionRepository(LivInParisContext context)
                 _context.MenuProposals,
                 ol => new
                 {
-                    ChefId = ol.Chef!.AccountId,
+                    ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
                 mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },

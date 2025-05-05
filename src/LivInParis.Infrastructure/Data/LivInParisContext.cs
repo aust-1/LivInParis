@@ -131,7 +131,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
         modelBuilder.Entity<Chef>(e =>
         {
             e.ToTable("Chef");
-            e.HasKey(c => c.AccountId);
+            e.HasKey(c => c.ChefAccountId);
             e.Property(c => c.ChefIsBanned).IsRequired();
             e.Property(c => c.ChefRating).HasColumnType("decimal(2,1)");
 
@@ -142,7 +142,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
 
             e.HasOne<Account>()
                 .WithOne()
-                .HasForeignKey<Chef>(c => c.AccountId)
+                .HasForeignKey<Chef>(c => c.ChefAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(c => c.Address)
                 .WithMany(a => a.Chefs)
@@ -153,7 +153,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
         modelBuilder.Entity<Customer>(e =>
         {
             e.ToTable("Customer");
-            e.HasKey(c => c.AccountId);
+            e.HasKey(c => c.CustomerAccountId);
             e.Property(c => c.CustomerIsBanned).IsRequired();
             e.Property(c => c.CustomerRating).HasColumnType("decimal(2,1)");
 
@@ -164,14 +164,14 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
 
             e.HasOne<Account>()
                 .WithOne()
-                .HasForeignKey<Customer>(c => c.AccountId)
+                .HasForeignKey<Customer>(c => c.CustomerAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Company>(e =>
         {
             e.ToTable("Company");
-            e.HasKey(c => c.AccountId);
+            e.HasKey(c => c.CompanyAccountId);
             e.Property(c => c.CompanyName).IsRequired().HasMaxLength(50);
             e.Property(c => c.ContactFirstName).IsRequired(false).HasMaxLength(50);
             e.Property(c => c.ContactLastName).IsRequired(false).HasMaxLength(50);
@@ -180,14 +180,14 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
 
             e.HasOne<Customer>()
                 .WithOne()
-                .HasForeignKey<Company>(c => c.AccountId)
+                .HasForeignKey<Company>(c => c.CompanyAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Individual>(e =>
         {
             e.ToTable("Individual");
-            e.HasKey(i => i.AccountId);
+            e.HasKey(i => i.IndividualAccountId);
             e.Property(i => i.LastName).IsRequired().HasMaxLength(50);
             e.Property(i => i.FirstName).IsRequired().HasMaxLength(50);
             e.Property(i => i.PersonalEmail).IsRequired().HasMaxLength(100);
@@ -197,7 +197,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
 
             e.HasOne<Customer>()
                 .WithOne()
-                .HasForeignKey<Individual>(i => i.AccountId)
+                .HasForeignKey<Individual>(i => i.IndividualAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(i => i.Address)
                 .WithMany(a => a.Individuals)

@@ -9,7 +9,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order;
 public class Individual
 {
     [Key]
-    public int AccountId { get; set; }
+    public int IndividualAccountId { get; set; }
 
     [Required]
     [MaxLength(50)]
@@ -30,7 +30,7 @@ public class Individual
     [Required]
     public int AddressId { get; set; }
 
-    [ForeignKey("AccountId")]
+    [ForeignKey("IndividualAccountId")]
     public Account? Account { get; set; }
 
     [ForeignKey("AddressId")]

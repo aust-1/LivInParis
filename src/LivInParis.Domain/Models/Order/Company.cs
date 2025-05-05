@@ -9,7 +9,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order;
 public class Company
 {
     [Key]
-    public int AccountId { get; set; }
+    public int CompanyAccountId { get; set; }
 
     [Required]
     [MaxLength(50)]
@@ -21,7 +21,7 @@ public class Company
     [MaxLength(50)]
     public string? ContactLastName { get; set; }
 
-    [ForeignKey("AccountId")]
+    [ForeignKey("CompanyAccountId")]
     public Account? Account { get; set; }
 }
 

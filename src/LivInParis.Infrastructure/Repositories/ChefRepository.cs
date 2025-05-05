@@ -107,7 +107,7 @@ public class ChefRepository(LivInParisContext context) : Repository<Chef>(contex
                 _context.MenuProposals,
                 olc => new
                 {
-                    ChefId = olc.c.AccountId,
+                    ChefId = olc.c.ChefAccountId,
                     Date = DateOnly.FromDateTime(olc.ol.OrderLineDatetime),
                 },
                 mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },

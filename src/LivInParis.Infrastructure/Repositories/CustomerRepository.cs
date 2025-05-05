@@ -81,7 +81,7 @@ public class CustomerRepository(LivInParisContext context)
                 _context.MenuProposals,
                 olot => new
                 {
-                    ChefId = olot.ol.Chef!.AccountId,
+                    ChefId = olot.ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(olot.ol.OrderLineDatetime),
                 },
                 mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
@@ -104,7 +104,7 @@ public class CustomerRepository(LivInParisContext context)
             .Join(
                 _context.Customers,
                 g => g.AccountId,
-                c => c.AccountId,
+                c => c.CustomerAccountId,
                 (g, c) => new { Customer = c, TotalSpent = g.Total }
             )
             .OrderByDescending(g => g.TotalSpent);
@@ -137,7 +137,7 @@ public class CustomerRepository(LivInParisContext context)
                 _context.MenuProposals,
                 ol => new
                 {
-                    ChefId = ol.Chef!.AccountId,
+                    ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
                 mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },

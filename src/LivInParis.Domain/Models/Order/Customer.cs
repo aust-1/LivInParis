@@ -7,7 +7,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order;
 public class Customer
 {
     [Key]
-    public int AccountId { get; set; }
+    public int CustomerAccountId { get; set; }
 
     [Range(1.0, 5.0)]
     public decimal? CustomerRating { get; set; }
@@ -15,7 +15,7 @@ public class Customer
     [Required]
     public bool CustomerIsBanned { get; set; }
 
-    [ForeignKey("AccountId")]
+    [ForeignKey("CustomerAccountId")]
     public Account? Account { get; set; }
 
     public ICollection<OrderTransaction> OrderTransactions { get; set; } =

@@ -7,7 +7,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order;
 public class Chef
 {
     [Key]
-    public int AccountId { get; set; }
+    public int ChefAccountId { get; set; }
 
     [Range(1.0, 5.0)]
     public decimal? ChefRating { get; set; }
@@ -18,7 +18,7 @@ public class Chef
     [Required]
     public required int AddressId { get; set; }
 
-    [ForeignKey("AccountId")]
+    [ForeignKey("ChefAccountId")]
     public Account? Account { get; set; }
 
     [ForeignKey("AddressId")]
