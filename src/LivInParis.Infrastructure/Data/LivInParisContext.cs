@@ -258,12 +258,12 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
         modelBuilder.Entity<MenuProposal>(e =>
         {
             e.ToTable("MenuProposal");
-            e.HasKey(mp => new { mp.AccountId, mp.ProposalDate });
+            e.HasKey(mp => new { mp.ChefAccountId, mp.ProposalDate });
             e.Property(mp => mp.ProposalDate).HasColumnType("date").IsRequired();
 
             e.HasOne(mp => mp.Chef)
                 .WithMany(c => c.MenuProposals)
-                .HasForeignKey(mp => mp.AccountId)
+                .HasForeignKey(mp => mp.ChefAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(mp => mp.Dish)
                 .WithMany(d => d.MenuProposals)
@@ -279,7 +279,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
 
             e.HasOne(ot => ot.Customer)
                 .WithMany(c => c.OrderTransactions)
-                .HasForeignKey(ot => ot.AccountId)
+                .HasForeignKey(ot => ot.CustomerAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -303,7 +303,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(ol => ol.Chef)
                 .WithMany(c => c.OrderLines)
-                .HasForeignKey(ol => ol.AccountId)
+                .HasForeignKey(ol => ol.ChefAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

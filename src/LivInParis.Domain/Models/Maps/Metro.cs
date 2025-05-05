@@ -1,18 +1,41 @@
+using System.Diagnostics;
 using Aspose.Cells;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using Newtonsoft.Json.Linq;
 
 namespace LivInParisRoussilleTeynier.Domain.Models.Maps;
 
+/// <summary>
+/// Provides functionality to initialize the metro network and to retrieve the nearest station based on coordinates.
+/// </summary>
 public static class Metro
 {
-    private const string dataDirectory = "../resources/";
-    private static Graph<Station>? _graph;
+    #region Fields
 
     /// <summary>
-    /// XlsxToAdjacencyMatrix
+    /// The directory where the data files are located.
     /// </summary>
-    /// <param name="fileName"></param>
+    private const string dataDirectory = "../resources/";
+
+    /// <summary>
+    /// The base URL for the Nominatim API used to retrieve coordinates from an address.
+    /// </summary>
+    private const string baseUrl = "https://nominatim.openstreetmap.org/search";
+
+    /// <summary>
+    /// The graph representing the metro network.
+    /// </summary>
+    private static Graph<Station>? _graph;
+
+    #endregion Fields
+
+    #region Initialization
+
+    /// <summary>
+    /// Initializes the metro network using data from an Excel file.
+    /// The file should contain three sheets: stations, lines, and correspondences.
+    /// </summary>
+    /// <param name="fileName">The name of the Excel file (without extension).</param>
     public static void InitializeMetro(string fileName)
     {
         var file = dataDirectory + fileName + ".xlsx";
@@ -62,7 +85,12 @@ public static class Metro
                 var preStation = Node<Station>.GetNode(preStationId).Data;
                 adjacencyMatrix[stationId, preStationId] = station.GetTimeTo(preStation);
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Warning: Unable to set previous station for stationId {stationId} - {ex.Message}"
+                );
+            }
 
             try
             {
@@ -70,7 +98,12 @@ public static class Metro
                 var nextStation = Node<Station>.GetNode(nextStationId).Data;
                 adjacencyMatrix[stationId, nextStationId] = station.GetTimeTo(nextStation);
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Warning: Unable to set previous station for stationId {stationId} - {ex.Message}"
+                );
+            }
         }
 
         for (int i = 1; i <= correspondences.MaxDataRow; i++)
@@ -86,10 +119,19 @@ public static class Metro
         _graph = new Graph<Station>(adjacencyMatrix);
     }
 
+    #endregion Initialization
+
+    #region Properties
+
+    /// <summary>
+    /// Gets the graph representing the metro network.
+    /// </summary>
     public static Graph<Station> Graph
     {
         get { return _graph!; }
     }
+
+    #endregion Properties
 
     /// <summary>
     /// Finds the nearest station to the given coordinates (longitude, latitude).
@@ -138,12 +180,16 @@ public static class Metro
         return nearestStation;
     }
 
+    /// <summary>
+    /// Retrieves the coordinates (longitude, latitude) from the given address using the Nominatim API.
+    /// </summary>
+    /// <param name="address">The address to search for.</param>
+    /// <returns>A tuple containing the longitude and latitude of the address, or null if not found.</returns>
     public static async Task<(double, double)?> GetCoordinatesFromAddress(string address)
     {
         address = address.Replace(" ", "+");
         address = address.Replace("'", "%27");
         address += "+Paris+France";
-        string baseUrl = "https://nominatim.openstreetmap.org/search";
 
         string url = $"{baseUrl}?format=json&q={Uri.EscapeDataString(address)}";
 
@@ -174,6 +220,3 @@ public static class Metro
         return null;
     }
 }
-
-
-//TODO: add doc

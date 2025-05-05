@@ -22,31 +22,38 @@ public class Address
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int AddressId { get; set; }
 
+    /// <summary>
+    /// The number of the address.
+    /// </summary>
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Address number must be positive.")]
     public required int AddressNumber { get; set; }
 
+    /// <summary>
+    /// The street name of the address.
+    /// </summary>
     [Required]
     [MaxLength(100)]
     public required string Street { get; set; }
 
+    /// <summary>
+    /// The nearest station to the address.
+    /// </summary>
     [MaxLength(50)]
     public Station? NearestStation { get; set; }
 
     /// <summary>
-    /// Chefs résidant à cette adresse.
+    /// Chefs associated with this address.
     /// </summary>
     public ICollection<Chef> Chefs { get; set; } = new List<Chef>();
 
     /// <summary>
-    /// Particuliers domiciliés à cette adresse.
+    /// Individuals associated with this address.
     /// </summary>
     public ICollection<Individual> Individuals { get; set; } = new List<Individual>();
 
     /// <summary>
-    /// Lignes de commande pour livraison à cette adresse.
+    /// Orders associated with this address.
     /// </summary>
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }
-
-//TODO: add doc

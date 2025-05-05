@@ -84,7 +84,7 @@ public class CustomerRepository(LivInParisContext context)
                     ChefId = olot.ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(olot.ol.OrderLineDatetime),
                 },
-                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
+                mp => new { ChefId = mp.ChefAccountId, Date = mp.ProposalDate },
                 (tmp, mp) =>
                     new
                     {
@@ -97,7 +97,7 @@ public class CustomerRepository(LivInParisContext context)
                 _context.Dishes,
                 tmp => tmp.mp.DishId,
                 d => d.DishId,
-                (tmp, d) => new { tmp.ot.AccountId, d.Price }
+                (tmp, d) => new { tmp.ot.CustomerAccountId, d.Price }
             )
             .GroupBy(ap => ap.AccountId)
             .Select(g => new { AccountId = g.Key, Total = g.Sum(x => x.Price) })
@@ -140,7 +140,7 @@ public class CustomerRepository(LivInParisContext context)
                     ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
-                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
+                mp => new { ChefId = mp.ChefAccountId, Date = mp.ProposalDate },
                 (ol, mp) => new { ol, mp }
             )
             .Join(

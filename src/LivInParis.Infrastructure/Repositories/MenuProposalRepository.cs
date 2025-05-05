@@ -36,7 +36,7 @@ public class MenuProposalRepository(LivInParisContext context)
                     ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
-                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
+                mp => new { ChefId = mp.ChefAccountId, Date = mp.ProposalDate },
                 (ol, mp) => new { ol, mp }
             )
             .GroupBy(olmp => olmp.mp.Dish)

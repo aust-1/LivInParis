@@ -35,7 +35,7 @@ public class OrderTransactionRepository(LivInParisContext context)
                     ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
-                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
+                mp => new { ChefId = mp.ChefAccountId, Date = mp.ProposalDate },
                 (ol, mp) => new { ol.OrderTransaction, mp.Dish!.Price }
             )
             .GroupBy(g => g.OrderTransaction)
@@ -73,7 +73,7 @@ public class OrderTransactionRepository(LivInParisContext context)
                     ChefId = ol.Chef!.ChefAccountId,
                     Date = DateOnly.FromDateTime(ol.OrderLineDatetime),
                 },
-                mp => new { ChefId = mp.AccountId, Date = mp.ProposalDate },
+                mp => new { ChefId = mp.ChefAccountId, Date = mp.ProposalDate },
                 (ol, mp) => new { ol, mp }
             );
 
