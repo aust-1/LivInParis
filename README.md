@@ -102,6 +102,7 @@ LivinParis
 │  ├─ output_archive
 │  │  ├─ graph_20250325_21-14-20.png
 │  │  ├─ graph_20250325_22-09-45.png
+│  │  ├─ welshpowell_20250428_18-29-40.png
 │  │  └─ ...
 │  ├─ PSI.loo
 │  ├─ rapport_d_optimisation_de_graph.md
@@ -116,46 +117,41 @@ LivinParis
 │  │  └─ init.sql
 │  ├─ LivinParis
 │  │  ├─ data
-│  │  │  ├─ Attributes
-│  │  │  │  ├─ ConnectionControlAttributes.cs
-│  │  │  │  └─ ConnectionInterceptor.cs
 │  │  │  ├─ Interfaces
-│  │  │  │  ├─ IAccountService.cs
-│  │  │  │  ├─ IAddressService.cs
-│  │  │  │  ├─ IChefService.cs
-│  │  │  │  ├─ ICompanyService.cs
-│  │  │  │  ├─ IContainsService.cs
-│  │  │  │  ├─ ICustomerService.cs
-│  │  │  │  ├─ IDishService.cs
-│  │  │  │  ├─ IIndividualService.cs
-│  │  │  │  ├─ IIngredientService.cs
-│  │  │  │  ├─ IMenuProposalService.cs
-│  │  │  │  ├─ IOrderLineService.cs
-│  │  │  │  ├─ IReviewService.cs
-│  │  │  │  └─ ITransactionService.cs
-│  │  │  ├─ Repository.cs
-│  │  │  └─ Services
-│  │  │     ├─ AccountService.cs
-│  │  │     ├─ AddressService.cs
-│  │  │     ├─ ChefService.cs
-│  │  │     ├─ CompanyService.cs
-│  │  │     ├─ ContainsService.cs
-│  │  │     ├─ CustomerService.cs
-│  │  │     ├─ DishService.cs
-│  │  │     ├─ IndividualService.cs
-│  │  │     ├─ IngredientService.cs
-│  │  │     ├─ MenuProposalService.cs
-│  │  │     ├─ OrderLineService.cs
-│  │  │     ├─ ReviewService.cs
-│  │  │     └─ TransactionService.cs
+│  │  │  │  ├─ IAccountRepository.cs
+│  │  │  │  ├─ IAddressRepository.cs
+│  │  │  │  ├─ IChefRepository.cs
+│  │  │  │  ├─ ICompanyRepository.cs
+│  │  │  │  ├─ IContainsRepository.cs
+│  │  │  │  ├─ ICustomerRepository.cs
+│  │  │  │  ├─ IDishRepository.cs
+│  │  │  │  ├─ IIndividualRepository.cs
+│  │  │  │  ├─ IIngredientRepository.cs
+│  │  │  │  ├─ IMenuProposalRepository.cs
+│  │  │  │  ├─ IOrderLineRepository.cs
+│  │  │  │  ├─ IOrderTransactionRepository.cs
+│  │  │  │  ├─ IRepository.cs
+│  │  │  │  └─ IReviewRepository.cs
+│  │  │  ├─ LivInParisContext.cs
+│  │  │  ├─ Repositories
+│  │  │  │  ├─ AccountRepository.cs
+│  │  │  │  ├─ AddressRepository.cs
+│  │  │  │  ├─ ChefRepository.cs
+│  │  │  │  ├─ CompanyRepository.cs
+│  │  │  │  ├─ ContainsRepository.cs
+│  │  │  │  ├─ CustomerRepository.cs
+│  │  │  │  ├─ DishRepository.cs
+│  │  │  │  ├─ IndividualRepository.cs
+│  │  │  │  ├─ IngredientRepository.cs
+│  │  │  │  ├─ MenuProposalRepository.cs
+│  │  │  │  ├─ OrderLineRepository.cs
+│  │  │  │  ├─ OrderTransactionRepository.cs
+│  │  │  │  ├─ Repository.cs
+│  │  │  │  └─ ReviewRepository.cs
+│  │  │  └─ Repository.cs
+│  │  ├─ DataBaseSeeder.cs
 │  │  ├─ LivinParis.csproj
 │  │  ├─ Models
-│  │  │  ├─ Enums
-│  │  │  │  ├─ DishType.cs
-│  │  │  │  ├─ LoyaltyRank.cs
-│  │  │  │  ├─ OrderLineStatus.cs
-│  │  │  │  ├─ ProductOrigin.cs
-│  │  │  │  └─ ReviewType.cs
 │  │  │  ├─ Maps
 │  │  │  │  ├─ Edge.cs
 │  │  │  │  ├─ Graph.cs
@@ -173,28 +169,49 @@ LivinParis
 │  │  │     ├─ Address.cs
 │  │  │     ├─ Chef.cs
 │  │  │     ├─ Company.cs
+│  │  │     ├─ Contains.cs
 │  │  │     ├─ Customer.cs
 │  │  │     ├─ Dish.cs
+│  │  │     ├─ Enums
+│  │  │     │  ├─ DishType.cs
+│  │  │     │  ├─ LoyaltyRank.cs
+│  │  │     │  ├─ OrderLineStatus.cs
+│  │  │     │  ├─ ProductsOrigin.cs
+│  │  │     │  └─ ReviewerType.cs
 │  │  │     ├─ Individual.cs
 │  │  │     ├─ Ingredient.cs
 │  │  │     ├─ MenuProposal.cs
 │  │  │     ├─ OrderLine.cs
-│  │  │     ├─ Review.cs
-│  │  │     └─ Transaction.cs
+│  │  │     ├─ OrderTransaction.cs
+│  │  │     └─ Review.cs
 │  │  ├─ Program.cs
 │  │  └─ Using.cs
 │  ├─ output_graphs
-│  │  ├─ graph_20250404_02-45-07.png
-│  │  ├─ scc0_20250331_18-08-48.png
-│  │  └─ ...
+│  │  ├─ ...
+│  │  └─ graph_20250404_02-45-07.png
 │  └─ resources
-│     └─ MetroParis.xlsx
+│     ├─ dish_pictures
+│     │  ├─ null.jpg
+│     │  ├─ plat_1.jpg
+│     │  ├─ plat_2.jpg
+│     │  └─ plat_3.jpg
+│     ├─ MetroParis.xlsx
+│     └─ Peuplement.xlsx
 └─ tests
    └─ LivinParis.Tests
+      ├─ AccountServiceTests.cs
       ├─ EdgeTests.cs
       ├─ GraphOptimisation.cs
       ├─ GraphTests.cs
       ├─ LivinParis.Tests.csproj
+      ├─ Models
+      │  └─ Order
+      │     ├─ AccountTests.cs
+      │     ├─ AddressTests.cs
+      │     ├─ CustomerTests.cs
+      │     ├─ DishTests.cs
+      │     ├─ IngredientTests.cs
+      │     └─ Utils.cs
       ├─ MSTestSettings.cs
       ├─ NodeTests.cs
       └─ Using.cs
