@@ -1,4 +1,5 @@
 using DotNetEnv;
+using LivInParisRoussilleTeynier.Domain.Models.Maps;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using Microsoft.EntityFrameworkCore;
 
@@ -108,7 +109,9 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.Property(a => a.AddressNumber).IsRequired();
             e.HasCheckConstraint("CK_Address_Number_Positive", "`AddressNumber` > 0");
             e.Property(a => a.Street).IsRequired().HasMaxLength(100);
-            e.Property(a => a.NearestStation).HasConversion<string>().HasMaxLength(50);
+            e.Property(a => a.NearestStation)
+                .HasConversion(station => station!.ToString(), value => new Station(value))
+                .HasMaxLength(50);
 
             e.HasIndex(x => new { x.AddressNumber, x.Street })
                 .IsUnique()

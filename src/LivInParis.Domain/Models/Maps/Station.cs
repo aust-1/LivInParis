@@ -47,16 +47,6 @@ public class Station
     private readonly double _latitudeRadians;
 
     /// <summary>
-    /// The commune where the station is located.
-    /// </summary>
-    private readonly string _commune;
-
-    /// <summary>
-    /// The INSEE code of the commune the station is in.
-    /// </summary>
-    private readonly int _insee;
-
-    /// <summary>
     /// The color of the line the station is on.
     /// </summary>
     private readonly string _lineColor;
@@ -66,31 +56,35 @@ public class Station
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Station"/> struct.
+    /// Initializes a new instance of the <see cref="Station"/> class.
     /// Longitude and latitude are converted from degrees to radians internally.
     /// </summary>
     /// <param name="line">The metro line on which this station is located (e.g., "1", "4").</param>
     /// <param name="name">The name of the station (e.g., "Châtelet").</param>
     /// <param name="longitude">The longitude in degrees.</param>
     /// <param name="latitude">The latitude in degrees.</param>
-    /// <param name="commune">The commune where this station is located.</param>
-    /// <param name="insee">The INSEE code of the commune.</param>
-    public Station(
-        string line,
-        string name,
-        double longitude,
-        double latitude,
-        string commune,
-        int insee
-    )
+    public Station(string line, string name, double longitude, double latitude)
     {
         _line = line;
         _name = name;
         _longitudeRadians = longitude * DEGREES_TO_RADIANS;
         _latitudeRadians = latitude * DEGREES_TO_RADIANS;
-        _commune = commune;
-        _insee = insee;
         _lineColor = GetLineColor(line);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Station"/> class.
+    /// Longitude and latitude are converted from degrees to radians internally.
+    /// </summary>
+    /// <param name="toString">
+    /// A string representation of the station in the format: "name (line)"
+    /// </param>
+    public Station(string toString)
+    {
+        var parts = toString.Split(' ');
+        _name = parts[0];
+        _line = parts[1].Trim('(', ')');
+        _lineColor = GetLineColor(_line);
     }
 
     #endregion Constructors

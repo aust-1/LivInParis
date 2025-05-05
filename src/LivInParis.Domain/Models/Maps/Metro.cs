@@ -28,10 +28,8 @@ public static class Metro
             var stationName = stations[i, 2].StringValue;
             var longitude = stations[i, 3].DoubleValue;
             var latitude = stations[i, 4].DoubleValue;
-            var commune = stations[i, 5].StringValue;
-            var insee = stations[i, 6].IntValue;
 
-            var station = new Station(lineName, stationName, longitude, latitude, commune, insee);
+            var station = new Station(lineName, stationName, longitude, latitude);
             new Node<Station>(
                 stationId,
                 station,
