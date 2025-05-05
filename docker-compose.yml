@@ -20,7 +20,7 @@ services:
 
   api:
     build:
-      context: ./src/LivinParis.Api
+      context: ./src/LivInParis.Api
       dockerfile: Dockerfile
     ports:
       - "5105:80"

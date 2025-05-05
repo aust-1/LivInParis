@@ -150,7 +150,7 @@ public static class Metro
         using var client = new HttpClient();
         try
         {
-            client.DefaultRequestHeaders.Add("User-Agent", "LivinParis");
+            client.DefaultRequestHeaders.Add("User-Agent", "LivInParis");
 
             HttpResponseMessage response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();

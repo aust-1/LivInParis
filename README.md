@@ -1,6 +1,6 @@
-# LivinParis
+# LivInParis
 
-Bienvenue dans le projet **LivinParis**, une plateforme de livraison de repas dans Paris intra muros.
+Bienvenue dans le projet **LivInParis**, une plateforme de livraison de repas dans Paris intra muros.
 
 ## 👥 Nous
 
@@ -34,8 +34,8 @@ winget install -e --id Docker.DockerDesktop
 #### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/Captainbleu/LivinParis.git
-cd .\LivinParis\src\database\
+git clone https://github.com/Captainbleu/LivInParis.git
+cd .\LivInParis\src\database\
 ```
 
 #### 2. Démarrer les conteneurs
@@ -91,13 +91,15 @@ docker compose down --volumes
 
 ## Explications supplémentaires
 
-Nous n'avions pas conscience qu'il fallait faire la logique métier pour ce rendu, nous nous sommes donc concentré sur tous les objets métiers et la base de données. Nous vous invitons donc à lire le code notamment dans le dossier `src/LivinParis/Models` pour les graphes, stations, la détection automatique de la station la plus proche et les objets métiers, et dans le dossier `src/LivinParis/data` pour la base de donnée. Nous avons implémenté énormément de requête SQL pour faire des statistiques. Nous avons développé un attribute `ConnectionInterceptor` qui nous permet de faire des requêtes SQL avant et après chaque appel de méthode dans le repository. Cela nous permet de mieux encapsuler et centraliser la gestion de la connexion à la base de données.
+Nous n'avions pas conscience qu'il fallait faire la logique métier pour ce rendu, nous nous sommes donc concentré sur tous les objets métiers et la base de données. Nous vous invitons donc à lire le code notamment dans le dossier `src/LivInParis/Models` pour les graphes, stations, la détection automatique de la station la plus proche et les objets métiers, et dans le dossier `src/LivInParis/data` pour la base de donnée. Nous avons implémenté énormément de requête SQL pour faire des statistiques. Nous avons développé un attribute `ConnectionInterceptor` qui nous permet de faire des requêtes SQL avant et après chaque appel de méthode dans le repository. Cela nous permet de mieux encapsuler et centraliser la gestion de la connexion à la base de données.
 
 Bonne lecture !
 
 ## Architecture
 
-LivinParis
+LivInParis
+├─ .env
+├─ docker-compose.yml
 ├─ docs
 │  ├─ output_archive
 │  │  ├─ graph_20250325_21-14-20.png
@@ -107,111 +109,124 @@ LivinParis
 │  ├─ PSI.loo
 │  ├─ rapport_d_optimisation_de_graph.md
 │  └─ rapport_d_utilisation_de_l_ia.md
+├─ frontend
+│  ├─ css
+│  │  └─ style.css
+│  ├─ index.html
+│  ├─ js
+│  │  ├─ api.js
+│  │  ├─ app.js
+│  │  └─ map.js
+│  ├─ lib
+│  │  ├─ chartjs
+│  │  │  ├─ chart.umd.js
+│  │  │  └─ chart.umd.js.map
+│  │  └─ leaflet
+│  │     ├─ images
+│  │     │  ├─ layers-2x.png
+│  │     │  ├─ layers.png
+│  │     │  ├─ marker-icon-2x.png
+│  │     │  ├─ marker-icon.png
+│  │     │  └─ marker-shadow.png
+│  │     ├─ leaflet.css
+│  │     ├─ leaflet.js
+│  │     └─ leaflet.js.map
+│  └─ pages
+│     └─ customers.html
+├─ init.sql
 ├─ LICENSE
-├─ LivinParis.sln
+├─ LivInParis.sln
 ├─ README.md
-├─ src
-│  ├─ database
-│  │  ├─ .env
-│  │  ├─ docker-compose.yml
-│  │  └─ init.sql
-│  ├─ LivinParis
-│  │  ├─ data
-│  │  │  ├─ Interfaces
-│  │  │  │  ├─ IAccountRepository.cs
-│  │  │  │  ├─ IAddressRepository.cs
-│  │  │  │  ├─ IChefRepository.cs
-│  │  │  │  ├─ ICompanyRepository.cs
-│  │  │  │  ├─ IContainsRepository.cs
-│  │  │  │  ├─ ICustomerRepository.cs
-│  │  │  │  ├─ IDishRepository.cs
-│  │  │  │  ├─ IIndividualRepository.cs
-│  │  │  │  ├─ IIngredientRepository.cs
-│  │  │  │  ├─ IMenuProposalRepository.cs
-│  │  │  │  ├─ IOrderLineRepository.cs
-│  │  │  │  ├─ IOrderTransactionRepository.cs
-│  │  │  │  ├─ IRepository.cs
-│  │  │  │  └─ IReviewRepository.cs
-│  │  │  ├─ LivInParisContext.cs
-│  │  │  ├─ Repositories
-│  │  │  │  ├─ AccountRepository.cs
-│  │  │  │  ├─ AddressRepository.cs
-│  │  │  │  ├─ ChefRepository.cs
-│  │  │  │  ├─ CompanyRepository.cs
-│  │  │  │  ├─ ContainsRepository.cs
-│  │  │  │  ├─ CustomerRepository.cs
-│  │  │  │  ├─ DishRepository.cs
-│  │  │  │  ├─ IndividualRepository.cs
-│  │  │  │  ├─ IngredientRepository.cs
-│  │  │  │  ├─ MenuProposalRepository.cs
-│  │  │  │  ├─ OrderLineRepository.cs
-│  │  │  │  ├─ OrderTransactionRepository.cs
-│  │  │  │  ├─ Repository.cs
-│  │  │  │  └─ ReviewRepository.cs
-│  │  │  └─ Repository.cs
-│  │  ├─ DataBaseSeeder.cs
-│  │  ├─ LivinParis.csproj
-│  │  ├─ Models
-│  │  │  ├─ Maps
-│  │  │  │  ├─ Edge.cs
-│  │  │  │  ├─ Graph.cs
-│  │  │  │  ├─ Helpers
-│  │  │  │  │  ├─ CycleDetector.cs
-│  │  │  │  │  ├─ GraphAlgorithms.cs
-│  │  │  │  │  ├─ PathfindingResult.cs
-│  │  │  │  │  ├─ Visualization.cs
-│  │  │  │  │  └─ VisualizationParameters.cs
-│  │  │  │  ├─ Metro.cs
-│  │  │  │  ├─ Node.cs
-│  │  │  │  └─ Station.cs
-│  │  │  └─ Order
-│  │  │     ├─ Account.cs
-│  │  │     ├─ Address.cs
-│  │  │     ├─ Chef.cs
-│  │  │     ├─ Company.cs
-│  │  │     ├─ Contains.cs
-│  │  │     ├─ Customer.cs
-│  │  │     ├─ Dish.cs
-│  │  │     ├─ Enums
-│  │  │     │  ├─ DishType.cs
-│  │  │     │  ├─ LoyaltyRank.cs
-│  │  │     │  ├─ OrderLineStatus.cs
-│  │  │     │  ├─ ProductsOrigin.cs
-│  │  │     │  └─ ReviewerType.cs
-│  │  │     ├─ Individual.cs
-│  │  │     ├─ Ingredient.cs
-│  │  │     ├─ MenuProposal.cs
-│  │  │     ├─ OrderLine.cs
-│  │  │     ├─ OrderTransaction.cs
-│  │  │     └─ Review.cs
-│  │  ├─ Program.cs
-│  │  └─ Using.cs
-│  ├─ output_graphs
-│  │  ├─ ...
-│  │  └─ graph_20250404_02-45-07.png
-│  └─ resources
-│     ├─ dish_pictures
-│     │  ├─ null.jpg
-│     │  ├─ plat_1.jpg
-│     │  ├─ plat_2.jpg
-│     │  └─ plat_3.jpg
-│     ├─ MetroParis.xlsx
-│     └─ Peuplement.xlsx
-└─ tests
-   └─ LivinParis.Tests
-      ├─ AccountServiceTests.cs
-      ├─ EdgeTests.cs
-      ├─ GraphOptimisation.cs
-      ├─ GraphTests.cs
-      ├─ LivinParis.Tests.csproj
-      ├─ Models
-      │  └─ Order
-      │     ├─ AccountTests.cs
-      │     ├─ AddressTests.cs
-      │     ├─ CustomerTests.cs
-      │     ├─ DishTests.cs
-      │     ├─ IngredientTests.cs
-      │     └─ Utils.cs
+├─ resources
+│  ├─ dish_pictures
+│  │  ├─ null.jpg
+│  │  ├─ plat_1.jpg
+│  │  └─ ...
+│  ├─ MetroParis.xlsx
+│  └─ Peuplement.xlsx
+└─ src
+   ├─ LivInParis.Api
+   │  ├─ appsettings.Development.json
+   │  ├─ appsettings.json
+   │  ├─ Controllers
+   │  │  └─ AddressesController.cs
+   │  ├─ Dockerfile
+   │  ├─ LivInParis.Api.csproj
+   │  ├─ Program.cs
+   │  └─ Properties
+   │     └─ launchSettings.json
+   ├─ LivInParis.Domain
+   │  ├─ LivInParis.Domain.csproj
+   │  └─ Models
+   │     ├─ Maps
+   │     │  ├─ Edge.cs
+   │     │  ├─ Graph.cs
+   │     │  ├─ Helpers
+   │     │  │  ├─ CycleDetector.cs
+   │     │  │  ├─ GraphAlgorithms.cs
+   │     │  │  ├─ PathfindingResult.cs
+   │     │  │  ├─ Visualization.cs
+   │     │  │  └─ VisualizationParameters.cs
+   │     │  ├─ Metro.cs
+   │     │  ├─ Node.cs
+   │     │  └─ Station.cs
+   │     └─ Order
+   │        ├─ Account.cs
+   │        ├─ Address.cs
+   │        ├─ Chef.cs
+   │        ├─ Company.cs
+   │        ├─ Contains.cs
+   │        ├─ Customer.cs
+   │        ├─ Dish.cs
+   │        ├─ Enums
+   │        │  ├─ DishType.cs
+   │        │  ├─ LoyaltyRank.cs
+   │        │  ├─ OrderLineStatus.cs
+   │        │  ├─ ProductsOrigin.cs
+   │        │  └─ ReviewerType.cs
+   │        ├─ Individual.cs
+   │        ├─ Ingredient.cs
+   │        ├─ MenuProposal.cs
+   │        ├─ OrderLine.cs
+   │        ├─ OrderTransaction.cs
+   │        └─ Review.cs
+   ├─ LivInParis.Infrastructure
+   │  ├─ Data
+   │  │  └─ LivInParisContext.cs
+   │  ├─ Interfaces
+   │  │  ├─ IAccountRepository.cs
+   │  │  ├─ IAddressRepository.cs
+   │  │  ├─ IChefRepository.cs
+   │  │  ├─ ICompanyRepository.cs
+   │  │  ├─ IContainsRepository.cs
+   │  │  ├─ ICustomerRepository.cs
+   │  │  ├─ IDishRepository.cs
+   │  │  ├─ IIndividualRepository.cs
+   │  │  ├─ IIngredientRepository.cs
+   │  │  ├─ IMenuProposalRepository.cs
+   │  │  ├─ IOrderLineRepository.cs
+   │  │  ├─ IOrderTransactionRepository.cs
+   │  │  ├─ IRepository.cs
+   │  │  └─ IReviewRepository.cs
+   │  ├─ LivInParis.Infrastructure.csproj
+   │  └─ Repositories
+   │     ├─ AccountRepository.cs
+   │     ├─ AddressRepository.cs
+   │     ├─ ChefRepository.cs
+   │     ├─ CompanyRepository.cs
+   │     ├─ ContainsRepository.cs
+   │     ├─ CustomerRepository.cs
+   │     ├─ DishRepository.cs
+   │     ├─ IndividualRepository.cs
+   │     ├─ IngredientRepository.cs
+   │     ├─ MenuProposalRepository.cs
+   │     ├─ OrderLineRepository.cs
+   │     ├─ OrderTransactionRepository.cs
+   │     ├─ Repository.cs
+   │     └─ ReviewRepository.cs
+   ├─ LivInParis.Services
+   │  └─ LivInParis.Services.csproj
+   └─ LivInParis.Tests
+      ├─ LivInParis.Tests.csproj
       ├─ MSTestSettings.cs
-      ├─ NodeTests.cs
-      └─ Using.cs
+      └─ ...
