@@ -73,3 +73,5 @@ namespace LivInParisRoussilleTeynier.Api.Controllers
 }
 
 //FIXME: int et adress bizarre
+
+//TODO: Essayer de faire un héritage pour que le code soit plus propre et que les contrôleurs soient plus courts
