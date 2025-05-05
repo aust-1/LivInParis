@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 using LivInParisRoussilleTeynier.Domain.Models.Maps.Helpers;
 
 namespace LivInParisRoussilleTeynier.Domain.Models.Maps;
@@ -13,9 +16,6 @@ public class Graph<T>
     where T : notnull
 {
     #region Fields
-
-    //TODO: rajouter diamètre du graphe
-    //QUESTION: Gestion des propriétés
 
     /// <summary>
     /// The set of nodes in this graph, sorted by their IDs.
@@ -81,6 +81,11 @@ public class Graph<T>
     /// </summary>
     private readonly double _density;
 
+    /// <summary>
+    /// The diameter of the graph, which is the longest shortest path between any two nodes.
+    /// </summary>
+    private readonly double _diameter;
+
     #endregion Fields
 
     #region Constructors
@@ -138,6 +143,9 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
+        _diameter = ComputeRoyFloydWarshall()
+            .Cast<(double Weight, List<Node<T>> Path)>()
+            .Max(p => p.Weight);
     }
 
     /// <summary>
@@ -183,6 +191,9 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
+        _diameter = ComputeRoyFloydWarshall()
+            .Cast<(double Weight, List<Node<T>> Path)>()
+            .Max(p => p.Weight);
     }
 
     #endregion Constructors
@@ -286,6 +297,15 @@ public class Graph<T>
     public bool IsConnected
     {
         get { return _isConnected; }
+    }
+
+    /// <summary>
+    /// Gets the diameter of the graph,
+    /// which is the longest shortest path between any two nodes.
+    /// </summary>
+    public double Diameter
+    {
+        get { return _diameter; }
     }
 
     #endregion Properties
@@ -460,7 +480,7 @@ public class Graph<T>
     /// <returns>
     /// A 2D array of lists, where each element is the path from node i to j.
     /// </returns>
-    public List<Node<T>>[,] ComputeRoyFloydWarshall()
+    public (double Weight, List<Node<T>> Path)[,] ComputeRoyFloydWarshall()
     {
         return GraphAlgorithms<T>.RoyFloydWarshall(this);
     }
@@ -623,6 +643,3 @@ public class Graph<T>
 
     #endregion Private Helpers - Edge Building
 }
-
-
-//TODO: coloration de graphe

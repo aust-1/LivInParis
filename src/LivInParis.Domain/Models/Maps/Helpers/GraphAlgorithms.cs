@@ -98,8 +98,6 @@ public static class GraphAlgorithms<T>
 
     #region Public Methods - Pathfinding
 
-    //TODO: Méthode graph.Dist(Node<T> a, Node<T> b)
-
     /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
@@ -206,8 +204,6 @@ public static class GraphAlgorithms<T>
         return BuildGraph(graph, result);
     }
 
-    //TODO: Distance + chemins. Pas d'attribut distance_matrix mais méthode de recherche de pcc dans pathfinding. Lzay computation ??
-
     /// <summary>
     /// Uses the Roy-Floyd-Warshall algorithm to compute shortest paths
     /// between all pairs of nodes in the graph.
@@ -217,30 +213,28 @@ public static class GraphAlgorithms<T>
     /// A 2D array of lists, where each element <c>pathMatrix[i, j]</c>
     /// represents the path from node i to node j.
     /// </returns>
-    public static List<Node<T>>[,] RoyFloydWarshall(Graph<T> graph)
+    public static (double Weight, List<Node<T>> Path)[,] RoyFloydWarshall(Graph<T> graph)
     {
         int n = graph.Order;
-        var distanceMatrix = new double[n, n];
-        var pathMatrix = new List<Node<T>>[n, n];
+        var result = new (double Weight, List<Node<T>> Path)[n, n];
 
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
             {
-                distanceMatrix[i, j] = graph.AdjacencyMatrix[i, j];
-                pathMatrix[i, j] = [];
+                result[i, j] = (graph.AdjacencyMatrix[i, j], []);
 
                 if (i == j)
                 {
                     var nodeI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
-                    pathMatrix[i, j].Add(nodeI);
+                    result[i, j].Path.Add(nodeI);
                 }
-                else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
+                else if (Math.Abs(result[i, j].Weight - double.MaxValue) > 1e-9)
                 {
                     var sourceI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
                     var targetJ = graph.NodeIndexMap.First(kvp => kvp.Value == j).Key;
-                    pathMatrix[i, j].Add(sourceI);
-                    pathMatrix[i, j].Add(targetJ);
+                    result[i, j].Path.Add(sourceI);
+                    result[i, j].Path.Add(targetJ);
                 }
             }
         }
@@ -255,29 +249,62 @@ public static class GraphAlgorithms<T>
                         i == j
                         || i == k
                         || j == k
-                        || Math.Abs(distanceMatrix[i, k] - double.MaxValue) < 1e-9
-                        || Math.Abs(distanceMatrix[k, j] - double.MaxValue) < 1e-9
+                        || Math.Abs(result[i, k].Weight - double.MaxValue) < 1e-9
+                        || Math.Abs(result[k, j].Weight - double.MaxValue) < 1e-9
                     )
                     {
                         continue;
                     }
 
-                    double distanceViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
-                    if (distanceViaK < distanceMatrix[i, j])
+                    double distanceViaK = result[i, k].Weight + result[k, j].Weight;
+                    if (distanceViaK < result[i, j].Weight)
                     {
-                        distanceMatrix[i, j] = distanceViaK;
+                        result[i, j].Weight = distanceViaK;
 
-                        var pathViaK = new List<Node<T>>(pathMatrix[i, k]);
+                        var pathViaK = new List<Node<T>>(result[i, k].Path);
                         pathViaK.RemoveAt(pathViaK.Count - 1);
-                        pathViaK.AddRange(pathMatrix[k, j]);
+                        pathViaK.AddRange(result[k, j].Path);
 
-                        pathMatrix[i, j] = pathViaK;
+                        result[i, j].Path = pathViaK;
                     }
                 }
             }
         }
 
-        return pathMatrix;
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates the distance between two nodes in the graph.
+    /// </summary>
+    /// <typeparam name="TU">The type of the source node.</typeparam>
+    /// <typeparam name="TV">The type of the target node.</typeparam>
+    /// <param name="graph">The graph to analyze.</param>
+    /// <param name="source">The source node or identifier.</param>
+    /// <param name="target">The target node or identifier.</param>
+    /// <returns>The distance between the source and target nodes.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the source or target node is not part of the graph.
+    /// </exception>
+    public static double GetDistanceBetweenNodes<TU, TV>(Graph<T> graph, TU source, TV target)
+        where TU : notnull
+        where TV : notnull
+    {
+        var sourceNode = ResolveNode(source);
+        var targetNode = ResolveNode(target);
+
+        if (!graph.Nodes.Contains(sourceNode) || !graph.Nodes.Contains(targetNode))
+        {
+            throw new ArgumentException("Invalid source or target node.");
+        }
+
+        if (sourceNode.Equals(targetNode))
+        {
+            return 0;
+        }
+
+        var bellmanFordResult = BellmanFord(graph, source);
+        return bellmanFordResult[targetNode].Distance;
     }
 
     #endregion Public Methods - Pathfinding
@@ -291,7 +318,6 @@ public static class GraphAlgorithms<T>
     /// <returns>The number of colors used to color the graph.</returns>
     public static int WelshPowell(Graph<T> graph)
     {
-        //TODO: tests
         var sortedNodes = graph
             .Nodes.OrderByDescending(node => GetNodeDegree(graph, node))
             .ToList();
