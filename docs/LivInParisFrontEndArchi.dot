@@ -1,0 +1,132 @@
+digraph LivInParisFrontend {
+    graph [fontsize=12];
+    node [shape=box, style=rounded, fontname="Arial"];
+    edge [minlen=2];
+ 
+    /* --- AUTHENTICATION CLUSTER --- */ 
+    subgraph cluster_auth { 
+        label="🔒 Authentication";
+        style=filled;color=lightgrey;node [style=filled,color=white];
+        Login [label="Login"];
+        Register [label="Register"];
+        MainMenu [shape=ellipse, style=filled, fillcolor=lightblue, label="Main Menu"];
+        ErrorPage [label="Error\n(invalid creds)", style="dotted"];
+        Login -> MainMenu [label="success"];
+        Login -> ErrorPage [label="fail", style=dotted];
+        Login -> Register [taillabel="Sign Up", constraint=false, labeldistance=2];
+        Register -> MainMenu [label="success"];
+        Register -> ErrorPage [label="fail", style=dotted];
+        Register -> Login [taillabel="Sign In", constraint=false, labeldistance=2];
+    }
+ 
+    /* --- MAIN MENU --- */ 
+    MainMenu -> CustomerView [label="Customer View"];
+    MainMenu -> ChefView [label="Chef View"];
+    MainMenu -> StatsView [label="Statistics"];
+    MainMenu -> Login [label="Logout", style="dotted"];
+ 
+    /* --- CUSTOMER VIEW CLUSTER --- */ 
+    subgraph cluster_customer { 
+        label="👤 Customer View";
+        style=rounded;color=steelblue;node [style=filled,fillcolor=white];
+    
+        CustomerDashboard [shape=ellipse, style=filled, fillcolor=lightsteelblue, label="Customer Dashboard"];
+        BrowseDishes [label="Browse Dishes"];
+        DishDetail [label="Dish Detail"];
+        Cart [label="Shopping Cart"];
+        Checkout [label="Checkout"];
+        OrderConfirmation [label="Order Confirmation"];
+        MyOrders [label="My Orders"];
+        OrderDetail_C [label="Order Detail"];
+        Profile_C [label="My Profile"];
+        EditProfile_C [label="Edit Profile"];
+    
+        /* navigation */ 
+        CustomerView -> CustomerDashboard;
+        CustomerDashboard -> BrowseDishes [label="Browse Menu"];
+        CustomerDashboard -> MyOrders [label="View Orders"];
+        CustomerDashboard -> Profile_C [label="Profile"];
+        BrowseDishes -> DishDetail [label="Select Dish"];
+        DishDetail -> Cart [label="Add to Cart"];
+        Cart -> Checkout [label="Proceed to Checkout"];
+        Checkout -> OrderConfirmation [label="Place Order"];
+        OrderConfirmation -> CustomerDashboard [label="Done", style=dotted];
+        MyOrders -> OrderDetail_C [label="View"];
+        OrderDetail_C -> MyOrders [label="Back", style=dotted];
+        Profile_C -> EditProfile_C [label="Edit"];
+        EditProfile_C -> Profile_C [label="Save/Cancel", style=dotted];
+        Profile_C -> CustomerDashboard [label="Back", style=dotted];
+        MyOrders -> CustomerDashboard [label="Back", style=dotted];
+        CustomerDashboard -> MainMenu [label="Home", style=dotted];
+    }
+ 
+    /* --- CHEF VIEW CLUSTER --- */ 
+    subgraph cluster_chef { 
+        label="👨‍🍳 Chef View";
+        style=rounded;color=seagreen;node [style=filled,fillcolor=white];
+    
+        ChefDashboard [shape=ellipse, style=filled, fillcolor=lightgreen, label="Chef Dashboard"];
+        ManageMenu [label="Manage Menu"];
+        CreateProposal [label="Create Proposal"];
+        EditProposal [label="Edit Proposal"];
+        IncomingOrders [label="Incoming Orders"];
+        OrderDetail_H [label="Order Detail"];
+        AcceptRejectOrder [label="Accept / Reject"];
+        UpdateStatus [label="Update Status"];
+        MyDeliveries [label="My Deliveries"];
+        DeliveryDetail [label="Delivery Detail"];
+        Profile_H [label="My Profile"];
+        EditProfile_H [label="Edit Profile"];
+    
+        /* navigation */ 
+        ChefView -> ChefDashboard;
+        ChefDashboard -> ManageMenu [label="Menu Proposals"];
+        ManageMenu -> CreateProposal [label="New"];
+        ManageMenu -> EditProposal [label="Edit"];
+        CreateProposal -> ManageMenu [label="Save/Cancel", style=dotted];
+        EditProposal -> ManageMenu [label="Save/Cancel", style=dotted];
+    
+        ChefDashboard -> IncomingOrders [label="Orders"];
+        IncomingOrders -> OrderDetail_H [label="View"];
+        OrderDetail_H -> AcceptRejectOrder [label="Decide"];
+        AcceptRejectOrder -> UpdateStatus [label="Confirm"];
+        UpdateStatus -> IncomingOrders [label="Back", style=dotted];
+        OrderDetail_H -> IncomingOrders [label="Back", style=dotted];
+    
+        ChefDashboard -> MyDeliveries [label="Deliveries"];
+        MyDeliveries -> DeliveryDetail [label="View"];
+        DeliveryDetail -> MyDeliveries [label="Back", style=dotted];
+    
+        ChefDashboard -> Profile_H [label="Profile"];
+        Profile_H -> EditProfile_H [label="Edit"];
+        EditProfile_H -> Profile_H [label="Save/Cancel", style=dotted];
+        Profile_H -> ChefDashboard [label="Back", style=dotted];
+    
+        ChefDashboard -> MainMenu [label="Home", style=dotted];
+    }
+ 
+    /* --- STATISTICS VIEW CLUSTER --- */ 
+    subgraph cluster_stats { 
+        label="📈 Statistics View";
+        style=rounded;color=mediumpurple;node [style=filled,fillcolor=white];
+    
+        StatsDashboard [shape=ellipse, style=filled, fillcolor=thistle, label="Statistics Dashboard"];
+        StatsOrdersByChef [label="Orders by Chef"];
+        StatsRevenue [label="Revenue by Street"];
+        StatsAverages [label="Average Order Price"];
+        StatsCuisine [label="Top Cuisines"];
+    
+        StatsView -> StatsDashboard;
+        StatsDashboard -> StatsOrdersByChef [label="Chef Deliveries"];
+        StatsDashboard -> StatsRevenue [label="Revenue"];
+        StatsDashboard -> StatsAverages [label="Avg. Order Price"];
+        StatsDashboard -> StatsCuisine [label="Cuisine Prefs"];
+    
+        StatsOrdersByChef -> StatsDashboard [label="Back", style=dotted];
+        StatsRevenue -> StatsDashboard [label="Back", style=dotted];
+        StatsAverages -> StatsDashboard [label="Back", style=dotted];
+        StatsCuisine -> StatsDashboard [label="Back", style=dotted];
+    
+        StatsDashboard -> MainMenu [label="Home", style=dotted];
+    }
+}

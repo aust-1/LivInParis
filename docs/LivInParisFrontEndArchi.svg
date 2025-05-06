@@ -1,0 +1,620 @@
+<svg width="1973pt" height="1123pt" viewBox="0.00 0.00 1973.00 1123.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1119)">
+<title>LivInParisFrontend</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1119 1969,-1119 1969,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_auth</title>
+<polygon fill="lightgrey" stroke="lightgrey" points="693,-900.2 693,-1107 1033,-1107 1033,-900.2 693,-900.2"/>
+<text text-anchor="middle" x="863" y="-1092.2" font-family="Times,serif" font-size="12.00">🔒 Authentication</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_customer</title>
+<path fill="none" stroke="steelblue" d="M20,-8C20,-8 441,-8 441,-8 447,-8 453,-14 453,-20 453,-20 453,-815.4 453,-815.4 453,-821.4 447,-827.4 441,-827.4 441,-827.4 20,-827.4 20,-827.4 14,-827.4 8,-821.4 8,-815.4 8,-815.4 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="230.5" y="-812.6" font-family="Times,serif" font-size="12.00">👤 Customer View</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_chef</title>
+<path fill="none" stroke="seagreen" d="M473,-134.8C473,-134.8 1227,-134.8 1227,-134.8 1233,-134.8 1239,-140.8 1239,-146.8 1239,-146.8 1239,-815.4 1239,-815.4 1239,-821.4 1233,-827.4 1227,-827.4 1227,-827.4 473,-827.4 473,-827.4 467,-827.4 461,-821.4 461,-815.4 461,-815.4 461,-146.8 461,-146.8 461,-140.8 467,-134.8 473,-134.8"/>
+<text text-anchor="middle" x="850" y="-812.6" font-family="Times,serif" font-size="12.00">👨‍🍳 Chef View</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_stats</title>
+<path fill="none" stroke="mediumpurple" d="M1259,-515.2C1259,-515.2 1945,-515.2 1945,-515.2 1951,-515.2 1957,-521.2 1957,-527.2 1957,-527.2 1957,-815.4 1957,-815.4 1957,-821.4 1951,-827.4 1945,-827.4 1945,-827.4 1259,-827.4 1259,-827.4 1253,-827.4 1247,-821.4 1247,-815.4 1247,-815.4 1247,-527.2 1247,-527.2 1247,-521.2 1253,-515.2 1259,-515.2"/>
+<text text-anchor="middle" x="1602" y="-812.6" font-family="Times,serif" font-size="12.00">📈 Statistics View</text>
+</g>
+<!-- Login -->
+<g id="node1" class="node">
+<title>Login</title>
+<polygon fill="white" stroke="white" points="934,-1076.6 880,-1076.6 880,-1040.6 934,-1040.6 934,-1076.6"/>
+<text text-anchor="middle" x="907" y="-1054.4" font-family="Arial" font-size="14.00">Login</text>
+</g>
+<!-- Register -->
+<g id="node2" class="node">
+<title>Register</title>
+<polygon fill="white" stroke="white" points="789.07,-1076.6 720.93,-1076.6 720.93,-1040.6 789.07,-1040.6 789.07,-1076.6"/>
+<text text-anchor="middle" x="755" y="-1054.4" font-family="Arial" font-size="14.00">Register</text>
+</g>
+<!-- Login&#45;&gt;Register -->
+<g id="edge3" class="edge">
+<title>Login-&gt;Register</title>
+<path fill="none" stroke="black" d="M879.91,-1050.69C853.52,-1044.66 827.13,-1043.51 800.75,-1047.24"/>
+<polygon fill="black" stroke="black" points="800.21,-1043.78 790.93,-1048.89 801.37,-1050.68 800.21,-1043.78"/>
+<text text-anchor="middle" x="860.43" y="-1051.03" font-family="Times,serif" font-size="14.00">Sign Up</text>
+</g>
+<!-- MainMenu -->
+<g id="node3" class="node">
+<title>MainMenu</title>
+<ellipse fill="lightblue" stroke="white" cx="907" cy="-929" rx="58.81" ry="18"/>
+<text text-anchor="middle" x="907" y="-924.8" font-family="Arial" font-size="14.00">Main Menu</text>
+</g>
+<!-- Login&#45;&gt;MainMenu -->
+<g id="edge1" class="edge">
+<title>Login-&gt;MainMenu</title>
+<path fill="none" stroke="black" d="M928.77,-1040.13C942.98,-1026.46 957.74,-1006.52 951,-986.8 947.06,-975.29 939.74,-964.31 932.19,-955.13"/>
+<polygon fill="black" stroke="black" points="934.9,-952.91 925.67,-947.72 929.65,-957.54 934.9,-952.91"/>
+<text text-anchor="middle" x="973.67" y="-991" font-family="Times,serif" font-size="14.00">success</text>
+</g>
+<!-- ErrorPage -->
+<g id="node4" class="node">
+<title>ErrorPage</title>
+<polygon fill="none" stroke="white" stroke-dasharray="1,5" points="817.57,-949.8 714.43,-949.8 714.43,-908.2 817.57,-908.2 817.57,-949.8"/>
+<text text-anchor="middle" x="766" y="-933.2" font-family="Arial" font-size="14.00">Error</text>
+<text text-anchor="middle" x="766" y="-916.4" font-family="Arial" font-size="14.00">(invalid creds)</text>
+</g>
+<!-- Login&#45;&gt;ErrorPage -->
+<g id="edge2" class="edge">
+<title>Login-&gt;ErrorPage</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M887.69,-1040.13C864.28,-1018.94 824.53,-982.96 796.85,-957.92"/>
+<polygon fill="black" stroke="black" points="799.21,-955.34 789.45,-951.22 794.52,-960.53 799.21,-955.34"/>
+<text text-anchor="middle" x="856.37" y="-991" font-family="Times,serif" font-size="14.00">fail</text>
+</g>
+<!-- Register&#45;&gt;Login -->
+<g id="edge6" class="edge">
+<title>Register-&gt;Login</title>
+<path fill="none" stroke="black" d="M789.44,-1068.06C815.94,-1073.21 842.45,-1073.44 868.95,-1068.73"/>
+<polygon fill="black" stroke="black" points="869.32,-1072.23 878.42,-1066.81 867.93,-1065.37 869.32,-1072.23"/>
+<text text-anchor="middle" x="808.75" y="-1058.67" font-family="Times,serif" font-size="14.00">Sign In</text>
+</g>
+<!-- Register&#45;&gt;MainMenu -->
+<g id="edge4" class="edge">
+<title>Register-&gt;MainMenu</title>
+<path fill="none" stroke="black" d="M758.06,-1040.18C761.62,-1024.48 768.91,-1001.67 783.01,-986.8 801.59,-967.21 828.22,-953.8 852.04,-944.96"/>
+<polygon fill="black" stroke="black" points="853.04,-948.32 861.32,-941.71 850.73,-941.71 853.04,-948.32"/>
+<text text-anchor="middle" x="804.01" y="-991" font-family="Times,serif" font-size="14.00">success</text>
+</g>
+<!-- Register&#45;&gt;ErrorPage -->
+<g id="edge5" class="edge">
+<title>Register-&gt;ErrorPage</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M744.07,-1040.24C736.44,-1025.97 728.44,-1005.18 733.34,-986.8 735.83,-977.5 740.23,-968.15 745.02,-959.79"/>
+<polygon fill="black" stroke="black" points="747.9,-961.79 750.16,-951.44 741.94,-958.13 747.9,-961.79"/>
+<text text-anchor="middle" x="742.67" y="-991" font-family="Times,serif" font-size="14.00">fail</text>
+</g>
+<!-- MainMenu&#45;&gt;Login -->
+<g id="edge10" class="edge">
+<title>MainMenu-&gt;Login</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M906.8,-947.25C906.65,-962.17 906.48,-984.31 906.56,-1003.6 906.59,-1011.91 906.66,-1020.95 906.72,-1029.21"/>
+<polygon fill="black" stroke="black" points="903.22,-1029.09 906.81,-1039.06 910.22,-1029.03 903.22,-1029.09"/>
+<text text-anchor="middle" x="926.78" y="-991" font-family="Times,serif" font-size="14.00">Logout</text>
+</g>
+<!-- CustomerView -->
+<g id="node5" class="node">
+<title>CustomerView</title>
+<path fill="none" stroke="black" d="M313.51,-797C313.51,-797 230.49,-797 230.49,-797 224.49,-797 218.49,-791 218.49,-785 218.49,-785 218.49,-773 218.49,-773 218.49,-767 224.49,-761 230.49,-761 230.49,-761 313.51,-761 313.51,-761 319.51,-761 325.51,-767 325.51,-773 325.51,-773 325.51,-785 325.51,-785 325.51,-791 319.51,-797 313.51,-797"/>
+<text text-anchor="middle" x="272" y="-774.8" font-family="Arial" font-size="14.00">CustomerView</text>
+</g>
+<!-- MainMenu&#45;&gt;CustomerView -->
+<g id="edge7" class="edge">
+<title>MainMenu-&gt;CustomerView</title>
+<path fill="none" stroke="black" d="M873.76,-913.85C859.62,-908.52 842.77,-903.05 827,-900.2 734.04,-883.38 495.82,-901.3 402,-890.2 362.15,-885.48 345.02,-896.33 313.73,-871.2 294.24,-855.54 283.48,-828.75 277.8,-808.24"/>
+<polygon fill="black" stroke="black" points="281.25,-807.64 275.44,-798.79 274.46,-809.34 281.25,-807.64"/>
+<text text-anchor="middle" x="357.87" y="-858.6" font-family="Times,serif" font-size="14.00">Customer View</text>
+</g>
+<!-- ChefView -->
+<g id="node6" class="node">
+<title>ChefView</title>
+<path fill="none" stroke="black" d="M988.96,-797C988.96,-797 937.04,-797 937.04,-797 931.04,-797 925.04,-791 925.04,-785 925.04,-785 925.04,-773 925.04,-773 925.04,-767 931.04,-761 937.04,-761 937.04,-761 988.96,-761 988.96,-761 994.96,-761 1000.96,-767 1000.96,-773 1000.96,-773 1000.96,-785 1000.96,-785 1000.96,-791 994.96,-797 988.96,-797"/>
+<text text-anchor="middle" x="963" y="-774.8" font-family="Arial" font-size="14.00">ChefView</text>
+</g>
+<!-- MainMenu&#45;&gt;ChefView -->
+<g id="edge8" class="edge">
+<title>MainMenu-&gt;ChefView</title>
+<path fill="none" stroke="black" d="M913.53,-910.73C923.1,-885.45 941.03,-838.07 952.47,-807.83"/>
+<polygon fill="black" stroke="black" points="955.71,-809.16 955.97,-798.57 949.16,-806.69 955.71,-809.16"/>
+<text text-anchor="middle" x="965.05" y="-858.6" font-family="Times,serif" font-size="14.00">Chef View</text>
+</g>
+<!-- StatsView -->
+<g id="node7" class="node">
+<title>StatsView</title>
+<path fill="none" stroke="black" d="M1410.12,-797C1410.12,-797 1355.88,-797 1355.88,-797 1349.88,-797 1343.88,-791 1343.88,-785 1343.88,-785 1343.88,-773 1343.88,-773 1343.88,-767 1349.88,-761 1355.88,-761 1355.88,-761 1410.12,-761 1410.12,-761 1416.12,-761 1422.12,-767 1422.12,-773 1422.12,-773 1422.12,-785 1422.12,-785 1422.12,-791 1416.12,-797 1410.12,-797"/>
+<text text-anchor="middle" x="1383" y="-774.8" font-family="Arial" font-size="14.00">StatsView</text>
+</g>
+<!-- MainMenu&#45;&gt;StatsView -->
+<g id="edge9" class="edge">
+<title>MainMenu-&gt;StatsView</title>
+<path fill="none" stroke="black" d="M948.79,-916.01C1012.48,-897.61 1137.56,-861.02 1243,-827.4 1272.98,-817.84 1306.35,-806.57 1332.99,-797.41"/>
+<polygon fill="black" stroke="black" points="1333.85,-800.82 1342.17,-794.25 1331.57,-794.2 1333.85,-800.82"/>
+<text text-anchor="middle" x="1181.48" y="-858.6" font-family="Times,serif" font-size="14.00">Statistics</text>
+</g>
+<!-- CustomerDashboard -->
+<g id="node8" class="node">
+<title>CustomerDashboard</title>
+<ellipse fill="lightsteelblue" stroke="black" cx="232" cy="-668" rx="102.82" ry="18"/>
+<text text-anchor="middle" x="232" y="-663.8" font-family="Arial" font-size="14.00">Customer Dashboard</text>
+</g>
+<!-- CustomerView&#45;&gt;CustomerDashboard -->
+<g id="edge11" class="edge">
+<title>CustomerView-&gt;CustomerDashboard</title>
+<path fill="none" stroke="black" d="M265.75,-760.97C259.48,-743.87 249.7,-717.24 242.28,-697.02"/>
+<polygon fill="black" stroke="black" points="245.59,-695.87 238.86,-687.69 239.02,-698.29 245.59,-695.87"/>
+</g>
+<!-- ChefDashboard -->
+<g id="node18" class="node">
+<title>ChefDashboard</title>
+<ellipse fill="lightgreen" stroke="black" cx="902" cy="-668" rx="81.36" ry="18"/>
+<text text-anchor="middle" x="902" y="-663.8" font-family="Arial" font-size="14.00">Chef Dashboard</text>
+</g>
+<!-- ChefView&#45;&gt;ChefDashboard -->
+<g id="edge27" class="edge">
+<title>ChefView-&gt;ChefDashboard</title>
+<path fill="none" stroke="black" d="M953.47,-760.97C943.77,-743.63 928.58,-716.49 917.21,-696.18"/>
+<polygon fill="black" stroke="black" points="920.34,-694.61 912.4,-687.59 914.23,-698.03 920.34,-694.61"/>
+</g>
+<!-- StatsDashboard -->
+<g id="node30" class="node">
+<title>StatsDashboard</title>
+<ellipse fill="thistle" stroke="black" cx="1504" cy="-668" rx="99.6" ry="18"/>
+<text text-anchor="middle" x="1504" y="-663.8" font-family="Arial" font-size="14.00">Statistics Dashboard</text>
+</g>
+<!-- StatsView&#45;&gt;StatsDashboard -->
+<g id="edge47" class="edge">
+<title>StatsView-&gt;StatsDashboard</title>
+<path fill="none" stroke="black" d="M1395.15,-760.75C1406.93,-744.79 1425.94,-721.04 1446,-704 1451.29,-699.5 1457.23,-695.22 1463.24,-691.29"/>
+<polygon fill="black" stroke="black" points="1464.72,-694.48 1471.36,-686.22 1461.02,-688.54 1464.72,-694.48"/>
+</g>
+<!-- CustomerDashboard&#45;&gt;MainMenu -->
+<g id="edge26" class="edge">
+<title>CustomerDashboard-&gt;MainMenu</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M316.19,-678.68C364.64,-686.69 416,-700.49 416,-723 416,-863.8 416,-863.8 416,-863.8 416,-909.65 782.18,-890.58 827,-900.2 838.66,-902.7 850.96,-906.41 862.32,-910.3"/>
+<polygon fill="black" stroke="black" points="860.86,-913.5 871.45,-913.56 863.21,-906.9 860.86,-913.5"/>
+<text text-anchor="middle" x="433.11" y="-774.8" font-family="Times,serif" font-size="14.00">Home</text>
+</g>
+<!-- BrowseDishes -->
+<g id="node9" class="node">
+<title>BrowseDishes</title>
+<polygon fill="white" stroke="black" points="420.68,-559.2 311.32,-559.2 311.32,-523.2 420.68,-523.2 420.68,-559.2"/>
+<text text-anchor="middle" x="366" y="-537" font-family="Arial" font-size="14.00">Browse Dishes</text>
+</g>
+<!-- CustomerDashboard&#45;&gt;BrowseDishes -->
+<g id="edge12" class="edge">
+<title>CustomerDashboard-&gt;BrowseDishes</title>
+<path fill="none" stroke="black" d="M262.7,-650.35C278.96,-640.68 298.68,-627.56 314,-613 327.61,-600.07 340.16,-583.2 349.52,-569.17"/>
+<polygon fill="black" stroke="black" points="352.42,-571.12 354.91,-560.83 346.54,-567.32 352.42,-571.12"/>
+<text text-anchor="middle" x="368.88" y="-600.4" font-family="Times,serif" font-size="14.00">Browse Menu</text>
+</g>
+<!-- MyOrders -->
+<g id="node14" class="node">
+<title>MyOrders</title>
+<polygon fill="white" stroke="black" points="150.67,-559.2 69.33,-559.2 69.33,-523.2 150.67,-523.2 150.67,-559.2"/>
+<text text-anchor="middle" x="110" y="-537" font-family="Arial" font-size="14.00">My Orders</text>
+</g>
+<!-- CustomerDashboard&#45;&gt;MyOrders -->
+<g id="edge13" class="edge">
+<title>CustomerDashboard-&gt;MyOrders</title>
+<path fill="none" stroke="black" d="M143.57,-658.44C114.78,-650.96 85.73,-637.4 68.08,-613 57.68,-598.62 67.24,-581.53 79.84,-567.74"/>
+<polygon fill="black" stroke="black" points="82.28,-570.26 86.86,-560.71 77.32,-565.31 82.28,-570.26"/>
+<text text-anchor="middle" x="104.04" y="-600.4" font-family="Times,serif" font-size="14.00">View Orders</text>
+</g>
+<!-- Profile_C -->
+<g id="node16" class="node">
+<title>Profile_C</title>
+<polygon fill="white" stroke="black" points="281.12,-559.2 202.88,-559.2 202.88,-523.2 281.12,-523.2 281.12,-559.2"/>
+<text text-anchor="middle" x="242" y="-537" font-family="Arial" font-size="14.00">My Profile</text>
+</g>
+<!-- CustomerDashboard&#45;&gt;Profile_C -->
+<g id="edge14" class="edge">
+<title>CustomerDashboard-&gt;Profile_C</title>
+<path fill="none" stroke="black" d="M233.39,-649.65C235.02,-629.25 237.76,-595.1 239.71,-570.78"/>
+<polygon fill="black" stroke="black" points="243.19,-571.16 240.5,-560.91 236.21,-570.6 243.19,-571.16"/>
+<text text-anchor="middle" x="256.72" y="-600.4" font-family="Times,serif" font-size="14.00">Profile</text>
+</g>
+<!-- DishDetail -->
+<g id="node10" class="node">
+<title>DishDetail</title>
+<polygon fill="white" stroke="black" points="395.84,-432.4 312.16,-432.4 312.16,-396.4 395.84,-396.4 395.84,-432.4"/>
+<text text-anchor="middle" x="354" y="-410.2" font-family="Arial" font-size="14.00">Dish Detail</text>
+</g>
+<!-- BrowseDishes&#45;&gt;DishDetail -->
+<g id="edge15" class="edge">
+<title>BrowseDishes-&gt;DishDetail</title>
+<path fill="none" stroke="black" d="M364.33,-522.85C362.37,-502.45 359.09,-468.3 356.75,-443.98"/>
+<polygon fill="black" stroke="black" points="360.24,-443.73 355.8,-434.11 353.27,-444.4 360.24,-443.73"/>
+<text text-anchor="middle" x="392.88" y="-473.6" font-family="Times,serif" font-size="14.00">Select Dish</text>
+</g>
+<!-- Cart -->
+<g id="node11" class="node">
+<title>Cart</title>
+<polygon fill="white" stroke="black" points="282.75,-305.6 177.25,-305.6 177.25,-269.6 282.75,-269.6 282.75,-305.6"/>
+<text text-anchor="middle" x="230" y="-283.4" font-family="Arial" font-size="14.00">Shopping Cart</text>
+</g>
+<!-- DishDetail&#45;&gt;Cart -->
+<g id="edge16" class="edge">
+<title>DishDetail-&gt;Cart</title>
+<path fill="none" stroke="black" d="M336.76,-396.05C315.57,-374.72 279.44,-338.35 255.15,-313.91"/>
+<polygon fill="black" stroke="black" points="257.69,-311.51 248.16,-306.88 252.73,-316.44 257.69,-311.51"/>
+<text text-anchor="middle" x="333.3" y="-346.8" font-family="Times,serif" font-size="14.00">Add to Cart</text>
+</g>
+<!-- Checkout -->
+<g id="node12" class="node">
+<title>Checkout</title>
+<polygon fill="white" stroke="black" points="197.57,-178.8 122.43,-178.8 122.43,-142.8 197.57,-142.8 197.57,-178.8"/>
+<text text-anchor="middle" x="160" y="-156.6" font-family="Arial" font-size="14.00">Checkout</text>
+</g>
+<!-- Cart&#45;&gt;Checkout -->
+<g id="edge17" class="edge">
+<title>Cart-&gt;Checkout</title>
+<path fill="none" stroke="black" d="M220.27,-269.25C208.56,-248.38 188.79,-213.14 175.1,-188.73"/>
+<polygon fill="black" stroke="black" points="178.34,-187.34 170.39,-180.33 172.23,-190.76 178.34,-187.34"/>
+<text text-anchor="middle" x="257.97" y="-220" font-family="Times,serif" font-size="14.00">Proceed to Checkout</text>
+</g>
+<!-- OrderConfirmation -->
+<g id="node13" class="node">
+<title>OrderConfirmation</title>
+<polygon fill="white" stroke="black" points="189.52,-52 54.48,-52 54.48,-16 189.52,-16 189.52,-52"/>
+<text text-anchor="middle" x="122" y="-29.8" font-family="Arial" font-size="14.00">Order Confirmation</text>
+</g>
+<!-- Checkout&#45;&gt;OrderConfirmation -->
+<g id="edge18" class="edge">
+<title>Checkout-&gt;OrderConfirmation</title>
+<path fill="none" stroke="black" d="M154.72,-142.45C148.45,-121.86 137.92,-87.28 130.5,-62.91"/>
+<polygon fill="black" stroke="black" points="133.94,-62.2 127.68,-53.65 127.24,-64.24 133.94,-62.2"/>
+<text text-anchor="middle" x="176.76" y="-93.2" font-family="Times,serif" font-size="14.00">Place Order</text>
+</g>
+<!-- OrderConfirmation&#45;&gt;CustomerDashboard -->
+<g id="edge19" class="edge">
+<title>OrderConfirmation-&gt;CustomerDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M68.28,-52.4C49.95,-61.95 34,-76.09 34,-96.4 34,-352 34,-352 34,-352 34,-468.57 6.29,-509.54 60,-613 65.95,-624.47 70.49,-626.14 82,-632 100.59,-641.46 121.77,-648.4 142.24,-653.49"/>
+<polygon fill="black" stroke="black" points="141.18,-656.83 151.71,-655.71 142.78,-650.02 141.18,-656.83"/>
+<text text-anchor="middle" x="49.16" y="-346.8" font-family="Times,serif" font-size="14.00">Done</text>
+</g>
+<!-- MyOrders&#45;&gt;CustomerDashboard -->
+<g id="edge25" class="edge">
+<title>MyOrders-&gt;CustomerDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M126.9,-559.49C147.77,-580.84 183.44,-617.33 207.36,-641.8"/>
+<polygon fill="black" stroke="black" points="204.74,-644.12 214.23,-648.83 209.75,-639.23 204.74,-644.12"/>
+<text text-anchor="middle" x="193.49" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- OrderDetail_C -->
+<g id="node15" class="node">
+<title>OrderDetail_C</title>
+<polygon fill="white" stroke="black" points="159.73,-432.4 68.27,-432.4 68.27,-396.4 159.73,-396.4 159.73,-432.4"/>
+<text text-anchor="middle" x="114" y="-410.2" font-family="Arial" font-size="14.00">Order Detail</text>
+</g>
+<!-- MyOrders&#45;&gt;OrderDetail_C -->
+<g id="edge20" class="edge">
+<title>MyOrders-&gt;OrderDetail_C</title>
+<path fill="none" stroke="black" d="M110.56,-522.85C111.21,-502.45 112.3,-468.3 113.08,-443.98"/>
+<polygon fill="black" stroke="black" points="116.58,-444.23 113.4,-434.12 109.58,-444 116.58,-444.23"/>
+<text text-anchor="middle" x="127.43" y="-473.6" font-family="Times,serif" font-size="14.00">View</text>
+</g>
+<!-- OrderDetail_C&#45;&gt;MyOrders -->
+<g id="edge21" class="edge">
+<title>OrderDetail_C-&gt;MyOrders</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M99.28,-432.61C91.68,-442.63 83.2,-455.92 79.23,-469.4 74.81,-484.46 80.87,-500.56 88.75,-513.6"/>
+<polygon fill="black" stroke="black" points="85.67,-515.29 94.15,-521.65 91.49,-511.39 85.67,-515.29"/>
+<text text-anchor="middle" x="93.62" y="-473.6" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- Profile_C&#45;&gt;CustomerDashboard -->
+<g id="edge24" class="edge">
+<title>Profile_C-&gt;CustomerDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M260.55,-559.68C273.06,-573.67 286.1,-594.04 279,-613 274.99,-623.71 267.79,-633.7 260.21,-642.1"/>
+<polygon fill="black" stroke="black" points="257.81,-639.55 253.35,-649.16 262.83,-644.43 257.81,-639.55"/>
+<text text-anchor="middle" x="295.39" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- EditProfile_C -->
+<g id="node17" class="node">
+<title>EditProfile_C</title>
+<polygon fill="white" stroke="black" points="282.85,-432.4 199.15,-432.4 199.15,-396.4 282.85,-396.4 282.85,-432.4"/>
+<text text-anchor="middle" x="241" y="-410.2" font-family="Arial" font-size="14.00">Edit Profile</text>
+</g>
+<!-- Profile_C&#45;&gt;EditProfile_C -->
+<g id="edge22" class="edge">
+<title>Profile_C-&gt;EditProfile_C</title>
+<path fill="none" stroke="black" d="M257.6,-522.72C268.18,-508.72 279.33,-488.36 274,-469.4 271.33,-459.93 266.49,-450.47 261.33,-442.18"/>
+<polygon fill="black" stroke="black" points="264.3,-440.34 255.83,-433.98 258.49,-444.24 264.3,-440.34"/>
+<text text-anchor="middle" x="287.04" y="-473.6" font-family="Times,serif" font-size="14.00">Edit</text>
+</g>
+<!-- EditProfile_C&#45;&gt;Profile_C -->
+<g id="edge23" class="edge">
+<title>EditProfile_C-&gt;Profile_C</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M220.8,-432.8C207.38,-446.59 193.35,-466.72 200.03,-486.2 203.53,-496.43 209.86,-506.21 216.55,-514.57"/>
+<polygon fill="black" stroke="black" points="213.68,-516.6 222.85,-521.9 218.98,-512.03 213.68,-516.6"/>
+<text text-anchor="middle" x="235.01" y="-473.6" font-family="Times,serif" font-size="14.00">Save/Cancel</text>
+</g>
+<!-- ChefDashboard&#45;&gt;MainMenu -->
+<g id="edge46" class="edge">
+<title>ChefDashboard-&gt;MainMenu</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M887.5,-685.78C880.25,-695.88 873,-709.38 873,-723 873,-863.8 873,-863.8 873,-863.8 873,-877.32 878.96,-890.77 885.89,-901.84"/>
+<polygon fill="black" stroke="black" points="882.97,-903.78 891.53,-910.03 888.74,-899.81 882.97,-903.78"/>
+<text text-anchor="middle" x="890.11" y="-774.8" font-family="Times,serif" font-size="14.00">Home</text>
+</g>
+<!-- ManageMenu -->
+<g id="node19" class="node">
+<title>ManageMenu</title>
+<polygon fill="white" stroke="black" points="827.75,-559.2 722.25,-559.2 722.25,-523.2 827.75,-523.2 827.75,-559.2"/>
+<text text-anchor="middle" x="775" y="-537" font-family="Arial" font-size="14.00">Manage Menu</text>
+</g>
+<!-- ChefDashboard&#45;&gt;ManageMenu -->
+<g id="edge28" class="edge">
+<title>ChefDashboard-&gt;ManageMenu</title>
+<path fill="none" stroke="black" d="M867.93,-651.28C850.4,-641.97 829.58,-628.88 814.39,-613 802.46,-600.52 792.92,-583.74 786.21,-569.65"/>
+<polygon fill="black" stroke="black" points="789.57,-568.57 782.27,-560.89 783.18,-571.44 789.57,-568.57"/>
+<text text-anchor="middle" x="859.69" y="-600.4" font-family="Times,serif" font-size="14.00">Menu Proposals</text>
+</g>
+<!-- IncomingOrders -->
+<g id="node22" class="node">
+<title>IncomingOrders</title>
+<polygon fill="white" stroke="black" points="1177.74,-559.2 1058.26,-559.2 1058.26,-523.2 1177.74,-523.2 1177.74,-559.2"/>
+<text text-anchor="middle" x="1118" y="-537" font-family="Arial" font-size="14.00">Incoming Orders</text>
+</g>
+<!-- ChefDashboard&#45;&gt;IncomingOrders -->
+<g id="edge33" class="edge">
+<title>ChefDashboard-&gt;IncomingOrders</title>
+<path fill="none" stroke="black" d="M930.24,-650.68C968.03,-628.85 1035.27,-590 1078.19,-565.2"/>
+<polygon fill="black" stroke="black" points="1079.8,-568.31 1086.71,-560.28 1076.3,-562.25 1079.8,-568.31"/>
+<text text-anchor="middle" x="1043.41" y="-600.4" font-family="Times,serif" font-size="14.00">Orders</text>
+</g>
+<!-- MyDeliveries -->
+<g id="node26" class="node">
+<title>MyDeliveries</title>
+<polygon fill="white" stroke="black" points="602.01,-559.2 501.99,-559.2 501.99,-523.2 602.01,-523.2 602.01,-559.2"/>
+<text text-anchor="middle" x="552" y="-537" font-family="Arial" font-size="14.00">My Deliveries</text>
+</g>
+<!-- ChefDashboard&#45;&gt;MyDeliveries -->
+<g id="edge39" class="edge">
+<title>ChefDashboard-&gt;MyDeliveries</title>
+<path fill="none" stroke="black" d="M856.99,-652.59C824.27,-641.98 778.98,-627.02 739.47,-613 694.71,-597.12 644.37,-578.04 607.14,-563.69"/>
+<polygon fill="black" stroke="black" points="608.51,-560.47 597.92,-560.13 605.99,-567 608.51,-560.47"/>
+<text text-anchor="middle" x="768.23" y="-600.4" font-family="Times,serif" font-size="14.00">Deliveries</text>
+</g>
+<!-- Profile_H -->
+<g id="node28" class="node">
+<title>Profile_H</title>
+<polygon fill="white" stroke="black" points="1006.12,-559.2 927.88,-559.2 927.88,-523.2 1006.12,-523.2 1006.12,-559.2"/>
+<text text-anchor="middle" x="967" y="-537" font-family="Arial" font-size="14.00">My Profile</text>
+</g>
+<!-- ChefDashboard&#45;&gt;Profile_H -->
+<g id="edge42" class="edge">
+<title>ChefDashboard-&gt;Profile_H</title>
+<path fill="none" stroke="black" d="M902.72,-649.52C903.95,-634.62 907.23,-613.01 915.9,-596.2 921.31,-585.7 929.38,-575.81 937.52,-567.43"/>
+<polygon fill="black" stroke="black" points="939.77,-570.13 944.5,-560.65 934.89,-565.11 939.77,-570.13"/>
+<text text-anchor="middle" x="934.95" y="-600.4" font-family="Times,serif" font-size="14.00">Profile</text>
+</g>
+<!-- CreateProposal -->
+<g id="node20" class="node">
+<title>CreateProposal</title>
+<polygon fill="white" stroke="black" points="854.58,-432.4 737.42,-432.4 737.42,-396.4 854.58,-396.4 854.58,-432.4"/>
+<text text-anchor="middle" x="796" y="-410.2" font-family="Arial" font-size="14.00">Create Proposal</text>
+</g>
+<!-- ManageMenu&#45;&gt;CreateProposal -->
+<g id="edge29" class="edge">
+<title>ManageMenu-&gt;CreateProposal</title>
+<path fill="none" stroke="black" d="M817.21,-522.93C832.6,-514.32 848.35,-502.26 857,-486.2 866.29,-468.97 853.27,-452.25 836.91,-439.39"/>
+<polygon fill="black" stroke="black" points="838.98,-436.57 828.82,-433.55 834.88,-442.25 838.98,-436.57"/>
+<text text-anchor="middle" x="873.31" y="-473.6" font-family="Times,serif" font-size="14.00">New</text>
+</g>
+<!-- EditProposal -->
+<g id="node21" class="node">
+<title>EditProposal</title>
+<polygon fill="white" stroke="black" points="716.63,-432.4 617.37,-432.4 617.37,-396.4 716.63,-396.4 716.63,-432.4"/>
+<text text-anchor="middle" x="667" y="-410.2" font-family="Arial" font-size="14.00">Edit Proposal</text>
+</g>
+<!-- ManageMenu&#45;&gt;EditProposal -->
+<g id="edge30" class="edge">
+<title>ManageMenu-&gt;EditProposal</title>
+<path fill="none" stroke="black" d="M759.98,-522.85C741.61,-501.61 710.33,-465.47 689.18,-441.03"/>
+<polygon fill="black" stroke="black" points="692.07,-439.02 682.88,-433.75 686.78,-443.6 692.07,-439.02"/>
+<text text-anchor="middle" x="739.85" y="-473.6" font-family="Times,serif" font-size="14.00">Edit</text>
+</g>
+<!-- CreateProposal&#45;&gt;ManageMenu -->
+<g id="edge31" class="edge">
+<title>CreateProposal-&gt;ManageMenu</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M791.25,-432.8C788.51,-443.32 785.2,-457.06 783.03,-469.4 780.58,-483.3 778.72,-498.87 777.41,-511.86"/>
+<polygon fill="black" stroke="black" points="773.96,-511.15 776.5,-521.44 780.93,-511.81 773.96,-511.15"/>
+<text text-anchor="middle" x="818.01" y="-473.6" font-family="Times,serif" font-size="14.00">Save/Cancel</text>
+</g>
+<!-- EditProposal&#45;&gt;ManageMenu -->
+<g id="edge32" class="edge">
+<title>EditProposal-&gt;ManageMenu</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M651.71,-432.76C640.43,-447.79 628.82,-469.64 640.03,-486.2 656.07,-509.9 684.38,-523.19 710.94,-530.66"/>
+<polygon fill="black" stroke="black" points="709.76,-533.97 720.31,-533.05 711.49,-527.19 709.76,-533.97"/>
+<text text-anchor="middle" x="675.01" y="-473.6" font-family="Times,serif" font-size="14.00">Save/Cancel</text>
+</g>
+<!-- OrderDetail_H -->
+<g id="node23" class="node">
+<title>OrderDetail_H</title>
+<polygon fill="white" stroke="black" points="1218.73,-432.4 1127.27,-432.4 1127.27,-396.4 1218.73,-396.4 1218.73,-432.4"/>
+<text text-anchor="middle" x="1173" y="-410.2" font-family="Arial" font-size="14.00">Order Detail</text>
+</g>
+<!-- IncomingOrders&#45;&gt;OrderDetail_H -->
+<g id="edge34" class="edge">
+<title>IncomingOrders-&gt;OrderDetail_H</title>
+<path fill="none" stroke="black" d="M1140.71,-522.71C1151.29,-513.17 1162.88,-500.41 1169,-486.2 1174.63,-473.13 1175.99,-457.42 1175.79,-444.13"/>
+<polygon fill="black" stroke="black" points="1179.29,-444.08 1175.32,-434.26 1172.3,-444.41 1179.29,-444.08"/>
+<text text-anchor="middle" x="1188.99" y="-473.6" font-family="Times,serif" font-size="14.00">View</text>
+</g>
+<!-- OrderDetail_H&#45;&gt;IncomingOrders -->
+<g id="edge38" class="edge">
+<title>OrderDetail_H-&gt;IncomingOrders</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1159.11,-432.48C1151.41,-442.67 1142.22,-456.17 1136.23,-469.4 1130.23,-482.68 1125.94,-498.29 1123.04,-511.47"/>
+<polygon fill="black" stroke="black" points="1119.61,-510.78 1121.05,-521.28 1126.47,-512.17 1119.61,-510.78"/>
+<text text-anchor="middle" x="1150.62" y="-473.6" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- AcceptRejectOrder -->
+<g id="node24" class="node">
+<title>AcceptRejectOrder</title>
+<polygon fill="white" stroke="black" points="1228.08,-305.6 1117.92,-305.6 1117.92,-269.6 1228.08,-269.6 1228.08,-305.6"/>
+<text text-anchor="middle" x="1173" y="-283.4" font-family="Arial" font-size="14.00">Accept / Reject</text>
+</g>
+<!-- OrderDetail_H&#45;&gt;AcceptRejectOrder -->
+<g id="edge35" class="edge">
+<title>OrderDetail_H-&gt;AcceptRejectOrder</title>
+<path fill="none" stroke="black" d="M1173,-396.05C1173,-375.65 1173,-341.5 1173,-317.18"/>
+<polygon fill="black" stroke="black" points="1176.5,-317.32 1173,-307.32 1169.5,-317.32 1176.5,-317.32"/>
+<text text-anchor="middle" x="1192.82" y="-346.8" font-family="Times,serif" font-size="14.00">Decide</text>
+</g>
+<!-- UpdateStatus -->
+<g id="node25" class="node">
+<title>UpdateStatus</title>
+<polygon fill="white" stroke="black" points="1178.36,-178.8 1073.64,-178.8 1073.64,-142.8 1178.36,-142.8 1178.36,-178.8"/>
+<text text-anchor="middle" x="1126" y="-156.6" font-family="Arial" font-size="14.00">Update Status</text>
+</g>
+<!-- AcceptRejectOrder&#45;&gt;UpdateStatus -->
+<g id="edge36" class="edge">
+<title>AcceptRejectOrder-&gt;UpdateStatus</title>
+<path fill="none" stroke="black" d="M1166.46,-269.25C1158.71,-248.66 1145.69,-214.08 1136.51,-189.71"/>
+<polygon fill="black" stroke="black" points="1139.81,-188.55 1133.01,-180.42 1133.26,-191.01 1139.81,-188.55"/>
+<text text-anchor="middle" x="1176.35" y="-220" font-family="Times,serif" font-size="14.00">Confirm</text>
+</g>
+<!-- UpdateStatus&#45;&gt;IncomingOrders -->
+<g id="edge37" class="edge">
+<title>UpdateStatus-&gt;IncomingOrders</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1113.76,-179.19C1106.62,-191.02 1099,-207.36 1099,-223.2 1099,-478.8 1099,-478.8 1099,-478.8 1099,-490.11 1101.98,-502.09 1105.58,-512.43"/>
+<polygon fill="black" stroke="black" points="1102.21,-513.42 1109.07,-521.49 1108.74,-510.9 1102.21,-513.42"/>
+<text text-anchor="middle" x="1113.38" y="-346.8" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- DeliveryDetail -->
+<g id="node27" class="node">
+<title>DeliveryDetail</title>
+<polygon fill="white" stroke="black" points="592.12,-432.4 485.88,-432.4 485.88,-396.4 592.12,-396.4 592.12,-432.4"/>
+<text text-anchor="middle" x="539" y="-410.2" font-family="Arial" font-size="14.00">Delivery Detail</text>
+</g>
+<!-- MyDeliveries&#45;&gt;DeliveryDetail -->
+<g id="edge40" class="edge">
+<title>MyDeliveries-&gt;DeliveryDetail</title>
+<path fill="none" stroke="black" d="M550.19,-522.85C548.07,-502.45 544.51,-468.3 541.98,-443.98"/>
+<polygon fill="black" stroke="black" points="545.47,-443.69 540.95,-434.11 538.5,-444.42 545.47,-443.69"/>
+<text text-anchor="middle" x="561.53" y="-473.6" font-family="Times,serif" font-size="14.00">View</text>
+</g>
+<!-- DeliveryDetail&#45;&gt;MyDeliveries -->
+<g id="edge41" class="edge">
+<title>DeliveryDetail-&gt;MyDeliveries</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M525.49,-432.71C516.06,-446.95 506.17,-467.72 512.23,-486.2 515.51,-496.17 521.4,-505.8 527.67,-514.11"/>
+<polygon fill="black" stroke="black" points="524.81,-516.14 533.83,-521.7 530.24,-511.73 524.81,-516.14"/>
+<text text-anchor="middle" x="526.62" y="-473.6" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- Profile_H&#45;&gt;ChefDashboard -->
+<g id="edge45" class="edge">
+<title>Profile_H-&gt;ChefDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M966.58,-559.69C965.59,-574.59 962.61,-596.21 954,-613 948.47,-623.77 940.1,-633.84 931.68,-642.3"/>
+<polygon fill="black" stroke="black" points="929.3,-639.73 924.44,-649.15 934.11,-644.82 929.3,-639.73"/>
+<text text-anchor="middle" x="974.74" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- EditProfile_H -->
+<g id="node29" class="node">
+<title>EditProfile_H</title>
+<polygon fill="white" stroke="black" points="1035.85,-432.4 952.15,-432.4 952.15,-396.4 1035.85,-396.4 1035.85,-432.4"/>
+<text text-anchor="middle" x="994" y="-410.2" font-family="Arial" font-size="14.00">Edit Profile</text>
+</g>
+<!-- Profile_H&#45;&gt;EditProfile_H -->
+<g id="edge43" class="edge">
+<title>Profile_H-&gt;EditProfile_H</title>
+<path fill="none" stroke="black" d="M994.05,-522.78C1005.91,-513.51 1018.58,-500.96 1025,-486.2 1031.38,-471.55 1025.11,-455.21 1016.59,-441.92"/>
+<polygon fill="black" stroke="black" points="1019.66,-440.2 1011.01,-434.08 1013.96,-444.26 1019.66,-440.2"/>
+<text text-anchor="middle" x="1039.28" y="-473.6" font-family="Times,serif" font-size="14.00">Edit</text>
+</g>
+<!-- EditProfile_H&#45;&gt;Profile_H -->
+<g id="edge44" class="edge">
+<title>EditProfile_H-&gt;Profile_H</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M975.41,-432.48C966.16,-442.27 955.93,-455.37 951.03,-469.4 946.19,-483.25 949.05,-499.14 953.62,-512.36"/>
+<polygon fill="black" stroke="black" points="950.23,-513.3 957.16,-521.32 956.74,-510.73 950.23,-513.3"/>
+<text text-anchor="middle" x="986.01" y="-473.6" font-family="Times,serif" font-size="14.00">Save/Cancel</text>
+</g>
+<!-- StatsDashboard&#45;&gt;MainMenu -->
+<g id="edge56" class="edge">
+<title>StatsDashboard-&gt;MainMenu</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1480.45,-685.77C1469.99,-695.29 1460,-708.25 1460,-723 1460,-863.8 1460,-863.8 1460,-863.8 1460,-911.87 1126.04,-924 977.17,-927.02"/>
+<polygon fill="black" stroke="black" points="977.36,-923.51 967.43,-927.21 977.5,-930.51 977.36,-923.51"/>
+<text text-anchor="middle" x="1477.11" y="-774.8" font-family="Times,serif" font-size="14.00">Home</text>
+</g>
+<!-- StatsOrdersByChef -->
+<g id="node31" class="node">
+<title>StatsOrdersByChef</title>
+<polygon fill="white" stroke="black" points="1581.46,-559.2 1470.54,-559.2 1470.54,-523.2 1581.46,-523.2 1581.46,-559.2"/>
+<text text-anchor="middle" x="1526" y="-537" font-family="Arial" font-size="14.00">Orders by Chef</text>
+</g>
+<!-- StatsDashboard&#45;&gt;StatsOrdersByChef -->
+<g id="edge48" class="edge">
+<title>StatsDashboard-&gt;StatsOrdersByChef</title>
+<path fill="none" stroke="black" d="M1470.23,-650.69C1447.86,-637.48 1424.68,-617.61 1436.75,-596.2 1444.05,-583.25 1455.85,-573.06 1468.5,-565.18"/>
+<polygon fill="black" stroke="black" points="1470.02,-568.34 1476.97,-560.35 1466.55,-562.26 1470.02,-568.34"/>
+<text text-anchor="middle" x="1480.88" y="-600.4" font-family="Times,serif" font-size="14.00">Chef Deliveries</text>
+</g>
+<!-- StatsRevenue -->
+<g id="node32" class="node">
+<title>StatsRevenue</title>
+<polygon fill="white" stroke="black" points="1405.98,-559.2 1274.02,-559.2 1274.02,-523.2 1405.98,-523.2 1405.98,-559.2"/>
+<text text-anchor="middle" x="1340" y="-537" font-family="Arial" font-size="14.00">Revenue by Street</text>
+</g>
+<!-- StatsDashboard&#45;&gt;StatsRevenue -->
+<g id="edge49" class="edge">
+<title>StatsDashboard-&gt;StatsRevenue</title>
+<path fill="none" stroke="black" d="M1422.23,-657.38C1367.86,-649.08 1303.51,-634.9 1287.02,-613 1275.49,-597.68 1287.82,-580.46 1303.47,-566.84"/>
+<polygon fill="black" stroke="black" points="1305.59,-569.62 1311.19,-560.63 1301.21,-564.17 1305.59,-569.62"/>
+<text text-anchor="middle" x="1311.51" y="-600.4" font-family="Times,serif" font-size="14.00">Revenue</text>
+</g>
+<!-- StatsAverages -->
+<g id="node33" class="node">
+<title>StatsAverages</title>
+<polygon fill="white" stroke="black" points="1880.8,-559.2 1737.2,-559.2 1737.2,-523.2 1880.8,-523.2 1880.8,-559.2"/>
+<text text-anchor="middle" x="1809" y="-537" font-family="Arial" font-size="14.00">Average Order Price</text>
+</g>
+<!-- StatsDashboard&#45;&gt;StatsAverages -->
+<g id="edge50" class="edge">
+<title>StatsDashboard-&gt;StatsAverages</title>
+<path fill="none" stroke="black" d="M1580.32,-656.11C1621.11,-648.14 1671.19,-634.79 1712,-613 1736.39,-599.98 1761.53,-581.45 1780.11,-566.62"/>
+<polygon fill="black" stroke="black" points="1782.2,-569.43 1787.75,-560.41 1777.79,-564 1782.2,-569.43"/>
+<text text-anchor="middle" x="1786.64" y="-600.4" font-family="Times,serif" font-size="14.00">Avg. Order Price</text>
+</g>
+<!-- StatsCuisine -->
+<g id="node34" class="node">
+<title>StatsCuisine</title>
+<polygon fill="white" stroke="black" points="1711.85,-559.2 1614.15,-559.2 1614.15,-523.2 1711.85,-523.2 1711.85,-559.2"/>
+<text text-anchor="middle" x="1663" y="-537" font-family="Arial" font-size="14.00">Top Cuisines</text>
+</g>
+<!-- StatsDashboard&#45;&gt;StatsCuisine -->
+<g id="edge51" class="edge">
+<title>StatsDashboard-&gt;StatsCuisine</title>
+<path fill="none" stroke="black" d="M1525.44,-650.17C1552.91,-628.61 1600.7,-591.1 1632.09,-566.46"/>
+<polygon fill="black" stroke="black" points="1633.98,-569.43 1639.69,-560.5 1629.66,-563.92 1633.98,-569.43"/>
+<text text-anchor="middle" x="1631.6" y="-600.4" font-family="Times,serif" font-size="14.00">Cuisine Prefs</text>
+</g>
+<!-- StatsOrdersByChef&#45;&gt;StatsDashboard -->
+<g id="edge52" class="edge">
+<title>StatsOrdersByChef-&gt;StatsDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1527.46,-559.54C1528.27,-573.99 1528.5,-595.02 1525,-613 1523.28,-621.82 1520.2,-631.07 1516.92,-639.36"/>
+<polygon fill="black" stroke="black" points="1513.7,-637.99 1513.03,-648.57 1520.15,-640.72 1513.7,-637.99"/>
+<text text-anchor="middle" x="1541.55" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- StatsRevenue&#45;&gt;StatsDashboard -->
+<g id="edge53" class="edge">
+<title>StatsRevenue-&gt;StatsDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1351.81,-559.59C1362.95,-575.04 1380.8,-597.51 1400.23,-613 1416.56,-626.01 1436.52,-637.28 1454.55,-646.11"/>
+<polygon fill="black" stroke="black" points="1452.99,-649.25 1463.53,-650.38 1455.99,-642.93 1452.99,-649.25"/>
+<text text-anchor="middle" x="1414.62" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- StatsAverages&#45;&gt;StatsDashboard -->
+<g id="edge54" class="edge">
+<title>StatsAverages-&gt;StatsDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1825.84,-559.51C1838.77,-574.91 1852.33,-597.35 1839,-613 1810.35,-646.64 1700.24,-659.4 1613.98,-664.19"/>
+<polygon fill="black" stroke="black" points="1613.83,-660.7 1604.03,-664.71 1614.2,-667.69 1613.83,-660.7"/>
+<text text-anchor="middle" x="1858.87" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+<!-- StatsCuisine&#45;&gt;StatsDashboard -->
+<g id="edge55" class="edge">
+<title>StatsCuisine-&gt;StatsDashboard</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1671.87,-559.61C1678.37,-575.08 1684.27,-597.56 1673,-613 1656.56,-635.52 1630.61,-648.86 1603.93,-656.71"/>
+<polygon fill="black" stroke="black" points="1603.12,-653.3 1594.35,-659.26 1604.92,-660.07 1603.12,-653.3"/>
+<text text-anchor="middle" x="1693.43" y="-600.4" font-family="Times,serif" font-size="14.00">Back</text>
+</g>
+</g>
+</svg>
