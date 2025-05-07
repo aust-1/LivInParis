@@ -101,6 +101,8 @@ LivInParis
 ├─ .env
 ├─ docker-compose.yml
 ├─ docs
+│  ├─ LivInParisFrontEndArchi.dot
+│  ├─ LivInParisFrontEndArchi.svg
 │  ├─ output_archive
 │  │  ├─ graph_20250325_21-14-20.png
 │  │  ├─ graph_20250325_22-09-45.png
@@ -116,7 +118,12 @@ LivInParis
 │  ├─ js
 │  │  ├─ api.js
 │  │  ├─ app.js
-│  │  └─ map.js
+│  │  ├─ auth.js
+│  │  ├─ chef.js
+│  │  ├─ common.js
+│  │  ├─ customer.js
+│  │  ├─ map.js
+│  │  └─ stats.js
 │  ├─ lib
 │  │  ├─ chartjs
 │  │  │  ├─ chart.umd.js
@@ -132,7 +139,34 @@ LivInParis
 │  │     ├─ leaflet.js
 │  │     └─ leaflet.js.map
 │  └─ pages
-│     └─ customers.html
+│     ├─ auth
+│     │  ├─ login.html
+│     │  └─ register.html
+│     ├─ chef
+│     │  ├─ create-proposal.html
+│     │  ├─ dashboard.html
+│     │  ├─ delivery-detail.html
+│     │  ├─ edit-profile.html
+│     │  ├─ edit-proposal.html
+│     │  ├─ incoming-orders.html
+│     │  ├─ manage-menu.html
+│     │  ├─ my-deliveries.html
+│     │  ├─ order-detail.html
+│     │  └─ profile.html
+│     ├─ customer
+│     │  ├─ browse-dishes.html
+│     │  ├─ cart.html
+│     │  ├─ checkout.html
+│     │  ├─ dashboard.html
+│     │  ├─ dish-detail.html
+│     │  ├─ edit-profile.html
+│     │  ├─ my-orders.html
+│     │  ├─ order-confirmation.html
+│     │  ├─ order-detail.html
+│     │  └─ profile.html
+│     ├─ not-found.html
+│     └─ stats
+│        └─ dashboard.html
 ├─ init.sql
 ├─ LICENSE
 ├─ LivInParis.sln
@@ -180,7 +214,6 @@ LivInParis
    │        ├─ Dish.cs
    │        ├─ Enums
    │        │  ├─ DishType.cs
-   │        │  ├─ LoyaltyRank.cs
    │        │  ├─ OrderLineStatus.cs
    │        │  ├─ ProductsOrigin.cs
    │        │  └─ ReviewerType.cs
@@ -225,31 +258,32 @@ LivInParis
    │     ├─ Repository.cs
    │     └─ ReviewRepository.cs
    ├─ LivInParis.Services
+   │  ├─ ExportService.cs
+   │  ├─ Interfaces
+   │  │  ├─ IAccountService.cs
+   │  │  ├─ IAddressService.cs
+   │  │  ├─ IChefService.cs
+   │  │  ├─ IContainsService.cs
+   │  │  ├─ ICustomerService.cs
+   │  │  ├─ IDishService.cs
+   │  │  ├─ IGraphService.cs
+   │  │  ├─ IMenuProposalService.cs
+   │  │  ├─ IOrderLineService.cs
+   │  │  ├─ IReviewService.cs
+   │  │  └─ IStatisticsService.cs
    │  ├─ LivInParis.Services.csproj
-   │  ├── Interfaces/
-   │  │   ├── IAccountService.cs
-   │  │   ├── IAddressService.cs
-   │  │   ├── IChefService.cs
-   │  │   ├── IContainsService.cs
-   │  │   ├── ICustomerService.cs
-   │  │   ├── IDishService.cs
-   │  │   ├── IGraphService.cs
-   │  │   ├── IMenuProposalService.cs
-   │  │   ├── IOrderService.cs
-   │  │   ├── IReviewService.cs
-   │  │   └── IStatisticsService.cs
-   │  └── Services/
-   │     ├── AccountService.cs
-   │     ├── AddressService.cs
-   │     ├── ChefService.cs
-   │     ├── ContainsService.cs
-   │     ├── CustomerService.cs
-   │     ├── DishService.cs
-   │     ├── GraphService.cs
-   │     ├── MenuProposalService.cs
-   │     ├── OrderService.cs
-   │     ├── ReviewService.cs
-   │     └── StatisticsService.cs
+   │  └─ Services
+   │     ├─ AccountService.cs
+   │     ├─ AddressService.cs
+   │     ├─ ChefService.cs
+   │     ├─ ContainsService.cs
+   │     ├─ CustomerService.cs
+   │     ├─ DishService.cs
+   │     ├─ GraphService.cs
+   │     ├─ MenuProposalService.cs
+   │     ├─ OrderLineService.cs
+   │     ├─ ReviewService.cs
+   │     └─ StatisticsService.cs
    └─ LivInParis.Tests
       ├─ LivInParis.Tests.csproj
       ├─ MSTestSettings.cs

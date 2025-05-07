@@ -99,7 +99,7 @@ public class CustomerRepository(LivInParisContext context)
                 d => d.DishId,
                 (tmp, d) => new { tmp.ot.CustomerAccountId, d.Price }
             )
-            .GroupBy(ap => ap.AccountId)
+            .GroupBy(ap => ap.CustomerAccountId)
             .Select(g => new { AccountId = g.Key, Total = g.Sum(x => x.Price) })
             .Join(
                 _context.Customers,

@@ -3,6 +3,11 @@ using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Data;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
 using LivInParisRoussilleTeynier.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.SpaServices.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,18 +30,26 @@ builder.Services.AddScoped<IContainsRepository, ContainsRepository>();
 /// <summary>
 /// Register graph service for pathfinding and algorithms.
 /// </summary>
-//builder.Services.AddScoped<IGrapheService, GrapheService>();
+// builder.Services.AddScoped<IGrapheService, GrapheService>();
 
 /// <summary>
-/// Enable Cross-Origin Requests to allow frontend (localhost:3000) to call this API.
+/// Allow Cross-Origin Requests from frontend during development.
 /// </summary>
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
+    options.AddPolicy(
+        "AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
 });
+
+/// <summary>
+/// Add controllers for API endpoints.
+/// </summary>
+builder.Services.AddControllers();
 
 /// <summary>
 /// Add Swagger for API documentation and testing.
@@ -44,12 +57,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+/// <summary>
+/// Serve production build of frontend from "frontend/build" folder.
+/// </summary>
+builder.Services.AddSpaStaticFiles(options =>
+{
+    options.RootPath = Path.Combine(builder.Environment.ContentRootPath, "frontend", "build");
+});
+
 var app = builder.Build();
 
-/// <summary>
-/// Use CORS policy globally.
-/// </summary>
-app.UseCors();
+app.UseCors("AllowAll");
 
 /// <summary>
 /// In development, enable Swagger UI.
@@ -58,40 +76,38 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    /// <summary>
+    /// Proxy to frontend dev server in development mode.
+    /// </summary>
+    app.UseSpa(spa =>
+    {
+        spa.Options.SourcePath = "frontend";
+        spa.UseProxyToSpaDevelopmentServer("http://host.docker.internal:53754");
+    });
+}
+else
+{
+    /// <summary>
+    /// Serve static files for production.
+    /// </summary>
+    app.UseStaticFiles();
+    app.UseSpaStaticFiles();
+
+    app.UseSpa(spa =>
+    {
+        spa.Options.SourcePath = "frontend";
+    });
 }
 
 /// <summary>
-/// Simple endpoint to get all customers.
+/// Map controllers for API.
 /// </summary>
-app.MapGet("/clients", async (ICustomerRepository repo) => await repo.GetAllAsync());
+app.MapControllers();
 
 /// <summary>
-/// Simple endpoint to add a new customer.
+/// Fallback to index.html for client-side routing.
 /// </summary>
-app.MapPost(
-    "/clients",
-    async (ICustomerRepository repo, Customer customer) =>
-    {
-        await repo.AddAsync(customer);
-        return Results.Created($"/clients/{customer.CustomerAccountId}", customer);
-    }
-);
-
-/// <summary>
-/// Simple endpoint to get all dishes.
-/// </summary>
-app.MapGet("/dishes", async (IDishRepository repo) => await repo.GetAllAsync());
-
-/// <summary>
-/// Simple endpoint to calculate shortest path between two station IDs.
-/// </summary>
-// app.MapGet(
-//     "/graph/path/{fromId:int}/{toId:int}",
-//     async (IGrapheService service, int fromId, int toId) =>
-//     {
-//         var result = await service.FindShortestPathAsync(fromId, toId);
-//         return result is not null ? Results.Ok(result) : Results.NotFound();
-//     }
-// );
+app.MapFallbackToFile("index.html");
 
 await app.RunAsync();

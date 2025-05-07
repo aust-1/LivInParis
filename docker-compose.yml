@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -20,8 +18,8 @@ services:
 
   api:
     build:
-      context: ./src/LivInParis.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/LivInParis.Api/Dockerfile
     ports:
       - "5105:80"
     depends_on:

@@ -6,3 +6,5 @@ obj
 .Ds_Store
 .vs
 */database/db
+db/*
+frontend/node_modules/*
