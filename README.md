@@ -31,6 +31,24 @@ winget install -e --id Docker.DockerDesktop
 
 ### 🚀 Lancer le projet
 
+```bash
+# 1. Arrêt complet
+# → Dans le terminal du front   : Ctrl + C
+# → À la racine du projet       : docker compose down [--volumes]
+# → (Optionnel si dotnet run)   : Ctrl + C ou Stop-Process dotnet
+
+# 2. Démarrage
+# A) Base + API via Docker
+docker compose up -d --build
+
+# B) Front dans un autre terminal
+cd frontend
+npm start
+
+# C) Navigateur
+open http://localhost:53754/
+```
+
 #### 1. Cloner le dépôt
 
 ```bash

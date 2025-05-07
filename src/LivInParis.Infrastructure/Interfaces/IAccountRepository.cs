@@ -10,9 +10,9 @@ public interface IAccountRepository : IRepository<Account>
     //TODO:Check Password
 
     /// <summary>
-    /// Finds an account by its email.
+    /// Finds an account by its user name.
     /// </summary>
-    /// <param name="email">The email of the account to find.</param>
+    /// <param name="userName">The user name of the account to find.</param>
     /// <returns>A task that represents the asynchronous operation, containing the found account or null if not found.</returns>
-    Task<Account?> FindByEmailAsync(string email);
+    Task<Account?> FindByUserNameAsync(string userName);
 }

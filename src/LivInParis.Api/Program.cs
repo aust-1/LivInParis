@@ -105,9 +105,12 @@ else
 /// </summary>
 app.MapControllers();
 
-/// <summary>
-/// Fallback to index.html for client-side routing.
-/// </summary>
-app.MapFallbackToFile("index.html");
+if (!app.Environment.IsDevelopment())
+{
+    /// <summary>
+    /// Fallback to index.html for client-side routing in production.
+    /// </summary>
+    app.MapFallbackToFile("index.html");
+}
 
 await app.RunAsync();

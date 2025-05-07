@@ -1,34 +1,18 @@
+// Wrapper around all HTTP calls to the .NET API
+const API_BASE = 'http://localhost:5105/api';
 
-
-export async function getClients() {
-    const res = await fetch(`${API}/clients`);
-    return res.json();
-}
-
-export async function createClient(client) {
-    await fetch(`${API}/clients`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(client)
-    });
-}
-
-//TODO: idem pour chefs, dishes, orders…
-
-const API = "http://localhost:5105/api";
-
-export async function login(email, password) {
-    const res = await fetch(`${API}/auth/login`, {
+export async function login(name, password) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ name, password })
     });
     if (!res.ok) throw new Error('Login failed');
     return res.json();
 }
 
 export async function register(data) {
-    const res = await fetch(`${API}/auth/register`, {
+    const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -37,14 +21,20 @@ export async function register(data) {
     return res.json();
 }
 
-// Customer endpoints
+export async function getClients() {
+    const res = await fetch(`${API_BASE}/clients`);
+    if (!res.ok) throw new Error('Failed to fetch clients');
+    return res.json();
+}
+
 export async function fetchDishes() {
-    const res = await fetch(`${API}/dishes`);
+    const res = await fetch(`${API_BASE}/dishes`);
+    if (!res.ok) throw new Error('Failed to fetch dishes');
     return res.json();
 }
 
 export async function placeOrder(order) {
-    const res = await fetch(`${API}/orders`, {
+    const res = await fetch(`${API_BASE}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(order)
@@ -53,17 +43,16 @@ export async function placeOrder(order) {
     return res.json();
 }
 
-// Chef endpoints
 export async function fetchProposals() {
-    const res = await fetch(`${API}/chefs/proposals`);
+    const res = await fetch(`${API_BASE}/chefs/proposals`);
+    if (!res.ok) throw new Error('Failed to fetch proposals');
     return res.json();
 }
 
-// Map & routing
 export async function getRoute(fromId, toId) {
-    const res = await fetch(`${API}/map/route?from=${fromId}&to=${toId}`);
+    const res = await fetch(`${API_BASE}/map/route?from=${fromId}&to=${toId}`);
     if (!res.ok) throw new Error('Failed to fetch route');
     return res.json();
 }
 
-// etc.
+// add other endpoints as needed

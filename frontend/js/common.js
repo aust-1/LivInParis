@@ -1,17 +1,26 @@
-export function showError(message) {
-    alert(`Error: ${message}`);
+// Utilities for UI feedback and auth token management
+export function showError(msg) {
+    const el = document.getElementById('error-message');
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
 }
 
-export function showMessage(message) {
-    alert(message);
+export function showSuccess(msg) {
+    const el = document.getElementById('success-message');
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
 }
 
-export function clearContent() {
-    document.getElementById('content').innerHTML = '';
+export function redirect(path) {
+    if (path.startsWith('#')) {
+        window.location.hash = path;
+    } else {
+        window.location.href = path;
+    }
 }
 
-export async function loadHTML(path) {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error(`Cannot load ${path}`);
-    return await res.text();
+export function setAuthToken(token) {
+    sessionStorage.setItem('authToken', token);
+}
+
+export function getAuthToken() {
+    return sessionStorage.getItem('authToken');
 }
