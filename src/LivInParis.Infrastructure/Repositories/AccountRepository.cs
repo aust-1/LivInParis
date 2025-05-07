@@ -16,6 +16,6 @@ public class AccountRepository(LivInParisContext context)
     /// <inheritdoc/>
     public async Task<Account?> FindByEmailAsync(string email)
     {
-        return await _context.Accounts.SingleOrDefaultAsync(a => a.AccountEmail == email);
+        return await _context.Accounts.SingleOrDefaultAsync(a => a.AccountUserName == email);
     }
 }

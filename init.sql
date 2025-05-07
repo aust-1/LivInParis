@@ -13,10 +13,10 @@ CREATE TABLE
 CREATE TABLE
    Account (
       account_id INT AUTO_INCREMENT,
-      account_email VARCHAR(100) NOT NULL,
+      account_user_name VARCHAR(100) NOT NULL,
       account_password VARCHAR(50) NOT NULL,
       PRIMARY KEY (account_id),
-      UNIQUE (account_email)
+      UNIQUE (account_user_name)
    );
 
 CREATE TABLE

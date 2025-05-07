@@ -1,1 +1,45 @@
-//TODO: ajouter des styles pour les pages
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.4;
+    background: #f9f9f9;
+    color: #333;
+}
+
+header,
+footer {
+    background: #222;
+    color: #fff;
+    padding: 1rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 1rem;
+}
+
+button {
+    cursor: pointer;
+}
+
+input,
+select {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    width: 100%;
+}

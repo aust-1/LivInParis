@@ -8,7 +8,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order;
 /// Represents an account in the system.
 /// </summary>
 [Table("Account")]
-[Index(nameof(AccountEmail), IsUnique = true, Name = "IX_Account_Email")]
+[Index(nameof(AccountUserName), IsUnique = true, Name = "IX_Account_User_Name")]
 public class Account
 {
     /// <summary>
@@ -22,11 +22,11 @@ public class Account
     public int AccountId { get; set; }
 
     /// <summary>
-    /// Unique email address of the account.
+    /// Unique user name of the account.
     /// </summary>
     [Required]
     [MaxLength(100)]
-    public required string AccountEmail { get; set; }
+    public required string AccountUserName { get; set; }
 
     /// <summary>
     /// Password of the account.

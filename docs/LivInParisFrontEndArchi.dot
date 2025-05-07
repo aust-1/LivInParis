@@ -7,17 +7,20 @@ digraph LivInParisFrontend {
     subgraph cluster_auth {
         label="🔒 Authentication";
         style=filled;color=lightgrey;node [style=filled,color=white];
-        Login       [label="Login"];
-        Register    [label="Register"];
-        MainMenu    [shape=ellipse, style=filled, fillcolor=lightblue, label="Main Menu"];
-        ErrorPage   [label="Error\n(invalid creds)", style="dotted"];
+        Login           [label="Login"];
+        Register        [label="Register"];
+        MainMenu        [shape=ellipse, style=filled, fillcolor=lightblue, label="Main Menu"];
+        ErrorPage       [label="Error\n(invalid creds)", style="dotted"];
+        ForgotPassword  [label="Forgot Password", style=dotted];
 
-        Login -> MainMenu      [label="success"];
-        Login -> ErrorPage     [label="fail", style=dotted];
-        Login -> Register      [taillabel="Sign Up", constraint=false, labeldistance=2];
-        Register -> MainMenu   [label="success"];
-        Register -> ErrorPage  [label="fail", style=dotted];
-        Register -> Login      [taillabel="Sign In", constraint=false, labeldistance=2];
+        Login -> MainMenu       [label="success"];
+        Login -> ErrorPage      [label="fail", style=dotted];
+        Login -> Register       [taillabel="Sign Up", constraint=false, labeldistance=2];
+        Login -> ForgotPassword [label="Forgot Password", style=dashed];
+        ForgotPassword -> Login [label="Back to Login", style=dashed];
+        Register -> MainMenu    [label="success"];
+        Register -> ErrorPage   [label="fail", style=dotted];
+        Register -> Login       [taillabel="Sign In", constraint=false, labeldistance=2];
     }
 
     /* --- MAIN MENU --- */
