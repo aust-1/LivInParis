@@ -21,6 +21,13 @@ public interface ICustomerRepository : IRepository<Customer>
     );
 
     /// <summary>
+    /// Retrieves the rating of a specific customer.
+    /// </summary>
+    /// <param name="customer">The customer.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the rating of the customer.</returns>
+    Task<decimal?> GetCustomerRatingAsync(Customer customer);
+
+    /// <summary>
     /// Retrieves the top customers by order count from the database.
     /// </summary>
     /// <param name="from">

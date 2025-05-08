@@ -109,9 +109,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.Property(a => a.AddressNumber).IsRequired();
             e.HasCheckConstraint("CK_Address_Number_Positive", "`AddressNumber` > 0");
             e.Property(a => a.Street).IsRequired().HasMaxLength(100);
-            e.Property(a => a.NearestStation)
-                .HasConversion(station => station!.ToString(), value => new Station(value))
-                .HasMaxLength(50);
 
             e.HasIndex(x => new { x.AddressNumber, x.Street })
                 .IsUnique()
@@ -133,12 +130,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.ToTable("Chef");
             e.HasKey(c => c.ChefAccountId);
             e.Property(c => c.ChefIsBanned).IsRequired();
-            e.Property(c => c.ChefRating).HasColumnType("decimal(2,1)");
-
-            e.HasCheckConstraint(
-                "CK_Chef_Rating",
-                "`ChefRating` IS NULL OR (`ChefRating` BETWEEN 1.0 AND 5.0)"
-            );
 
             e.HasOne<Account>()
                 .WithOne()
@@ -155,12 +146,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.ToTable("Customer");
             e.HasKey(c => c.CustomerAccountId);
             e.Property(c => c.CustomerIsBanned).IsRequired();
-            e.Property(c => c.CustomerRating).HasColumnType("decimal(2,1)");
-
-            e.HasCheckConstraint(
-                "CK_Customer_Rating",
-                "`CustomerRating` IS NULL OR (`CustomerRating` BETWEEN 1.0 AND 5.0)"
-            );
 
             e.HasOne<Account>()
                 .WithOne()

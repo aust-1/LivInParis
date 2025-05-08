@@ -5,7 +5,6 @@ CREATE TABLE
       address_id INT AUTO_INCREMENT,
       address_number INT NOT NULL,
       street VARCHAR(100) NOT NULL,
-      nearest_station VARCHAR(50),
       PRIMARY KEY (address_id),
       UNIQUE (address_number, street)
    );
@@ -22,7 +21,6 @@ CREATE TABLE
 CREATE TABLE
    Chef (
       account_id INT,
-      chef_rating DECIMAL(2, 1) CHECK (chef_rating BETWEEN 1 AND 5),
       chef_is_banned BOOLEAN NOT NULL,
       address_id INT NOT NULL,
       PRIMARY KEY (account_id),
@@ -33,7 +31,6 @@ CREATE TABLE
 CREATE TABLE
    Customer (
       account_id INT,
-      customer_rating DECIMAL(2, 1) CHECK (customer_rating BETWEEN 1 AND 5),
       customer_is_banned BOOLEAN NOT NULL,
       PRIMARY KEY (account_id),
       FOREIGN KEY (account_id) REFERENCES Account (account_id) ON DELETE CASCADE

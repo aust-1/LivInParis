@@ -24,16 +24,36 @@ public class CustomerRepository(LivInParisContext context)
         var min = minRating ?? 0m;
         var max = maxRating ?? 5m;
 
-        var query = _context
-            .Customers.Where(c => c.CustomerRating >= min)
-            .Where(c => c.CustomerRating <= max);
+        IQueryable<Customer>? query = _context.Customers;
 
-        if (isBanned.HasValue)
+        if (!isBanned.HasValue)
         {
-            query = query.Where(c => c.CustomerIsBanned == isBanned.Value);
+            query = query.Where(c => c.CustomerIsBanned == isBanned!.Value);
         }
 
-        return await query.ToListAsync();
+        var customers = await query.ToListAsync();
+        var result = new List<Customer>();
+        foreach (var c in customers)
+        {
+            var rating = await GetCustomerRatingAsync(c);
+            if (rating >= min && rating <= max)
+            {
+                result.Add(c);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<decimal?> GetCustomerRatingAsync(Customer customer)
+    {
+        var query = _context
+            .Reviews.Include(r => r.OrderLine)
+            .ThenInclude(ol => ol!.OrderTransaction)
+            .Where(r => r.OrderLine!.OrderTransaction!.Customer == customer)
+            .Where(r => r.ReviewerType == ReviewerType.Chef);
+        return await query.AverageAsync(r => r.ReviewRating);
     }
 
     /// <inheritdoc/>

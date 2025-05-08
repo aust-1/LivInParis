@@ -21,6 +21,13 @@ public interface IChefRepository : IRepository<Chef>
     );
 
     /// <summary>
+    /// Retrieves the rating of a specific chef.
+    /// </summary>
+    /// <param name="chef">The chef.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the rating of the chef.</returns>
+    Task<decimal?> GetChefRatingAsync(Chef chef);
+
+    /// <summary>
     /// Retrieves customers served by a specific chef within a date range.
     /// </summary>
     /// <param name="chef">The chef.</param>

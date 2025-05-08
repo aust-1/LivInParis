@@ -16,16 +16,10 @@ public class Chef
     public int ChefAccountId { get; set; }
 
     /// <summary>
-    /// The rating of the chef.
-    /// </summary>
-    [Range(1.0, 5.0)]
-    public decimal? ChefRating { get; set; }
-
-    /// <summary>
     /// Indicates whether the chef is banned from the platform.
     /// </summary>
     [Required]
-    public required bool ChefIsBanned { get; set; }
+    public bool ChefIsBanned { get; set; }
 
     /// <summary>
     /// The ID of the address associated with the chef.
@@ -55,5 +49,3 @@ public class Chef
     /// </summary>
     public ICollection<MenuProposal> MenuProposals { get; set; } = new List<MenuProposal>();
 }
-
-//TODO: delete rating

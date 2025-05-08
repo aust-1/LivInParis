@@ -11,7 +11,7 @@ public class ChefService(IOrderLineRepository orderLineRepo) : IChefService
 
     public Task<IEnumerable<OrderLine>> GetIncomingOrdersAsync(int chefId)
     {
-        var chef = new Chef { AccountId = chefId };
+        var chef = new Chef { ChefAccountId = chefId };
         return _orderLineRepo.ReadAsync(chef: chef, status: OrderLineStatus.Pending);
     }
 
@@ -20,7 +20,7 @@ public class ChefService(IOrderLineRepository orderLineRepo) : IChefService
         var ol = await _orderLineRepo.GetByIdAsync(orderLineId);
         if (ol != null)
         {
-            ol.OrderLineStatus = OrderLineStatus.Prepared;
+            ol.OrderLineStatus = OrderLineStatus.Preparing;
             _orderLineRepo.Update(ol);
             await _orderLineRepo.SaveChangesAsync();
         }
@@ -39,7 +39,7 @@ public class ChefService(IOrderLineRepository orderLineRepo) : IChefService
 
     public Task<IEnumerable<OrderLine>> GetDeliveriesAsync(int chefId)
     {
-        var chef = new Chef { AccountId = chefId };
+        var chef = new Chef { ChefAccountId = chefId };
         return _orderLineRepo.ReadAsync(chef: chef, status: OrderLineStatus.Delivered);
     }
 

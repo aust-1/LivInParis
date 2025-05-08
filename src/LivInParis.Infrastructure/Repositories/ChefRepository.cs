@@ -22,14 +22,35 @@ public class ChefRepository(LivInParisContext context) : Repository<Chef>(contex
         var min = minRating ?? 0m;
         var max = maxRating ?? 5m;
 
-        var query = _context.Chefs.Where(c => c.ChefRating >= min).Where(c => c.ChefRating <= max);
+        IQueryable<Chef>? query = _context.Chefs;
 
-        if (isBanned.HasValue)
+        if (!isBanned.HasValue)
         {
-            query = query.Where(c => c.ChefIsBanned == isBanned.Value);
+            query = query.Where(c => c.ChefIsBanned == isBanned!.Value);
         }
 
-        return await query.ToListAsync();
+        var chefs = await query.ToListAsync();
+        var result = new List<Chef>();
+        foreach (var c in chefs)
+        {
+            var rating = await GetChefRatingAsync(c);
+            if (rating >= min && rating <= max)
+            {
+                result.Add(c);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<decimal?> GetChefRatingAsync(Chef chef)
+    {
+        var query = _context
+            .Reviews.Include(r => r.OrderLine)
+            .Where(r => r.OrderLine!.Chef == chef)
+            .Where(r => r.ReviewerType == ReviewerType.Customer);
+        return await query.AverageAsync(r => r.ReviewRating);
     }
 
     /// <inheritdoc/>

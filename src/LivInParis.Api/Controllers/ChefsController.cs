@@ -34,25 +34,22 @@ public class ChefsController : ControllerBase
         return CreatedAtAction(nameof(GetProposals), null);
     }
 
-    // PUT: api/chefs/proposals/{id}
-    [HttpPut("proposals/{chefId}/{date:datetime}")]
-    public async Task<IActionResult> UpdateProposal(
-        int chefId,
-        DateTime date,
-        [FromBody] MenuProposal proposal
-    )
+    // PUT: api/chefs/proposals
+    [HttpPut("proposals/{chefId}")]
+    public async Task<IActionResult> UpdateProposal(int chefId, [FromBody] MenuProposal proposal)
     {
-        proposal.AccountId = chefId;
-        proposal.ProposalDate = date;
+        var date = DateTime.Now;
+        proposal.ChefAccountId = chefId;
+        proposal.ProposalDate = DateOnly.FromDateTime(date);
         await _proposalSvc.UpdateAsync(proposal);
         return NoContent();
     }
 
-    // DELETE: api/chefs/proposals/{id}
-    [HttpDelete("proposals/{chefId}/{date:datetime}")]
-    public async Task<IActionResult> DeleteProposal(int chefId, DateTime date)
+    // DELETE: api/chefs/proposals
+    [HttpDelete("proposals/{chefId}")]
+    public async Task<IActionResult> DeleteProposal(int chefId)
     {
-        await _proposalSvc.DeleteAsync(chefId, date);
+        await _proposalSvc.DeleteAsync(chefId, DateTime.Now);
         return NoContent();
     }
 

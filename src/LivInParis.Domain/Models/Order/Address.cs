@@ -37,12 +37,6 @@ public class Address
     public required string Street { get; set; }
 
     /// <summary>
-    /// The nearest station to the address.
-    /// </summary>
-    [MaxLength(50)]
-    public Station? NearestStation { get; set; }
-
-    /// <summary>
     /// Chefs associated with this address.
     /// </summary>
     public ICollection<Chef> Chefs { get; set; } = new List<Chef>();
