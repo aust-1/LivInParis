@@ -1,18 +1,12 @@
-// import { loadClientsPage } from "./clients.js";
-// import { loadDishesPage } from "./dishes.js";
-
-// document.getElementById("nav-clients").onclick = () => loadClientsPage();
-// document.getElementById("nav-dishes").onclick = () => loadDishesPage();
-
-// loadClientsPage();
-
-// //TODO: faire le même pour les autres pages (dishes, orders, chefs…)
-
-import { getAuthToken, showError } from './common.js';
+import { getAuthToken, showError, clearAuthToken } from './common.js';
 
 // Setup hash-based routing
 window.addEventListener('load', loadPage);
 window.addEventListener('hashchange', loadPage);
+// Logout button
+document.getElementById('logout-link')?.addEventListener('click', e => {
+    e.preventDefault(); clearAuthToken(); redirect('#/auth/login');
+});
 
 async function loadPage() {
     const content = document.getElementById('content');
@@ -38,7 +32,9 @@ async function loadPage() {
     // TODO: initialize page-specific scripts if needed
     // Initialize loaded page logic
     try {
-        if (group === 'customer') {
+        if (group === 'auth') {
+            import('./auth.js').then(m => m.initPage(page));
+        } else if (group === 'customer') {
             import('./customer.js').then(m => m.initPage(page));
         } else if (group === 'chef') {
             import('./chef.js').then(m => m.initPage(page));

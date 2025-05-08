@@ -3,6 +3,8 @@ using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Data;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
 using LivInParisRoussilleTeynier.Infrastructure.Repositories;
+using LivInParisRoussilleTeynier.Services.Interfaces;
+using LivInParisRoussilleTeynier.Services.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SpaServices.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,16 @@ builder.Services.AddScoped<IDishRepository, DishRepository>();
 builder.Services.AddScoped<IOrderTransactionRepository, OrderTransactionRepository>();
 builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
 builder.Services.AddScoped<IContainsRepository, ContainsRepository>();
+
+/// <summary>
+/// Register service layer implementations
+/// </summary>
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IDishService, DishService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderLineService, OrderLineService>();
+builder.Services.AddScoped<IMenuProposalService, MenuProposalService>();
+builder.Services.AddScoped<IChefService, ChefService>();
 
 /// <summary>
 /// Register graph service for pathfinding and algorithms.

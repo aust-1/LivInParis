@@ -24,3 +24,7 @@ export function setAuthToken(token) {
 export function getAuthToken() {
     return sessionStorage.getItem('authToken');
 }
+
+export function clearAuthToken() {
+    sessionStorage.removeItem('authToken');
+}
