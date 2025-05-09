@@ -464,7 +464,7 @@ public class Graph<T>
     /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
     /// <param name="end">The ending node or identifier.</param>
     /// <returns>
-    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/>.
+    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/> and the total time taken.
     /// </returns>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
@@ -472,7 +472,7 @@ public class Graph<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public List<Node<T>> GetPath<TU, TV>(TU start, TV end)
+    public (List<Node<T>> Path, double TotalTime) GetPath<TU, TV>(TU start, TV end)
         where TU : notnull
         where TV : notnull
     {

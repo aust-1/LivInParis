@@ -8,8 +8,7 @@ namespace LivInParisRoussilleTeynier.Services.Services;
 /// </summary>
 public class TransactionService(
     IOrderLineRepository orderLineRepository,
-    IOrderTransactionRepository transactionRepository,
-    ICustomerRepository customerRepository
+    IOrderTransactionRepository transactionRepository
 ) : ITransactionService
 {
     private readonly IOrderLineRepository _orderLineRepository = orderLineRepository;

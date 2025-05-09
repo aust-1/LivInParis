@@ -246,14 +246,6 @@ public class OrderStatusDto
     public string? Status { get; set; }
 }
 
-public class DeliveryDto
-{
-    public int DeliveryId { get; set; }
-    public int OrderLineId { get; set; }
-    public DateTime ScheduledAt { get; set; }
-    public string? Status { get; set; }
-}
-
 #endregion Chef Orders and Delivery DTOs
 
 #region Statistics DTOs
@@ -283,18 +275,15 @@ public class CuisinePreferenceDto
 
 public class RouteDto
 {
-    public int OrderId { get; set; }
-    public IList<RouteSegmentDto>? Segments { get; set; }
-    public decimal TotalDistance { get; set; }
-    public TimeSpan EstimatedTime { get; set; }
+    public IList<StationDto>? Stations { get; set; }
+    public double TotalTime { get; set; }
 }
 
-public class RouteSegmentDto
+public class StationDto
 {
-    public string? From { get; set; }
-    public string? To { get; set; }
-    public decimal Distance { get; set; }
-    public TimeSpan Duration { get; set; }
+    public required string Name { get; set; }
+    public double LongitudeRadians { get; set; }
+    public double LatitudeRadians { get; set; }
 }
 
 #endregion Routing DTOs

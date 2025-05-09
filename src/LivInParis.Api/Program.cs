@@ -3,7 +3,7 @@ using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Data;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
 using LivInParisRoussilleTeynier.Infrastructure.Repositories;
-using LivInParisRoussilleTeynier.Services.Interfaces;
+using LivInParisRoussilleTeynier.Services;
 using LivInParisRoussilleTeynier.Services.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SpaServices.Extensions;
@@ -12,6 +12,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Metro.InitializeMetro();
 
 /// <summary>
 /// Configure database context with MySQL using connection string from appsettings.json.

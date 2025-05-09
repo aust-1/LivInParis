@@ -202,15 +202,8 @@ public interface ITransactionService
 /// <summary>
 /// Defines operations for retrieving and managing customer orders.
 /// </summary>
-public interface IOrderlineService
+public interface IOrderLineService
 {
-    /// <summary>
-    /// Retrieves all order lines for a specific transaction.
-    /// </summary>
-    /// <param name="transactionId">The identifier of the transaction.</param>
-    /// <returns>A task representing the asynchronous operation, containing a list of order lines.</returns>
-    Task<IEnumerable<TransactionDto>> GetOrderLinesByTransactionAsync(int transactionId);
-
     /// <summary>
     /// Retrieves order line details by orderline identifier.
     /// </summary>
@@ -277,22 +270,6 @@ public interface IIncomingOrderService
     Task UpdateOrderStatusAsync(int orderId, OrderStatusDto statusDto);
 }
 
-/// <summary>
-/// Defines operations for managing delivery tracking for chefs.
-/// </summary>
-public interface IDeliveryService
-{
-    /// <summary>
-    /// Retrieves deliveries assigned to a chef.
-    /// </summary>
-    Task<IEnumerable<DeliveryDto>> GetDeliveriesByChefAsync(int chefId);
-
-    /// <summary>
-    /// Retrieves details of a specific delivery.
-    /// </summary>
-    Task<DeliveryDto> GetDeliveryDetailAsync(int deliveryId);
-}
-
 #endregion
 
 #region Statistics
@@ -326,19 +303,26 @@ public interface IStatisticsService
     );
 }
 
-#endregion
+#endregion Statistics
 
-#region Routing
+#region Graph
 
 /// <summary>
-/// Defines operations for calculating delivery routes.
+/// Defines operations for graph‐based station routing.
 /// </summary>
-public interface IRouteCalculator
+public interface IGraphService
 {
     /// <summary>
-    /// Calculates the optimal route for a given order.
+    /// Finds the shortest path between two addresses.
     /// </summary>
-    Task<RouteDto> CalculateRouteAsync(int orderId);
+    /// <param name="fromAddress">The starting address.</param>
+    /// <param name="toAddress">The destination address.</param>
+    /// <returns>
+    /// A sequence of <see cref="RouteDto"/> objects representing the path
+    /// from source to destination, inclusive.
+    /// </returns>
+    Task<IEnumerable<RouteDto>> GetShortestPathAsync(string fromAddress, string toAddress);
 }
 
-#endregion
+
+#endregion Graph
