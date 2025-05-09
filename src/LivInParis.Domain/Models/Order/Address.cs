@@ -20,6 +20,7 @@ public class Address
     /// </remarks>
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("address_id")]
     public int AddressId { get; set; }
 
     /// <summary>
@@ -27,6 +28,7 @@ public class Address
     /// </summary>
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Address number must be positive.")]
+    [Column("address_number")]
     public required int AddressNumber { get; set; }
 
     /// <summary>
@@ -34,6 +36,7 @@ public class Address
     /// </summary>
     [Required]
     [MaxLength(100)]
+    [Column("street")]
     public required string Street { get; set; }
 
     /// <summary>

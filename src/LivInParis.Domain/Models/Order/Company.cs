@@ -15,6 +15,7 @@ public class Company
     /// The primary key for the company account.
     /// </summary>
     [Key]
+    [Column("account_id")]
     public int CompanyAccountId { get; set; }
 
     /// <summary>
@@ -22,18 +23,21 @@ public class Company
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("company_name")]
     public required string CompanyName { get; set; }
 
     /// <summary>
     /// The first name of the contact person for the company.
     /// </summary>
     [MaxLength(50)]
+    [Column("contact_first_name")]
     public string? ContactFirstName { get; set; }
 
     /// <summary>
     /// The last name of the contact person for the company.
     /// </summary>
     [MaxLength(50)]
+    [Column("contact_last_name")]
     public string? ContactLastName { get; set; }
 
     /// <summary>

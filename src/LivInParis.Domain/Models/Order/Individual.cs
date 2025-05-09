@@ -15,6 +15,7 @@ public class Individual
     /// The primary key for the individual account.
     /// </summary>
     [Key]
+    [Column("account_id")]
     public int IndividualAccountId { get; set; }
 
     /// <summary>
@@ -22,6 +23,7 @@ public class Individual
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("last_name")]
     public required string LastName { get; set; }
 
     /// <summary>
@@ -29,6 +31,7 @@ public class Individual
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("first_name")]
     public required string FirstName { get; set; }
 
     /// <summary>
@@ -36,6 +39,7 @@ public class Individual
     /// </summary>
     [Required]
     [MaxLength(100)]
+    [Column("personal_email")]
     public required string PersonalEmail { get; set; }
 
     /// <summary>
@@ -43,12 +47,14 @@ public class Individual
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("phone_number")]
     public required string PhoneNumber { get; set; }
 
     /// <summary>
     /// The Id of the address associated with the individual.
     /// </summary>
     [Required]
+    [Column("address_id")]
     public int AddressId { get; set; }
 
     /// <summary>

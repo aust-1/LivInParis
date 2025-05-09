@@ -1,10 +1,10 @@
 const API_BASE = `${window.location.protocol}//${window.location.hostname}:53754/api`;
 
-export async function login(name, password) {
+export async function login(username, password) {
     const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, password })
+        body: JSON.stringify({ username, password })
     });
     if (!res.ok) throw new Error('Login failed');
     return res.json();

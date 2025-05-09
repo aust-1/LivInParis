@@ -1,4 +1,4 @@
-import { getAuthToken, showError, clearAuthToken } from './common.js';
+import { getAuthToken, showError, clearAuthToken, redirect } from './common.js';
 
 // Setup hash-based routing
 window.addEventListener('load', loadPage);

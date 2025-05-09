@@ -5,7 +5,9 @@ import { showError, redirect, getCart, saveCart } from './common.js';
 // Initialize a page based on its name
 export function initPage(page) {
     switch (page) {
-        case 'dashboard': updateCartCount(); break;
+        case 'dashboard':
+            updateCartCount();
+            break;
         case 'browse-dishes': initBrowse(); break;
         case 'cart': initCart(); break;
         case 'checkout': initCheckout(); break;
@@ -205,14 +207,21 @@ async function initProfile() {
 
 async function initEditProfile() {
     try {
-        const form = document.getElementById('edit-profile-form');
         const profile = await fetchProfile();
-        form.name.value = profile.name;
-        form.address.value = profile.address;
-        form.addEventListener('submit', async e => {
+        const nameEl = document.getElementById('edit-name');
+        const emailEl = document.getElementById('edit-email');
+        const addressEl = document.getElementById('edit-address');
+        nameEl.value = profile.username || profile.name || '';
+        emailEl.value = profile.email || '';
+        addressEl.value = profile.address || '';
+        document.getElementById('edit-profile-form').addEventListener('submit', async e => {
             e.preventDefault();
             try {
-                const data = { name: form.name.value, address: form.address.value };
+                const data = {
+                    name: nameEl.value,
+                    email: emailEl.value,
+                    address: addressEl.value
+                };
                 await updateProfile(data);
                 redirect('#/customer/profile');
             } catch (err) {

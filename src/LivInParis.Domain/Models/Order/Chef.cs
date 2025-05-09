@@ -13,18 +13,21 @@ public class Chef
     /// The primary key for the chef account.
     /// </summary>
     [Key]
+    [Column("account_id")]
     public int ChefAccountId { get; set; }
 
     /// <summary>
     /// Indicates whether the chef is banned from the platform.
     /// </summary>
     [Required]
+    [Column("chef_is_banned")]
     public bool ChefIsBanned { get; set; }
 
     /// <summary>
     /// The ID of the address associated with the chef.
     /// </summary>
     [Required]
+    [Column("address_id")]
     public required int AddressId { get; set; }
 
     /// <summary>

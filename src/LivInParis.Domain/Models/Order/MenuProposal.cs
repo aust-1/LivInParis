@@ -21,6 +21,7 @@ public class MenuProposal
     /// The Id of the chef associated with this proposal.
     /// </summary>
     [Required]
+    [Column("account_id")]
     public required int ChefAccountId { get; set; }
 
     /// <summary>
@@ -28,12 +29,14 @@ public class MenuProposal
     /// The date of the proposal.
     /// </summary>
     [Required]
+    [Column("proposal_date", TypeName = "date")]
     public required DateOnly ProposalDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     /// <summary>
     /// The Id of the dish associated with this proposal.
     /// </summary>
     [Required]
+    [Column("dish_id")]
     public required int DishId { get; set; }
 
     /// <summary>

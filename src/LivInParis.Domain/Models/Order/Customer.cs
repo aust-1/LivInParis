@@ -13,12 +13,14 @@ public class Customer
     /// The primary key for the customer account.
     /// </summary>
     [Key]
+    [Column("account_id")]
     public int CustomerAccountId { get; set; }
 
     /// <summary>
     /// Indicates whether the customer is banned from the platform.
     /// </summary>
     [Required]
+    [Column("customer_is_banned")]
     public bool CustomerIsBanned { get; set; }
 
     /// <summary>
@@ -33,5 +35,3 @@ public class Customer
     public ICollection<OrderTransaction> OrderTransactions { get; set; } =
         new List<OrderTransaction>();
 }
-
-//TODO: check if a company already exists before creating an individual

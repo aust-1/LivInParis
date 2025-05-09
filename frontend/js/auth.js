@@ -5,10 +5,10 @@ document.addEventListener('submit', async e => {
     const form = e.target;
     if (form.id === 'login-form') {
         e.preventDefault();
-        const name = form.name.value;
+        const username = form.name.value;
         const password = form.password.value;
         try {
-            const data = await login(name, password);
+            const data = await login(username, password);
             setAuthToken(data.token);
             redirect('#/customer/dashboard');
         } catch (err) {

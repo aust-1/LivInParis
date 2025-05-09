@@ -14,6 +14,7 @@ public class Contains
     /// The ingredient associated with this dish.
     /// </summary>
     [Required]
+    [Column("ingredient_id")]
     public required int IngredientId { get; set; }
 
     /// <summary>
@@ -21,6 +22,7 @@ public class Contains
     /// The dish associated with this ingredient.
     /// </summary>
     [Required]
+    [Column("dish_id")]
     public required int DishId { get; set; }
 
     /// <summary>

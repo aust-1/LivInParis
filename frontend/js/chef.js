@@ -10,7 +10,13 @@ import { showError, redirect } from './common.js';
 // Initialize page based on sub-route
 export function initPage(page) {
     switch (page) {
-        case 'dashboard': /* nothing to init */ break;
+        case 'dashboard':
+            // Dashboard sub-nav links
+            document.getElementById('nav-manage-menu')?.addEventListener('click', () => redirect('#/chef/manage-menu'));
+            document.getElementById('nav-incoming-orders')?.addEventListener('click', () => redirect('#/chef/incoming-orders'));
+            document.getElementById('nav-deliveries')?.addEventListener('click', () => redirect('#/chef/deliveries'));
+            document.getElementById('nav-chef-profile')?.addEventListener('click', () => redirect('#/chef/profile'));
+            break;
         case 'manage-menu': initManageMenu(); break;
         case 'create-proposal': initCreateProposal(); break;
         case 'edit-proposal': initEditProposal(); break;
