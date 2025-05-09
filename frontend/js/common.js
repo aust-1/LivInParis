@@ -1,6 +1,7 @@
 // Utilities for UI feedback and auth token management
 export function showError(msg) {
-    const el = document.getElementById('error-message');
+    // Display error message in the first visible .error-message element
+    const el = document.querySelector('.error-message');
     if (el) { el.textContent = msg; el.style.display = 'block'; }
 }
 
@@ -27,4 +28,13 @@ export function getAuthToken() {
 
 export function clearAuthToken() {
     sessionStorage.removeItem('authToken');
+}
+
+// Cart management
+export function getCart() {
+    const c = sessionStorage.getItem('cart');
+    return c ? JSON.parse(c) : [];
+}
+export function saveCart(cart) {
+    sessionStorage.setItem('cart', JSON.stringify(cart));
 }

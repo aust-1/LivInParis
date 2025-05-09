@@ -162,7 +162,7 @@ public class Graph<T>
                 }
             }
         }
-        _diameter = _distanceMatrix.Cast<(double Weight, List<Node<T>> Path)>().Max(p => p.Weight);
+        //_diameter = _distanceMatrix.Cast<double>().Max();
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public class Graph<T>
                 }
             }
         }
-        _diameter = _distanceMatrix.Cast<(double Weight, List<Node<T>> Path)>().Max(p => p.Weight);
+        //_diameter = _distanceMatrix.Cast<double>().Max();
     }
 
     #endregion Constructors

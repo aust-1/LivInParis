@@ -1,4 +1,3 @@
-// Wrapper around all HTTP calls to the .NET API
 const API_BASE = 'http://localhost:5105/api';
 
 export async function login(name, password) {
@@ -33,6 +32,13 @@ export async function fetchDishes() {
     return res.json();
 }
 
+export async function fetchDishDetail(id) {
+    const dishes = await fetchDishes();
+    const dish = dishes.find(d => d.id.toString() === id.toString());
+    if (!dish) throw new Error('Dish not found');
+    return dish;
+}
+
 export async function placeOrder(order) {
     const res = await fetch(`${API_BASE}/orders`, {
         method: 'POST',
@@ -55,7 +61,6 @@ export async function getRoute(fromId, toId) {
     return res.json();
 }
 
-// Customer endpoints
 export async function fetchMyOrders() {
     const res = await fetch(`${API_BASE}/orders/my`);
     if (!res.ok) throw new Error('Failed to fetch your orders');
@@ -82,7 +87,6 @@ export async function updateProfile(data) {
     return res.json();
 }
 
-// Chef endpoints
 export async function fetchChefProposals() {
     const res = await fetch(`${API_BASE}/chefs/proposals`);
     if (!res.ok) throw new Error('Failed to fetch menu proposals');
@@ -152,7 +156,6 @@ export async function updateChefProfile(data) {
     return res.json();
 }
 
-// Statistics endpoints (examples)
 export async function fetchStatsOrdersByChef() {
     const res = await fetch(`${API_BASE}/stats/orders-by-chef`);
     if (!res.ok) throw new Error('Failed to fetch stats orders by chef');
@@ -176,5 +179,3 @@ export async function fetchStatsTopCuisines() {
     if (!res.ok) throw new Error('Failed to fetch stats top cuisines');
     return res.json();
 }
-
-// add other endpoints as needed

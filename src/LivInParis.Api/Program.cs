@@ -30,6 +30,13 @@ builder.Services.AddScoped<IOrderTransactionRepository, OrderTransactionReposito
 builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
 builder.Services.AddScoped<IContainsRepository, ContainsRepository>();
 
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IIndividualRepository, IndividualRepository>();
+builder.Services.AddScoped<IMenuProposalRepository, MenuProposalRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
 /// <summary>
 /// Register service layer implementations
 /// </summary>
@@ -44,6 +51,7 @@ builder.Services.AddScoped<IGraphService, GraphService>();
 builder.Services.AddScoped<IIncomingOrderService, IncomingOrderService>();
 builder.Services.AddScoped<IMenuProposalService, MenuProposalService>();
 builder.Services.AddScoped<IOrderLineService, OrderLineService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 //builder.Services.AddScoped<IReviewService, ReviewService>();
 //builder.Services.AddScoped<IStatisticsService, StatisticsService>();
@@ -75,17 +83,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 /// <summary>
-/// Serve production build of frontend from "frontend/build" folder.
+/// Serve production build of frontend from "frontend" folder.
 /// </summary>
 builder.Services.AddSpaStaticFiles(options =>
 {
-    options.RootPath = Path.Combine(builder.Environment.ContentRootPath, "frontend", "build");
+    options.RootPath = Path.Combine(builder.Environment.ContentRootPath, "frontend");
 });
 
 var app = builder.Build();
 
 Metro.InitializeMetro();
-await DatabaseSeeder.SeedFromExcelAsync(builder.Services.BuildServiceProvider());
 
 app.UseCors("AllowAll");
 
@@ -98,12 +105,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     /// <summary>
-    /// Proxy to frontend dev server in development mode.
+    /// Serve frontend in development from static files or external dev server specified in config.
     /// </summary>
     app.UseSpa(spa =>
     {
         spa.Options.SourcePath = "frontend";
-        spa.UseProxyToSpaDevelopmentServer("http://host.docker.internal:53754");
+        var spaUrl = builder.Configuration["SpaDevServerUrl"];
+        if (!string.IsNullOrEmpty(spaUrl))
+            spa.UseProxyToSpaDevelopmentServer(spaUrl);
     });
 }
 else

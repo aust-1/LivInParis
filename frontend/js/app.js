@@ -39,7 +39,7 @@ async function loadPage() {
         } else if (group === 'chef') {
             import('./chef.js').then(m => m.initPage(page));
         } else if (group === 'stats') {
-            import('./stats.js').then(m => m.initPage());
+            import('./stats.js').then(m => m.initPage(page));
         }
     } catch (err) {
         console.error('Init page failed', err);

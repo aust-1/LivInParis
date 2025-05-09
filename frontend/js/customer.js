@@ -1,16 +1,18 @@
 // Customer-side interactions: browsing, cart, checkout
-import { fetchDishes, placeOrder, fetchMyOrders, fetchOrderDetail, fetchProfile, updateProfile } from './api.js';
-import { showError, redirect } from './common.js';
+import { fetchDishes, placeOrder, fetchMyOrders, fetchOrderDetail, fetchProfile, updateProfile, fetchDishDetail } from './api.js';
+import { showError, redirect, getCart, saveCart } from './common.js';
 
 // Initialize a page based on its name
 export function initPage(page) {
     switch (page) {
-        case 'dashboard': /* nothing to init */ break;
+        case 'dashboard': updateCartCount(); break;
         case 'browse-dishes': initBrowse(); break;
         case 'cart': initCart(); break;
         case 'checkout': initCheckout(); break;
         case 'my-orders': initMyOrders(); break;
         case 'order-detail': initOrderDetail(); break;
+        case 'dish-detail': initDishDetail(); break;
+        case 'order-confirmation': initOrderConfirmation(); break;
         case 'profile': initProfile(); break;
         case 'edit-profile': initEditProfile(); break;
         // other pages don't require JS logic
@@ -24,17 +26,47 @@ export function initPage(page) {
         if (id === 'btn-continue-shopping') redirect('#/customer/browse-dishes');
         if (id === 'btn-checkout') redirect('#/customer/checkout');
     });
+    // View orders button on confirmation
+    document.addEventListener('click', e => {
+        if (e.target.id === 'btn-view-orders') redirect('#/customer/my-orders');
+    });
 }
 
 async function initBrowse() {
     try {
-        const list = document.getElementById('dishes-list');
+        const listEl = document.getElementById('dishes-list');
         const dishes = await fetchDishes();
+        listEl.innerHTML = '';
         dishes.forEach(d => {
-            const item = document.createElement('div');
-            item.textContent = d.name + ' – ' + d.price + '€';
-            // Add button to add to cart...
-            list.append(item);
+            const card = document.createElement('div');
+            card.className = 'dish-card';
+            card.dataset.id = d.id;
+            card.innerHTML = `
+                <img src="${d.photoUrl || ''}" alt="${d.name}">
+                <h3>${d.name}</h3>
+                <p>€${d.price.toFixed(2)}</p>
+                <button class="btn-add" data-id="${d.id}">+ Add to Cart</button>
+                <button class="btn-details" data-id="${d.id}">Details</button>
+            `;
+            listEl.append(card);
+        });
+        listEl.addEventListener('click', e => {
+            const id = e.target.dataset.id;
+            if (e.target.classList.contains('btn-add')) {
+                const cart = getCart();
+                const existing = cart.find(i => i.id.toString() === id);
+                if (existing) existing.quantity++;
+                else {
+                    const d = dishes.find(x => x.id.toString() === id);
+                    cart.push({ id: d.id, name: d.name, price: d.price, quantity: 1 });
+                }
+                saveCart(cart);
+                updateCartCount();
+            }
+            if (e.target.classList.contains('btn-details')) {
+                sessionStorage.setItem('currentDishId', id);
+                redirect('#/customer/dish-detail');
+            }
         });
     } catch (err) {
         showError(err.message);
@@ -42,17 +74,71 @@ async function initBrowse() {
 }
 
 function initCart() {
-    // Load cart from sessionStorage, display, allow update/remove
+    const cart = getCart();
+    const tbody = document.getElementById('cart-table').querySelector('tbody');
+    tbody.innerHTML = '';
+    cart.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = item.id;
+        tr.innerHTML = `
+            <td>${item.name}</td>
+            <td><input type="number" min="1" value="${item.quantity}" class="qty-input" data-id="${item.id}"></td>
+            <td>€${item.price.toFixed(2)}</td>
+            <td>€${(item.price * item.quantity).toFixed(2)}</td>
+            <td><button class="btn-remove" data-id="${item.id}">Remove</button></td>
+        `;
+        tbody.append(tr);
+    });
+    updateCartTotal();
+    tbody.addEventListener('click', e => {
+        const id = e.target.dataset.id;
+        if (e.target.classList.contains('btn-remove')) {
+            const idx = cart.findIndex(i => i.id.toString() === id);
+            if (idx >= 0) cart.splice(idx, 1);
+            saveCart(cart);
+            initCart();
+            updateCartCount();
+        }
+    });
+    tbody.addEventListener('change', e => {
+        const id = e.target.dataset.id;
+        if (e.target.classList.contains('qty-input')) {
+            const item = cart.find(i => i.id.toString() === id);
+            item.quantity = parseInt(e.target.value) || 1;
+            saveCart(cart);
+            initCart();
+            updateCartCount();
+        }
+    });
+    document.getElementById('btn-update-cart').addEventListener('click', () => initCart());
 }
 
-function initCheckout() {
+function updateCartTotal() {
+    const cart = getCart();
+    const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    document.getElementById('cart-total').textContent = `€${total.toFixed(2)}`;
+}
+
+function updateCartCount() {
+    const cart = getCart();
+    document.getElementById('cart-count').textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+}
+
+async function initCheckout() {
     const form = document.getElementById('checkout-form');
     form.addEventListener('submit', async e => {
         e.preventDefault();
-        const order = {/* collect order details */ };
+        const order = {
+            items: getCart(),
+            address: form.address.value,
+            paymentMethod: form.payment.value
+        };
         try {
-            await placeOrder(order);
-            redirect('order-confirmation.html');
+            const res = await placeOrder(order);
+            sessionStorage.setItem('confirmOrderId', res.id);
+            sessionStorage.setItem('confirmDeliveryTime', res.estimatedDelivery);
+            saveCart([]);
+            redirect('#/customer/order-confirmation');
         } catch (err) {
             showError(err.message);
         }
@@ -136,4 +222,42 @@ async function initEditProfile() {
     } catch (err) {
         showError(err.message);
     }
+}
+
+async function initDishDetail() {
+    try {
+        const id = sessionStorage.getItem('currentDishId');
+        const d = await fetchDishDetail(id);
+        document.getElementById('dish-photo').src = d.photoUrl || '';
+        document.getElementById('dish-name').textContent = d.name;
+        document.getElementById('dish-type').textContent = `Type: ${d.type}`;
+        document.getElementById('dish-price').textContent = `Price: €${d.price.toFixed(2)}`;
+        document.getElementById('dish-expiry').textContent = d.expiry;
+        document.getElementById('dish-nationality').textContent = `Cuisine: ${d.cuisine}`;
+        document.getElementById('dish-ingredients').textContent = d.ingredients.join(', ');
+        document.getElementById('btn-add-cart').addEventListener('click', () => {
+            const cart = getCart();
+            const existing = cart.find(i => i.id.toString() === id);
+            if (existing) existing.quantity++;
+            else cart.push({ id: d.id, name: d.name, price: d.price, quantity: 1 });
+            saveCart(cart);
+            updateCartCount();
+        });
+        document.getElementById('btn-buy-now').addEventListener('click', () => {
+            const cart = getCart();
+            const existing = cart.find(i => i.id.toString() === id);
+            if (existing) existing.quantity++;
+            else cart.push({ id: d.id, name: d.name, price: d.price, quantity: 1 });
+            saveCart(cart);
+            redirect('#/customer/checkout');
+        });
+        document.getElementById('btn-back-list').addEventListener('click', () => redirect('#/customer/browse-dishes'));
+    } catch (err) { showError(err.message); }
+}
+
+function initOrderConfirmation() {
+    const id = sessionStorage.getItem('confirmOrderId');
+    const time = sessionStorage.getItem('confirmDeliveryTime');
+    document.getElementById('confirm-order-id').textContent = id;
+    document.getElementById('confirm-delivery-time').textContent = time;
 }
