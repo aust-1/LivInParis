@@ -7,6 +7,13 @@ export function initPage(page) {
     switch (page) {
         case 'dashboard':
             updateCartCount();
+            // Enable clicking on dashboard sub-nav links
+            document.querySelectorAll('#content .sub-nav a').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    redirect(link.getAttribute('href'));
+                });
+            });
             break;
         case 'browse-dishes': initBrowse(); break;
         case 'cart': initCart(); break;
