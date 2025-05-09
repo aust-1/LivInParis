@@ -248,6 +248,20 @@ public class OrderStatusDto
 
 #endregion Chef Orders and Delivery DTOs
 
+#region Review DTOs
+
+public class ReviewDto
+{
+    public int Id { get; set; }
+    public int ChefId { get; set; }
+    public int CustomerId { get; set; }
+    public decimal? Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+#endregion Review DTOs
+
 #region Statistics DTOs
 
 public class ChefDeliveryStatsDto

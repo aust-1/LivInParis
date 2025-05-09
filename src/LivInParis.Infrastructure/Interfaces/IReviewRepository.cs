@@ -11,12 +11,12 @@ public interface IReviewRepository : IRepository<Review>
     /// <summary>
     /// Retrieves the reviews given to a specific customer.
     /// </summary>
-    /// <param name="account">The account associated with the reviews.</param>
+    /// <param name="accountId">The identifier of the account associated with the reviews.</param>
     /// <param name="reviewerType">The type of the review (e.g., customer or chef).</param>
     /// <param name="rating">Optional rating filter.</param>
     /// <returns>A task that represents the asynchronous operation, containing a list of reviews.</returns>
     Task<IEnumerable<Review>> ReadAsync(
-        Account account,
+        int accountId,
         ReviewerType reviewerType,
         decimal? rating = null
     );
@@ -24,7 +24,7 @@ public interface IReviewRepository : IRepository<Review>
     /// <summary>
     /// Retrieves the reviews given by a specific customer.
     /// </summary>
-    /// <param name="account">The account associated with the reviews.</param>
+    /// <param name="accountId">The identifier of the account associated with the reviews.</param>
     /// <param name="reviewerType">The type of the review (e.g., customer or chef).</param>
     /// <param name="from">
     /// The start of the period to include. If null, includes all deliveries from the beginning of time.
@@ -34,7 +34,7 @@ public interface IReviewRepository : IRepository<Review>
     /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of reviews.</returns>
     Task<decimal?> GetAverageRatingAsync(
-        Account account,
+        int accountId,
         ReviewerType reviewerType,
         DateTime? from = null,
         DateTime? to = null

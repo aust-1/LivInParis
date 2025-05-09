@@ -131,24 +131,41 @@ async function initChefOrderDetail() {
 }
 
 async function initDeliveries() {
-    try {
-        const tbody = document.getElementById('deliveries-table').querySelector('tbody');
-        const list = await fetchDeliveries();
-        list.forEach(d => {
-            const tr = document.createElement('tr'); tr.dataset.id = d.id;
-            tr.innerHTML = `<td>${d.id}</td><td>${d.orderId}</td>
+  const errorEl = document.getElementById('deliveries-error');
+  try {
+    const tbody  = document
+      .getElementById('deliveries-table')
+      .querySelector('tbody');
+    tbody.innerHTML = '';
+
+    const list = await fetchDeliveries();
+    list.forEach(d => {
+      const tr = document.createElement('tr');
+      tr.dataset.id = d.id;
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${d.orderId}</td>
         <td>${new Date(d.date).toLocaleString()}</td>
         <td>${d.status}</td>
-        <td><button class="btn-view-delivery" data-id="${d.id}">View</button></td>`;
-            tbody.append(tr);
-        });
-        tbody.addEventListener('click', e => {
-            if (e.target.classList.contains('btn-view-delivery')) {
-                sessionStorage.setItem('currentDeliveryId', e.target.dataset.id);
-                redirect('#/chef/delivery-detail');
-            }
-        });
-    } catch (err) { showError(err.message); }
+        <td>
+          <button class="btn-view-delivery" data-id="${d.id}">View</button>
+        </td>`;
+      tbody.append(tr);
+    });
+
+    errorEl.style.display = 'none';
+
+    tbody.addEventListener('click', e => {
+      if (e.target.classList.contains('btn-view-delivery')) {
+        const id = e.target.dataset.id;
+        sessionStorage.setItem('currentDeliveryId', id);
+        redirect('#/chef/delivery-detail');
+      }
+    });
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
 }
 
 async function initDeliveryDetail() {

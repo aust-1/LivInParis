@@ -272,6 +272,30 @@ public interface IIncomingOrderService
 
 #endregion
 
+#region Reviews
+
+/// <summary>
+/// Defines operations for managing reviews.
+/// </summary>
+public interface IReviewService
+{
+    /// <summary>
+    /// Retrieves all reviews for a specific chef.
+    /// </summary>
+    /// <param name="chefId">The identifier of the chef.</param>
+    /// <returns>A task representing the asynchronous operation, containing the reviews.</returns>
+    Task<List<ReviewDto>> GetReviewsForChefAsync(int chefId);
+
+    /// <summary>
+    /// Retrieves all reviews made by a specific customer.
+    /// </summary>
+    /// <param name="customerId">The identifier of the customer.</param>
+    /// <returns>A task representing the asynchronous operation, containing the reviews.</returns>
+    Task<List<ReviewDto>> GetReviewsByCustomerAsync(int customerId);
+}
+
+#endregion Reviews
+
 #region Statistics
 
 /// <summary>

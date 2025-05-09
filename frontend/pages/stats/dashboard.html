@@ -1,17 +1,33 @@
 <!-- pages/stats/dashboard.html -->
 <h2>Statistics Dashboard</h2>
 <nav class="sub-nav">
-    <ul>
-        <li><a href="#/stats/orders" id="nav-stats-orders">Orders by
-                Chef</a></li>
-        <li><a href="#/stats/revenue" id="nav-stats-revenue">Revenue by
-                Street</a></li>
-        <li><a href="#/stats/averages" id="nav-stats-averages">Average Order
-                Price</a></li>
-        <li><a href="#/stats/cuisine" id="nav-stats-cuisine">Top
-                Cuisines</a></li>
-    </ul>
+        <ul>
+                <li><a href="#/stats/orders" id="nav-stats-orders">Orders by
+                                Chef</a></li>
+                <li><a href="#/stats/revenue" id="nav-stats-revenue">Revenue by
+                                Street</a></li>
+                <li><a href="#/stats/averages" id="nav-stats-averages">Average
+                                Order
+                                Price</a></li>
+                <li><a href="#/stats/cuisine" id="nav-stats-cuisine">Top
+                                Cuisines</a></li>
+        </ul>
 </nav>
 <section id="stats-intro">
-    <p>Choose a report to display:</p>
+        <p>Choose a report to display:</p>
+</section>
+<section id="export-data" class="export-section">
+        <h3>Export Data</h3>
+        <div>
+                <a href="/api/export/json" target="_blank" class="btn"
+                        id="btn-export-json">
+                        Export full database (JSON)
+                </a>
+                <a href="/api/export/xml" target="_blank" class="btn"
+                        id="btn-export-xml">
+                        Export full database (XML)
+                </a>
+        </div>
+        <p class="info">Vous recevrez un fichier contenant l’intégralité des
+                données.</p>
 </section>

@@ -1,5 +1,5 @@
 using DotNetEnv;
-using LivInParisRoussilleTeynier.Api;
+using LivInParisRoussilleTeynier.API;
 using LivInParisRoussilleTeynier.Domain.Models.Maps;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Data;
@@ -77,7 +77,7 @@ builder.Services.AddCors(options =>
 /// <summary>
 /// Add controllers for API endpoints.
 /// </summary>
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddXmlSerializerFormatters();
 
 /// <summary>
 /// Add Swagger for API documentation and testing.

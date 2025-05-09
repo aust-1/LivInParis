@@ -16,7 +16,7 @@ public class ReviewRepository(LivInParisContext context)
 {
     /// <inheritdoc/>
     public async Task<IEnumerable<Review>> ReadAsync(
-        Account account,
+        int accountId,
         ReviewerType reviewerType,
         decimal? rating = null
     )
@@ -26,7 +26,7 @@ public class ReviewRepository(LivInParisContext context)
         if (reviewerType == ReviewerType.Customer)
         {
             var cr = new ChefRepository(_context);
-            var chefs = await cr.ReadAsync(c => c.Account == account);
+            var chefs = await cr.ReadAsync(c => c.ChefAccountId == accountId);
             Chef chef = chefs.First();
 
             query = query.Include(r => r.OrderLine).Where(r => r.OrderLine!.Chef == chef);
@@ -34,7 +34,7 @@ public class ReviewRepository(LivInParisContext context)
         else
         {
             var cr = new CustomerRepository(_context);
-            var customers = await cr.ReadAsync(c => c.Account == account);
+            var customers = await cr.ReadAsync(c => c.CustomerAccountId == accountId);
             Customer customer = customers.First();
 
             query = query
@@ -53,7 +53,7 @@ public class ReviewRepository(LivInParisContext context)
 
     /// <inheritdoc/>
     public async Task<decimal?> GetAverageRatingAsync(
-        Account account,
+        int accountId,
         ReviewerType reviewerType,
         DateTime? from = null,
         DateTime? to = null
@@ -67,7 +67,7 @@ public class ReviewRepository(LivInParisContext context)
         if (reviewerType == ReviewerType.Customer)
         {
             var cr = new ChefRepository(_context);
-            var chefs = await cr.ReadAsync(c => c.Account == account);
+            var chefs = await cr.ReadAsync(c => c.ChefAccountId == accountId);
             Chef chef = chefs.First();
 
             query = query.Include(r => r.OrderLine).Where(r => r.OrderLine!.Chef == chef);
@@ -75,7 +75,7 @@ public class ReviewRepository(LivInParisContext context)
         else
         {
             var cr = new CustomerRepository(_context);
-            var customers = await cr.ReadAsync(c => c.Account == account);
+            var customers = await cr.ReadAsync(c => c.CustomerAccountId == accountId);
             Customer customer = customers.First();
 
             query = query

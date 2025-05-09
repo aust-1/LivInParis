@@ -68,7 +68,7 @@ async function initBrowse() {
                 card.className = 'dish-card';
                 card.dataset.id = d.id;
                 card.innerHTML = `
-                    <img src="${d.photoUrl || ''}" alt="${d.name}">
+                    <img src=assets/"${d.photoUrl}" alt="${d.name}">
                     <h3>${d.name}</h3>
                     <p>€${d.price.toFixed(2)}</p>
                     <button class="btn-add" data-id="${d.id}">+ Add to Cart</button>

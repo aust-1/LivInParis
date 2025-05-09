@@ -1,5 +1,3 @@
-const customerId = sessionStorage.getItem("customerId");
-
 export function showError(msg) {
     const el = document.querySelector('.error-message');
     if (el) { el.textContent = msg; el.style.display = 'block'; }
