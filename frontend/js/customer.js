@@ -24,9 +24,7 @@ export function initPage(page) {
         case 'order-confirmation': initOrderConfirmation(); break;
         case 'profile': initProfile(); break;
         case 'edit-profile': initEditProfile(); break;
-        // other pages don't require JS logic
     }
-    // Navigation button handlers
     document.addEventListener('click', e => {
         const id = e.target.id;
         if (id === 'btn-back-dashboard') redirect('#/customer/dashboard');
@@ -35,7 +33,6 @@ export function initPage(page) {
         if (id === 'btn-continue-shopping') redirect('#/customer/browse-dishes');
         if (id === 'btn-checkout') redirect('#/customer/checkout');
     });
-    // View orders button on confirmation
     document.addEventListener('click', e => {
         if (e.target.id === 'btn-view-orders') redirect('#/customer/my-orders');
     });

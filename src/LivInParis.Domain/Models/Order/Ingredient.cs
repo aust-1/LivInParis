@@ -19,6 +19,7 @@ public class Ingredient
     /// </remarks>
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("ingredient_id")]
     public int IngredientId { get; set; }
 
     /// <summary>
@@ -26,42 +27,49 @@ public class Ingredient
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("ingredient_name")]
     public required string IngredientName { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is suitable for vegetarians.
     /// </summary>
     [Required]
+    [Column("is_vegetarian")]
     public bool IsVegetarian { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is suitable for vegans.
     /// </summary>
     [Required]
+    [Column("is_vegan")]
     public bool IsVegan { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is gluten-free.
     /// </summary>
     [Required]
+    [Column("is_gluten_free")]
     public bool IsGlutenFree { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is lactose-free.
     /// </summary>
     [Required]
+    [Column("is_lactose_free")]
     public bool IsLactoseFree { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is halal.
     /// </summary>
     [Required]
+    [Column("is_halal")]
     public bool IsHalal { get; set; }
 
     /// <summary>
     /// A value indicating whether this ingredient is kosher.
     /// </summary>
     [Required]
+    [Column("is_kosher")]
     public bool IsKosher { get; set; }
 
     /// <summary>

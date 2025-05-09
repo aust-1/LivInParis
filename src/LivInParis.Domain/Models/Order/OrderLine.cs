@@ -18,12 +18,14 @@ public class OrderLine
     /// </remarks>
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("order_line_id")]
     public int OrderLineId { get; set; }
 
     /// <summary>
     /// The Datetime when the order line was created.
     /// </summary>
     [Required]
+    [Column("order_line_datetime")]
     public required DateTime OrderLineDatetime { get; set; }
 
     /// <summary>
@@ -31,24 +33,28 @@ public class OrderLine
     /// </summary>
     /// <seealso cref="OrderLineStatus"/>
     [Required]
+    [Column("order_line_status")]
     public required OrderLineStatus OrderLineStatus { get; set; }
 
     /// <summary>
     /// The ID of the address where the order will be delivered.
     /// </summary>
     [Required]
+    [Column("address_id")]
     public required int AddressId { get; set; }
 
     /// <summary>
     /// The ID of the transaction associated with the order line.
     /// </summary>
     [Required]
+    [Column("transaction_id")]
     public required int TransactionId { get; set; }
 
     /// <summary>
     /// The ID of the chef account that prepared the order.
     /// </summary>
     [Required]
+    [Column("account_id")]
     public required int ChefAccountId { get; set; }
 
     /// <summary>

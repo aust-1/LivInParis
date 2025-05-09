@@ -58,23 +58,25 @@ public class DishService(IDishRepository dishRepository) : IDishService
             );
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<DishDto>> SearchDishesAsync(DishSearchCriteriaDto criteria)
+    public async Task<IEnumerable<DishDto>> SearchDishesAsync(DishSearchCriteriaDto? criteria)
     {
         var dishes = await _dishRepository.ReadAsync(
-            criteria.Name,
-            Enum.Parse<DishType>(criteria.Type!),
-            criteria.MinExpiryTime,
-            criteria.Cuisine,
-            criteria.Quantity,
-            criteria.MinPrice,
-            criteria.MaxPrice,
-            criteria.IsVegetarian,
-            criteria.IsVegan,
-            criteria.IsGlutenFree,
-            criteria.IsLactoseFree,
-            criteria.IsHalal,
-            criteria.IsKosher,
-            Enum.Parse<ProductsOrigin>(criteria.ProductsOrigin!)
+            criteria?.Name,
+            criteria?.Type != null ? Enum.Parse<DishType>(criteria.Type!) : null,
+            criteria?.MinExpiryTime,
+            criteria?.Cuisine,
+            criteria?.Quantity,
+            criteria?.MinPrice,
+            criteria?.MaxPrice,
+            criteria?.IsVegetarian,
+            criteria?.IsVegan,
+            criteria?.IsGlutenFree,
+            criteria?.IsLactoseFree,
+            criteria?.IsHalal,
+            criteria?.IsKosher,
+            criteria?.ProductsOrigin != null
+                ? Enum.Parse<ProductsOrigin>(criteria.ProductsOrigin!)
+                : null
         );
 
         return dishes.Select(d => new DishDto

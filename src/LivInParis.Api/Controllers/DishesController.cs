@@ -10,16 +10,6 @@ public class DishesController(IDishService dishService) : ControllerBase
     private readonly IDishService _dishService = dishService;
 
     /// <summary>
-    /// Retrieves all dishes.
-    /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<DishDto>>> GetAll()
-    {
-        var dishes = await _dishService.GetAllDishesAsync();
-        return Ok(dishes);
-    }
-
-    /// <summary>
     /// Retrieves a dish by id.
     /// </summary>
     [HttpGet("{id}")]
