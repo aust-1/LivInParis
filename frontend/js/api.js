@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5105/api';
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:53754/api`;
 
 export async function login(name, password) {
     const res = await fetch(`${API_BASE}/auth/login`, {

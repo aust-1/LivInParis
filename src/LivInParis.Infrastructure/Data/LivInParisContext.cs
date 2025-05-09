@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using DotNetEnv;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +19,19 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
     /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        Env.Load(Path.Combine("..", "database", ".env"));
+        // Locate and load .env file at project root for DB credentials
+        var baseDir = AppContext.BaseDirectory;
+        // Path up five levels to solution root for .env file
+        var envPath = Path.Combine(baseDir, "..", "..", "..", "..", "..", ".env");
+        if (File.Exists(envPath))
+        {
+            Env.Load(envPath);
+        }
+        else
+        {
+            // Fallback to loading from current directory
+            Env.Load();
+        }
 
         var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
         var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
@@ -106,7 +120,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.ToTable("Address");
             e.HasKey(a => a.AddressId);
             e.Property(a => a.AddressNumber).IsRequired();
-            e.HasCheckConstraint("CK_Address_Number_Positive", "`AddressNumber` > 0");
             e.Property(a => a.Street).IsRequired().HasMaxLength(100);
 
             e.HasIndex(x => new { x.AddressNumber, x.Street })
@@ -204,9 +217,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.Property(d => d.Price).IsRequired().HasColumnType("decimal(10,2)").IsRequired();
             e.Property(d => d.ProductsOrigin).IsRequired().HasConversion<string>().HasMaxLength(10);
             e.Property(d => d.PhotoPath).HasMaxLength(255);
-
-            e.HasCheckConstraint("CK_Dish_Quantity_Positive", "`Quantity` >= 0");
-            e.HasCheckConstraint("CK_Dish_Price_Positive", "`Price` >= 0");
         });
 
         modelBuilder.Entity<Ingredient>(e =>
@@ -299,11 +309,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.Property(r => r.ReviewDate).HasColumnType("date").IsRequired();
             e.Property(r => r.ReviewRating).HasColumnType("decimal(2,1)");
             e.Property(r => r.Comment).HasMaxLength(500);
-
-            e.HasCheckConstraint(
-                "CK_Review_Rating",
-                "`ReviewRating` IS NULL OR (`ReviewRating` BETWEEN 1.0 AND 5.0)"
-            );
 
             e.HasOne(r => r.OrderLine)
                 .WithMany(ol => ol.Reviews)

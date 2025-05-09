@@ -19,6 +19,7 @@ public class Account
     /// </remarks>
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("account_id")]
     public int AccountId { get; set; }
 
     /// <summary>
@@ -26,6 +27,7 @@ public class Account
     /// </summary>
     [Required]
     [MaxLength(100)]
+    [Column("account_user_name")]
     public required string AccountUserName { get; set; }
 
     /// <summary>
@@ -33,5 +35,6 @@ public class Account
     /// </summary>
     [Required]
     [MaxLength(50)]
+    [Column("account_password")]
     public required string AccountPassword { get; set; }
 }

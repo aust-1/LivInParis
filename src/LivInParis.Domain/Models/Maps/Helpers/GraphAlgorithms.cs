@@ -364,8 +364,9 @@ public static class GraphAlgorithms<T>
     /// Computes the Welsh-Powell graph coloring algorithm.
     /// </summary>
     /// <param name="graph">The graph to color.</param>
+    /// <param name="colorize">If <c>true</c>, colors the nodes in the graph.</param>
     /// <returns>The number of colors used to color the graph.</returns>
-    public static int WelshPowell(Graph<T> graph)
+    public static int WelshPowell(Graph<T> graph, bool colorize = false)
     {
         var sortedNodes = graph
             .Nodes.OrderByDescending(node => GetNodeDegree(graph, node))
@@ -394,8 +395,10 @@ public static class GraphAlgorithms<T>
             sortedNodes.RemoveAll(node => colorMap.ContainsKey(node));
         }
 
-        ColorizeNodes(colorMap);
-
+        if (colorize)
+        {
+            ColorizeNodes(colorMap);
+        }
         return color;
     }
 

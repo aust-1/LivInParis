@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: src/LivInParis.Api/Dockerfile
     ports:
-      - "5105:80"
+      - "53754:80"
     depends_on:
       - db
 

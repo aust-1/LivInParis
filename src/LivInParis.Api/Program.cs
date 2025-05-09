@@ -1,3 +1,4 @@
+using DotNetEnv;
 using LivInParisRoussilleTeynier.Api;
 using LivInParisRoussilleTeynier.Domain.Models.Maps;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
@@ -11,6 +12,8 @@ using Microsoft.AspNetCore.SpaServices.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+
+Env.Load(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".env"));
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -19,7 +19,6 @@ async function loadPage() {
         window.location.hash = '#/auth/login';
         return;
     }
-    // Fetch and inject content
     const url = `pages/${group}/${page || 'login'}.html`;
     try {
         const res = await fetch(url);
@@ -30,10 +29,11 @@ async function loadPage() {
         content.innerHTML = await res404.text();
     }
     // TODO: initialize page-specific scripts if needed
-    // Initialize loaded page logic
     try {
         if (group === 'auth') {
-            import('./auth.js').then(m => m.initPage(page));
+            import('./auth.js').then(m => {
+                if (typeof m.initPage === 'function') m.initPage(page);
+            });
         } else if (group === 'customer') {
             import('./customer.js').then(m => m.initPage(page));
         } else if (group === 'chef') {
@@ -45,4 +45,3 @@ async function loadPage() {
         console.error('Init page failed', err);
     }
 }
-// End routing

@@ -40,13 +40,14 @@ winget install -e --id Docker.DockerDesktop
 # 2. Démarrage
 # A) Base + API via Docker
 docker compose up -d --build
+dotnet run --project src/LivinParis.Api
 
 # B) Front dans un autre terminal
 cd frontend
 npm start
 
 # C) Navigateur
-open http://localhost:53754/
+open http://localhost:62542/
 ```
 
 #### 1. Cloner le dépôt

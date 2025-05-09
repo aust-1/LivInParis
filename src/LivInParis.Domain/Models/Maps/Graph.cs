@@ -88,6 +88,16 @@ public class Graph<T>
     /// </summary>
     private readonly double _diameter;
 
+    /// <summary>
+    /// Indicates whether the graph is bipartite.
+    /// </summary>
+    private readonly bool _isBipartite;
+
+    /// <summary>
+    /// Indicates whether the graph is planar.
+    /// </summary>
+    private readonly bool _isPlanar;
+
     #endregion Fields
 
     #region Constructors
@@ -162,6 +172,9 @@ public class Graph<T>
                 }
             }
         }
+        var nbColors = GraphAlgorithms<T>.WelshPowell(this);
+        _isBipartite = nbColors <= 2;
+        _isPlanar = nbColors <= 4;
         //_diameter = _distanceMatrix.Cast<double>().Max();
     }
 
@@ -225,6 +238,9 @@ public class Graph<T>
                 }
             }
         }
+        var nbColors = GraphAlgorithms<T>.WelshPowell(this);
+        _isBipartite = nbColors <= 2;
+        _isPlanar = nbColors <= 4;
         //_diameter = _distanceMatrix.Cast<double>().Max();
     }
 
@@ -347,6 +363,24 @@ public class Graph<T>
     public double Diameter
     {
         get { return _diameter; }
+    }
+
+    /// <summary>
+    /// Indicates whether the graph is bipartite.
+    /// A bipartite graph can be colored with two colors without adjacent nodes sharing the same color.
+    /// </summary>
+    public bool IsBipartite
+    {
+        get { return _isBipartite; }
+    }
+
+    /// <summary>
+    /// Indicates whether the graph is planar.
+    /// A planar graph can be drawn on a plane without edges crossing.
+    /// </summary>
+    public bool IsPlanar
+    {
+        get { return _isPlanar; }
     }
 
     #endregion Properties
@@ -611,12 +645,13 @@ public class Graph<T>
     /// Computes the Welsh-Powell algorithm for graph coloring.
     /// Modifies the <see cref="Node{T}.VisualizationParameters.Color"/> property of each node in the graph.
     /// </summary>
+    /// <param name="colorize">If <c>true</c>, colors the nodes in the graph.</param>
     /// <returns>
     /// The number of colors used in the graph coloring.
     /// </returns>
-    public int ComputeWelshPowell()
+    public int ComputeWelshPowell(bool colorize = false)
     {
-        return GraphAlgorithms<T>.WelshPowell(this);
+        return GraphAlgorithms<T>.WelshPowell(this, colorize);
     }
 
     #endregion Public Methods - Graph coloring

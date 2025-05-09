@@ -69,6 +69,7 @@ public class AuthService(IAccountRepository userAccountRepository, ITokenService
         };
 
         await _userAccountRepository.AddAsync(user);
+        await _userAccountRepository.SaveChangesAsync();
 
         var token = _tokenService.GenerateToken(user);
         return new AuthResultDto

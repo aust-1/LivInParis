@@ -18,8 +18,7 @@ document.addEventListener('submit', async e => {
     if (form.id === 'register-form') {
         e.preventDefault();
         const payload = {
-            name: form.name.value,
-            role: form.role.value,
+            username: form.name.value,
             password: form.password.value
         };
         try {
@@ -31,3 +30,7 @@ document.addEventListener('submit', async e => {
         }
     }
 });
+
+export function initPage(page) {
+    document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+}
