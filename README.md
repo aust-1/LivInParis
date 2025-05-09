@@ -44,6 +44,7 @@ dotnet run --project src/LivinParis.Api
 
 # B) Front dans un autre terminal
 cd frontend
+npm install
 npm start
 
 # C) Navigateur
