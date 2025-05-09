@@ -15,7 +15,7 @@ public static class Metro
     /// <summary>
     /// The directory where the data files are located.
     /// </summary>
-    private const string dataDirectory = "../resources/";
+    private const string dataDirectory = "../../resources/";
 
     /// <summary>
     /// The base URL for the Nominatim API used to retrieve coordinates from an address.
@@ -36,7 +36,7 @@ public static class Metro
     /// The file should contain three sheets: stations, lines, and correspondences.
     /// </summary>
     /// <param name="fileName">The name of the Excel file (without extension).</param>
-    public static void InitializeMetro(string fileName)
+    public static void InitializeMetro(string fileName = "MetroParis")
     {
         var file = dataDirectory + fileName + ".xlsx";
         var wb = new Workbook(file);

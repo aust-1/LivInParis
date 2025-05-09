@@ -10,7 +10,6 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Maps.Helpers;
 public static class GraphAlgorithms<T>
     where T : notnull
 {
-    //FIXME: nearest station avec correspondances
     #region Public Methods - Traversals
 
     /// <summary>
@@ -99,6 +98,83 @@ public static class GraphAlgorithms<T>
     #region Public Methods - Pathfinding
 
     /// <summary>
+    /// Calculates the shortest distance between two nodes or identifiers in the graph.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// The shortest distance between the two nodes, or <see cref="double.MaxValue"/> if unreachable.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    public static double GetDistanceBetween<TU, TV>(Graph<T> graph, TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        var startNode = ResolveNode(start);
+        var endNode = ResolveNode(end);
+        if (!graph.Nodes.Contains(startNode) || !graph.Nodes.Contains(endNode))
+        {
+            throw new ArgumentException("Invalid start or end node.");
+        }
+
+        return graph.DistanceMatrix[graph.NodeIndexMap[startNode], graph.NodeIndexMap[endNode]];
+    }
+
+    /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier
+    /// to find the shortest path to another node or identifier,
+    /// returning the path taken and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="graph">The graph to traverse.</param>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/>.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public static List<Node<T>> GetPath<TU, TV>(Graph<T> graph, TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        var resolvedStartNode = ResolveNode(start);
+        var resolvedEndNode = ResolveNode(end);
+        if (!graph.Nodes.Contains(resolvedStartNode) || !graph.Nodes.Contains(resolvedEndNode))
+        {
+            throw new ArgumentException("Invalid start or end node.");
+        }
+
+        var (startNode, endNode) = GetOptimalNodePairForCorrespondance(
+            graph,
+            resolvedStartNode,
+            resolvedEndNode
+        );
+
+        var result = BellmanFord(graph, startNode);
+        var paths = BuildPaths(result);
+
+        return paths[endNode];
+    }
+
+    /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
     /// </summary>
@@ -114,7 +190,7 @@ public static class GraphAlgorithms<T>
     /// <exception cref="ArgumentException">
     /// Thrown if <paramref name="start"/> is invalid or the node does not exist.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByDijkstra<TU>(
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathsByDijkstra<TU>(
         Graph<T> graph,
         TU start
     )
@@ -144,7 +220,7 @@ public static class GraphAlgorithms<T>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the graph contains a negative-weight cycle.
     /// </exception>
-    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathByBellmanFord<TU>(
+    public static SortedDictionary<Node<T>, List<Node<T>>> GetPathsByBellmanFord<TU>(
         Graph<T> graph,
         TU start
     )
@@ -213,28 +289,30 @@ public static class GraphAlgorithms<T>
     /// A 2D array of lists, where each element <c>pathMatrix[i, j]</c>
     /// represents the path from node i to node j.
     /// </returns>
-    public static (double Weight, List<Node<T>> Path)[,] RoyFloydWarshall(Graph<T> graph)
+    public static List<Node<T>>[,] RoyFloydWarshall(Graph<T> graph)
     {
         int n = graph.Order;
-        var result = new (double Weight, List<Node<T>> Path)[n, n];
+        var distanceMatrix = new double[n, n];
+        var pathMatrix = new List<Node<T>>[n, n];
 
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
             {
-                result[i, j] = (graph.AdjacencyMatrix[i, j], []);
+                distanceMatrix[i, j] = graph.AdjacencyMatrix[i, j];
+                pathMatrix[i, j] = [];
 
                 if (i == j)
                 {
                     var nodeI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
-                    result[i, j].Path.Add(nodeI);
+                    pathMatrix[i, j].Add(nodeI);
                 }
-                else if (Math.Abs(result[i, j].Weight - double.MaxValue) > 1e-9)
+                else if (Math.Abs(distanceMatrix[i, j] - double.MaxValue) > 1e-9)
                 {
                     var sourceI = graph.NodeIndexMap.First(kvp => kvp.Value == i).Key;
                     var targetJ = graph.NodeIndexMap.First(kvp => kvp.Value == j).Key;
-                    result[i, j].Path.Add(sourceI);
-                    result[i, j].Path.Add(targetJ);
+                    pathMatrix[i, j].Add(sourceI);
+                    pathMatrix[i, j].Add(targetJ);
                 }
             }
         }
@@ -249,62 +327,29 @@ public static class GraphAlgorithms<T>
                         i == j
                         || i == k
                         || j == k
-                        || Math.Abs(result[i, k].Weight - double.MaxValue) < 1e-9
-                        || Math.Abs(result[k, j].Weight - double.MaxValue) < 1e-9
+                        || Math.Abs(distanceMatrix[i, k] - double.MaxValue) < 1e-9
+                        || Math.Abs(distanceMatrix[k, j] - double.MaxValue) < 1e-9
                     )
                     {
                         continue;
                     }
 
-                    double distanceViaK = result[i, k].Weight + result[k, j].Weight;
-                    if (distanceViaK < result[i, j].Weight)
+                    double distanceViaK = distanceMatrix[i, k] + distanceMatrix[k, j];
+                    if (distanceViaK < distanceMatrix[i, j])
                     {
-                        result[i, j].Weight = distanceViaK;
+                        distanceMatrix[i, j] = distanceViaK;
 
-                        var pathViaK = new List<Node<T>>(result[i, k].Path);
+                        var pathViaK = new List<Node<T>>(pathMatrix[i, k]);
                         pathViaK.RemoveAt(pathViaK.Count - 1);
-                        pathViaK.AddRange(result[k, j].Path);
+                        pathViaK.AddRange(pathMatrix[k, j]);
 
-                        result[i, j].Path = pathViaK;
+                        pathMatrix[i, j] = pathViaK;
                     }
                 }
             }
         }
 
-        return result;
-    }
-
-    /// <summary>
-    /// Calculates the distance between two nodes in the graph.
-    /// </summary>
-    /// <typeparam name="TU">The type of the source node.</typeparam>
-    /// <typeparam name="TV">The type of the target node.</typeparam>
-    /// <param name="graph">The graph to analyze.</param>
-    /// <param name="source">The source node or identifier.</param>
-    /// <param name="target">The target node or identifier.</param>
-    /// <returns>The distance between the source and target nodes.</returns>
-    /// <exception cref="ArgumentException">
-    /// Thrown if the source or target node is not part of the graph.
-    /// </exception>
-    public static double GetDistanceBetweenNodes<TU, TV>(Graph<T> graph, TU source, TV target)
-        where TU : notnull
-        where TV : notnull
-    {
-        var sourceNode = ResolveNode(source);
-        var targetNode = ResolveNode(target);
-
-        if (!graph.Nodes.Contains(sourceNode) || !graph.Nodes.Contains(targetNode))
-        {
-            throw new ArgumentException("Invalid source or target node.");
-        }
-
-        if (sourceNode.Equals(targetNode))
-        {
-            return 0;
-        }
-
-        var bellmanFordResult = BellmanFord(graph, source);
-        return bellmanFordResult[targetNode].Distance;
+        return pathMatrix;
     }
 
     #endregion Public Methods - Pathfinding
@@ -466,6 +511,52 @@ public static class GraphAlgorithms<T>
             }
         }
         return degree;
+    }
+
+    /// <summary>
+    /// Finds the optimal pair of nodes for correspondance based on their labels.
+    /// The pair with the minimum distance in the graph is returned.
+    /// </summary>
+    /// <param name="graph">The graph containing the nodes.</param>
+    /// <param name="start">The first node to compare.</param>
+    /// <param name="end">The second node to compare.</param>
+    /// <returns>A tuple containing the optimal pair of nodes.</returns>
+    private static (Node<T>, Node<T>) GetOptimalNodePairForCorrespondance(
+        Graph<T> graph,
+        Node<T> start,
+        Node<T> end
+    )
+    {
+        var node1PossibleCorrespondances = graph
+            .Nodes.Where(n =>
+                n.VisualizationParameters.Label == start.VisualizationParameters.Label
+            )
+            .ToList();
+
+        var node2PossibleCorrespondances = graph
+            .Nodes.Where(n => n.VisualizationParameters.Label == end.VisualizationParameters.Label)
+            .ToList();
+
+        var minDistance = double.MaxValue;
+        var optimalNode1 = start;
+        var optimalNode2 = end;
+        foreach (var nodes1 in node1PossibleCorrespondances)
+        {
+            foreach (var nodes2 in node2PossibleCorrespondances)
+            {
+                var distance = graph.DistanceMatrix[
+                    graph.NodeIndexMap[nodes1],
+                    graph.NodeIndexMap[nodes2]
+                ];
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    optimalNode1 = nodes1;
+                    optimalNode2 = nodes2;
+                }
+            }
+        }
+        return (optimalNode1, optimalNode2);
     }
 
     /// <summary>

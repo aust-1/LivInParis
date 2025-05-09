@@ -1,6 +1,3 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 using LivInParisRoussilleTeynier.Domain.Models.Maps.Helpers;
 
 namespace LivInParisRoussilleTeynier.Domain.Models.Maps;
@@ -41,6 +38,11 @@ public class Graph<T>
     /// A mapping from each node to its index in the adjacency matrix.
     /// </summary>
     private readonly SortedDictionary<Node<T>, int> _nodeIndexMap;
+
+    /// <summary>
+    /// The distance matrix, where <c>_distanceMatrix[i, j]</c> indicates the shortest distance from <c>i</c> to <c>j</c>.
+    /// </summary>
+    private readonly double[,] _distanceMatrix;
 
     /// <summary>
     /// Indicates whether this graph is directed (<c>true</c>) or undirected (<c>false</c>).
@@ -143,9 +145,24 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
-        _diameter = ComputeRoyFloydWarshall()
-            .Cast<(double Weight, List<Node<T>> Path)>()
-            .Max(p => p.Weight);
+
+        _distanceMatrix = new double[_order, _order];
+        var royFloydWarshallResult = ComputeRoyFloydWarshall();
+        for (int i = 0; i < _order; i++)
+        {
+            for (int j = 0; j < _order; j++)
+            {
+                if (royFloydWarshallResult[i, j] == null)
+                {
+                    _distanceMatrix[i, j] = double.MaxValue;
+                }
+                else
+                {
+                    _distanceMatrix[i, j] = royFloydWarshallResult[i, j].Count - 1;
+                }
+            }
+        }
+        _diameter = _distanceMatrix.Cast<(double Weight, List<Node<T>> Path)>().Max(p => p.Weight);
     }
 
     /// <summary>
@@ -191,9 +208,24 @@ public class Graph<T>
 
         _isWeighted = _edges.Any(e => Math.Abs(e.Weight - 1.0) > 1e-9);
         _isConnected = PerformDepthFirstSearch(_nodes.First()).Count == _order;
-        _diameter = ComputeRoyFloydWarshall()
-            .Cast<(double Weight, List<Node<T>> Path)>()
-            .Max(p => p.Weight);
+
+        _distanceMatrix = new double[_order, _order];
+        var royFloydWarshallResult = ComputeRoyFloydWarshall();
+        for (int i = 0; i < _order; i++)
+        {
+            for (int j = 0; j < _order; j++)
+            {
+                if (royFloydWarshallResult[i, j] == null)
+                {
+                    _distanceMatrix[i, j] = double.MaxValue;
+                }
+                else
+                {
+                    _distanceMatrix[i, j] = royFloydWarshallResult[i, j].Count - 1;
+                }
+            }
+        }
+        _diameter = _distanceMatrix.Cast<(double Weight, List<Node<T>> Path)>().Max(p => p.Weight);
     }
 
     #endregion Constructors
@@ -239,6 +271,15 @@ public class Graph<T>
     public SortedDictionary<Node<T>, int> NodeIndexMap
     {
         get { return _nodeIndexMap; }
+    }
+
+    /// <summary>
+    /// Gets the distance matrix for the graph,
+    /// where <see cref="double.MaxValue"/> indicates no path between nodes.
+    /// </summary>
+    public double[,] DistanceMatrix
+    {
+        get { return _distanceMatrix; }
     }
 
     /// <summary>
@@ -386,6 +427,59 @@ public class Graph<T>
     #region Public Methods - Pathfinding
 
     /// <summary>
+    /// Calculates the shortest distance between two nodes or identifiers in the graph.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// The shortest distance between the two nodes, or <see cref="double.MaxValue"/> if unreachable.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    public double GetDistanceBetween<TU, TV>(TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        return GraphAlgorithms<T>.GetDistanceBetween(this, start, end);
+    }
+
+    /// <summary>
+    /// Executes the Bellman-Ford algorithm from the specified node or identifier
+    /// to find the shortest path to another node or identifier,
+    /// returning the path taken and detecting negative-weight cycles if present.
+    /// </summary>
+    /// <typeparam name="TU">
+    /// The type of <paramref name="start"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <typeparam name="TV">
+    /// The type of <paramref name="end"/> (could be an int for ID, a <see cref="Node{T}"/>, or the node's data of type <typeparamref name="T"/>).
+    /// </typeparam>
+    /// <param name="start">The starting node or identifier for the Bellman-Ford algorithm.</param>
+    /// <param name="end">The ending node or identifier.</param>
+    /// <returns>
+    /// A list of nodes representing the path taken from <paramref name="start"/> to <paramref name="end"/>.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown if <paramref name="start"/> or <paramref name="end"/> is invalid or the node does not exist.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the graph contains a negative-weight cycle.
+    /// </exception>
+    public List<Node<T>> GetPath<TU, TV>(TU start, TV end)
+        where TU : notnull
+        where TV : notnull
+    {
+        return GraphAlgorithms<T>.GetPath(this, start, end);
+    }
+
+    /// <summary>
     /// Executes Dijkstra's algorithm from the specified node or identifier,
     /// returning the shortest path to each reachable node.
     /// </summary>
@@ -403,7 +497,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeDijkstra<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.GetPathByDijkstra(this, start);
+        return GraphAlgorithms<T>.GetPathsByDijkstra(this, start);
     }
 
     /// <summary>
@@ -427,7 +521,7 @@ public class Graph<T>
     public SortedDictionary<Node<T>, List<Node<T>>> ComputeBellmanFord<TU>(TU start)
         where TU : notnull
     {
-        return GraphAlgorithms<T>.GetPathByBellmanFord(this, start);
+        return GraphAlgorithms<T>.GetPathsByBellmanFord(this, start);
     }
 
     /// <summary>
@@ -480,7 +574,7 @@ public class Graph<T>
     /// <returns>
     /// A 2D array of lists, where each element is the path from node i to j.
     /// </returns>
-    public (double Weight, List<Node<T>> Path)[,] ComputeRoyFloydWarshall()
+    public List<Node<T>>[,] ComputeRoyFloydWarshall()
     {
         return GraphAlgorithms<T>.RoyFloydWarshall(this);
     }
