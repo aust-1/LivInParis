@@ -42,45 +42,76 @@ export function initPage(page) {
 }
 
 async function initBrowse() {
-    try {
-        const listEl = document.getElementById('dishes-list');
-        const dishes = await fetchDishes();
-        listEl.innerHTML = '';
-        dishes.forEach(d => {
-            const card = document.createElement('div');
-            card.className = 'dish-card';
-            card.dataset.id = d.id;
-            card.innerHTML = `
-                <img src="${d.photoUrl || ''}" alt="${d.name}">
-                <h3>${d.name}</h3>
-                <p>€${d.price.toFixed(2)}</p>
-                <button class="btn-add" data-id="${d.id}">+ Add to Cart</button>
-                <button class="btn-details" data-id="${d.id}">Details</button>
-            `;
-            listEl.append(card);
-        });
-        listEl.addEventListener('click', e => {
-            const id = e.target.dataset.id;
-            if (e.target.classList.contains('btn-add')) {
-                const cart = getCart();
-                const existing = cart.find(i => i.id.toString() === id);
-                if (existing) existing.quantity++;
-                else {
-                    const d = dishes.find(x => x.id.toString() === id);
-                    cart.push({ id: d.id, name: d.name, price: d.price, quantity: 1 });
-                }
-                saveCart(cart);
-                updateCartCount();
+    const listEl = document.getElementById('dishes-list');
+    const filterBtn = document.getElementById('btn-filter');
+
+    async function applyFilters() {
+        try {
+            const filters = {
+                name: document.getElementById('filter-name').value.trim(),
+                type: document.getElementById('filter-type').value,
+                origin: document.getElementById('filter-origin').value,
+                vegetarian: document.getElementById('filter-vegetarian').checked,
+                vegan: document.getElementById('filter-vegan').checked,
+                glutenFree: document.getElementById('filter-glutenfree').checked,
+                lactoseFree: document.getElementById('filter-lactosefree').checked,
+                halal: document.getElementById('filter-halal').checked,
+                kosher: document.getElementById('filter-kosher').checked,
+                priceMin: parseFloat(document.getElementById('filter-price-min').value) || null,
+                priceMax: parseFloat(document.getElementById('filter-price-max').value) || null
+            };
+
+            const dishes = await fetchDishes(filters);
+            listEl.innerHTML = '';
+
+            if (dishes.length === 0) {
+                listEl.innerHTML = '<p>No dishes found matching your criteria.</p>';
+                return;
             }
-            if (e.target.classList.contains('btn-details')) {
-                sessionStorage.setItem('currentDishId', id);
-                redirect('#/customer/dish-detail');
-            }
-        });
-    } catch (err) {
-        showError(err.message);
+
+            dishes.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'dish-card';
+                card.dataset.id = d.id;
+                card.innerHTML = `
+                    <img src="${d.photoUrl || ''}" alt="${d.name}">
+                    <h3>${d.name}</h3>
+                    <p>€${d.price.toFixed(2)}</p>
+                    <button class="btn-add" data-id="${d.id}">+ Add to Cart</button>
+                    <button class="btn-details" data-id="${d.id}">Details</button>
+                `;
+                listEl.append(card);
+            });
+        } catch (err) {
+            showError(err.message);
+        }
     }
+
+    filterBtn.addEventListener('click', applyFilters);
+    await applyFilters();
+    listEl.addEventListener('click', e => {
+        const id = e.target.dataset.id;
+        if (e.target.classList.contains('btn-add')) {
+            const cart = getCart();
+            const existing = cart.find(i => i.id.toString() === id);
+            if (existing) existing.quantity++;
+            else {
+                const d = [...listEl.children].find(x => x.dataset.id === id);
+                if (!d) return;
+                const name = d.querySelector('h3').textContent;
+                const price = parseFloat(d.querySelector('p').textContent.replace('€', ''));
+                cart.push({ id: Number(id), name, price, quantity: 1 });
+            }
+            saveCart(cart);
+            updateCartCount();
+        }
+        if (e.target.classList.contains('btn-details')) {
+            sessionStorage.setItem('currentDishId', id);
+            redirect('#/customer/dish-detail');
+        }
+    });
 }
+
 
 function initCart() {
     const cart = getCart();

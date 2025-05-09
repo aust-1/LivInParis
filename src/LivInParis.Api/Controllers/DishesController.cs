@@ -32,13 +32,38 @@ public class DishesController(IDishService dishService) : ControllerBase
     }
 
     /// <summary>
-    /// Searches dishes by criteria.
+    /// Searches dishes by criteria via query string.
     /// </summary>
-    [HttpPost("search")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<DishDto>>> Search(
-        [FromBody] DishSearchCriteriaDto criteria
+        [FromQuery] string? name,
+        [FromQuery] string? type,
+        [FromQuery] string? origin,
+        [FromQuery] bool? vegetarian,
+        [FromQuery] bool? vegan,
+        [FromQuery] bool? glutenFree,
+        [FromQuery] bool? lactoseFree,
+        [FromQuery] bool? halal,
+        [FromQuery] bool? kosher,
+        [FromQuery] decimal? priceMin,
+        [FromQuery] decimal? priceMax
     )
     {
+        var criteria = new DishSearchCriteriaDto
+        {
+            Name = name,
+            Type = type,
+            ProductsOrigin = origin,
+            IsVegetarian = vegetarian,
+            IsVegan = vegan,
+            IsGlutenFree = glutenFree,
+            IsLactoseFree = lactoseFree,
+            IsHalal = halal,
+            IsKosher = kosher,
+            MinPrice = priceMin,
+            MaxPrice = priceMax,
+        };
+
         var results = await _dishService.SearchDishesAsync(criteria);
         return Ok(results);
     }

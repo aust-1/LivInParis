@@ -26,11 +26,23 @@ export async function getClients() {
     return res.json();
 }
 
-export async function fetchDishes() {
-    const res = await fetch(`${API_BASE}/dishes`);
+export async function fetchDishes(filters = {}) {
+    const params = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(filters)) {
+        if (value !== null && value !== '' && value !== false) {
+            params.append(key, value);
+        }
+        if (value === true) {
+            params.append(key, 'true');
+        }
+    }
+
+    const res = await fetch(`${API_BASE}/dishes?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to fetch dishes');
     return res.json();
 }
+
 
 export async function fetchDishDetail(id) {
     const dishes = await fetchDishes();

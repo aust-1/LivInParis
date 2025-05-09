@@ -72,21 +72,6 @@ public class Station
         _lineColor = GetLineColor(line);
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Station"/> class.
-    /// Longitude and latitude are converted from degrees to radians internally.
-    /// </summary>
-    /// <param name="toString">
-    /// A string representation of the station in the format: "name (line)"
-    /// </param>
-    public Station(string toString)
-    {
-        var parts = toString.Split(' ');
-        _name = parts[0];
-        _line = parts[1].Trim('(', ')');
-        _lineColor = GetLineColor(_line);
-    }
-
     #endregion Constructors
 
     #region Properties

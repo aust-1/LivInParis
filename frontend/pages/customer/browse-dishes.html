@@ -1,23 +1,15 @@
 <!-- pages/customer/browse-dishes.html -->
 <h2>Browse Dishes</h2>
-<div id="dishes-filter">
+
+<div id="dishes-filter" class="filter-container">
   <input type="text" id="filter-name" placeholder="Search by name">
+
   <select id="filter-type">
     <option value>All Types</option>
     <option value="starter">Starter</option>
     <option value="main_course">Main Course</option>
     <option value="dessert">Dessert</option>
   </select>
-
-  <label for="filter-vegetarian">
-    <input type="checkbox" id="filter-vegetarian"> Vegetarian
-  </label>
-  <label for="filter-vegan">
-    <input type="checkbox" id="filter-vegan"> Vegan
-  </label>
-  <label for="filter-glutenfree">
-    <input type="checkbox" id="filter-glutenfree"> Gluten-Free
-  </label>
 
   <select id="filter-origin">
     <option value>All Origins</option>
@@ -26,8 +18,25 @@
     <option value="other">Other</option>
   </select>
 
+  <div class="diet-options">
+    <label><input type="checkbox" id="filter-vegetarian"> Vegetarian</label>
+    <label><input type="checkbox" id="filter-vegan"> Vegan</label>
+    <label><input type="checkbox" id="filter-glutenfree"> Gluten-Free</label>
+    <label><input type="checkbox" id="filter-lactosefree"> Lactose-Free</label>
+    <label><input type="checkbox" id="filter-halal"> Halal</label>
+    <label><input type="checkbox" id="filter-kosher"> Kosher</label>
+  </div>
+
+  <div class="price-range">
+    <label>Min € <input type="number" id="filter-price-min" min="0"
+        step="0.1"></label>
+    <label>Max € <input type="number" id="filter-price-max" min="0"
+        step="0.1"></label>
+  </div>
+
   <button id="btn-filter">Apply Filters</button>
 </div>
-<div id="dishes-list" class="grid">
-</div>
-<script src="/js/dishes.js"></script>
+
+<hr>
+
+<div id="dishes-list" class="grid"></div>
