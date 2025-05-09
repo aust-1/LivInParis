@@ -1,13 +1,10 @@
-// Customer-side interactions: browsing, cart, checkout
-import { fetchDishes, placeOrder, fetchMyOrders, fetchOrderDetail, fetchProfile, updateProfile, fetchDishDetail } from './api.js';
+import { fetchDishes, placeOrder, fetchMyOrders, fetchOrderDetail, fetchCustomerProfile, updateProfile, fetchDishDetail } from './api.js';
 import { showError, redirect, getCart, saveCart } from './common.js';
 
-// Initialize a page based on its name
 export function initPage(page) {
     switch (page) {
         case 'dashboard':
             updateCartCount();
-            // Enable clicking on dashboard sub-nav links
             document.querySelectorAll('#content .sub-nav a').forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
@@ -22,7 +19,7 @@ export function initPage(page) {
         case 'order-detail': initOrderDetail(); break;
         case 'dish-detail': initDishDetail(); break;
         case 'order-confirmation': initOrderConfirmation(); break;
-        case 'profile': initProfile(); break;
+        case 'customer-profile': initProfile(); break;
         case 'edit-profile': initEditProfile(); break;
     }
     document.addEventListener('click', e => {
@@ -230,11 +227,14 @@ async function initOrderDetail() {
 
 async function initProfile() {
     try {
-        const profile = await fetchProfile();
-        document.getElementById('profile-name').textContent = profile.name;
-        document.getElementById('profile-username').textContent = profile.userName;
+        const customerId = sessionStorage.getItem("customerId");
+        const profile = await fetchCustomerProfile(customerId);
+
+        document.getElementById('profile-name').textContent = `${profile.firstName} ${profile.lastName}`;
+        document.getElementById('profile-username').textContent = profile.username;
         document.getElementById('profile-email').textContent = profile.email;
-        document.getElementById('profile-address').textContent = profile.address;
+        document.getElementById('profile-address').textContent = `${profile.address.number} ${profile.address.street}`;
+        document.getElementById('customer-rating').textContent = profile.rating?.toFixed(1) ?? 'N/A';
     } catch (err) {
         showError(err.message);
     }
@@ -242,7 +242,7 @@ async function initProfile() {
 
 async function initEditProfile() {
     try {
-        const profile = await fetchProfile();
+        const profile = await fetchCustomerProfile();
         const nameEl = document.getElementById('edit-name');
         const emailEl = document.getElementById('edit-email');
         const addressEl = document.getElementById('edit-address');

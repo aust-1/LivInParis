@@ -1,9 +1,7 @@
 import { getAuthToken, showError, clearAuthToken, redirect } from './common.js';
 
-// Setup hash-based routing
 window.addEventListener('load', loadPage);
 window.addEventListener('hashchange', loadPage);
-// Logout button
 document.getElementById('logout-link')?.addEventListener('click', e => {
     e.preventDefault(); clearAuthToken(); redirect('#/auth/login');
 });
@@ -13,7 +11,6 @@ async function loadPage() {
     let hash = window.location.hash || '#/auth/login';
     const [group, page] = hash.slice(2).split('/');
     const route = `${group}/${page || 'login'}`;
-    // Authentication guard
     const publicRoutes = ['auth/login', 'auth/register'];
     if (!getAuthToken() && !publicRoutes.includes(route)) {
         window.location.hash = '#/auth/login';
@@ -28,7 +25,6 @@ async function loadPage() {
         const res404 = await fetch('pages/not-found.html');
         content.innerHTML = await res404.text();
     }
-    // TODO: initialize page-specific scripts if needed
     try {
         if (group === 'auth') {
             import('./auth.js').then(m => {

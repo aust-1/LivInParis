@@ -1,9 +1,6 @@
-/* eslint-disable no-new */
-// Statistics charts using Chart.js
 import Chart from '../lib/chartjs/chart.umd.js';
 import { fetchStatsOrdersByChef, fetchStatsRevenueByStreet, fetchStatsAverageOrderPrice, fetchStatsTopCuisines } from './api.js';
 
-// Initialize stats pages
 export function initPage(page) {
     switch (page) {
         case 'orders': initOrdersByChef(); break;
@@ -14,7 +11,6 @@ export function initPage(page) {
     }
 }
 
-// Back to stats dashboard
 document.addEventListener('click', e => {
     if (e.target.id === 'btn-back-stats-dashboard') {
         window.location.hash = '#/stats/dashboard';
@@ -25,7 +21,6 @@ async function initOrdersByChef() {
     const ctx = document.getElementById('ordersByChefChart')?.getContext('2d');
     if (!ctx) return;
     const data = await fetchStatsOrdersByChef();
-    // Assign chart instance to global to avoid unused instantiation errors
     window.ordersByChefChart = new Chart(ctx, { type: 'bar', data: { labels: data.map(d => d.chefName), datasets: [{ label: 'Orders', data: data.map(d => d.count) }] } });
 }
 

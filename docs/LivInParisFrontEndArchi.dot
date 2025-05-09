@@ -53,17 +53,14 @@ digraph LivInParisFrontend {
         MyOrders -> CustomerDashboard       [label="Back", style=dotted];
         Profile_C -> CustomerDashboard      [label="Back", style=dotted];
 
-        // Direct add to cart and checkout from the list
         BrowseDishes -> BrowseDishes [label="Add to Cart", style=dashed];
         BrowseDishes -> Cart [label="View Cart"];
         Cart -> BrowseDishes                [label="Continue Shopping", style=dotted];
 
-        // Detail view: can pay or go back to list
         DishDetail -> Checkout [label="Buy Now"];
         BrowseDishes -> DishDetail          [label="Select Dish"];
         DishDetail -> Cart          [label="View Cart"];
 
-        // Cart navigation
         Cart -> Checkout                    [label="Proceed to Checkout"];
         Cart -> Cart [label="Update Quantity / Remove", style=dashed];
 

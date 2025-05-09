@@ -1,4 +1,3 @@
-// Map & routing with Leaflet
 import L from '../lib/leaflet/leaflet.js';
 import { getRoute } from './api.js';
 

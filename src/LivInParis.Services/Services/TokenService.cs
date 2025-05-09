@@ -50,19 +50,16 @@ namespace LivInParisRoussilleTeynier.Services.Services
 
         public string GenerateRefreshToken(Account user)
         {
-            // Ici un simple GUID, en prod on stocke en base
             return Guid.NewGuid().ToString("N");
         }
 
         public string HashPassword(string password)
         {
-            // Ex : BCrypt, ici simplifié
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
         }
 
         public Task RevokeTokenAsync(string refreshToken)
         {
-            // implémentation stub
             return Task.CompletedTask;
         }
     }

@@ -85,14 +85,14 @@ export async function fetchOrderDetail(orderId) {
     return res.json();
 }
 
-export async function fetchProfile() {
-    const res = await fetch(`${API_BASE}/auth/profile`);
+export async function fetchCustomerProfile(customerId) {
+    const res = await fetch(`${API_BASE}/customers/${customerId}/profile`);
     if (!res.ok) throw new Error('Failed to fetch profile');
     return res.json();
 }
 
 export async function updateProfile(data) {
-    const res = await fetch(`${API_BASE}/auth/profile`, {
+    const res = await fetch(`${API_BASE}/customers/profile`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
     });
     if (!res.ok) throw new Error('Failed to update profile');
@@ -154,14 +154,14 @@ export async function fetchDeliveryDetail(id) {
     return res.json();
 }
 
-export async function fetchChefProfile() {
-    const res = await fetch(`${API_BASE}/auth/profile`); // reuse auth/profile
+export async function fetchChefProfile(chefId) {
+    const res = await fetch(`${API_BASE}/chefs/${chefId}/profile`);
     if (!res.ok) throw new Error('Failed to fetch chef profile');
     return res.json();
 }
 
 export async function updateChefProfile(data) {
-    const res = await fetch(`${API_BASE}/auth/profile`, {
+    const res = await fetch(`${API_BASE}/chefs/profile`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
     });
     if (!res.ok) throw new Error('Failed to update chef profile');

@@ -132,11 +132,6 @@ else
     });
 }
 
-/// <summary>
-/// Map controllers for API.
-/// </summary>
-app.MapControllers();
-
 if (!app.Environment.IsDevelopment())
 {
     /// <summary>
@@ -144,5 +139,10 @@ if (!app.Environment.IsDevelopment())
     /// </summary>
     app.MapFallbackToFile("index.html");
 }
+
+/// <summary>
+/// Map controllers for API.
+/// </summary>
+app.MapControllers();
 
 await app.RunAsync();

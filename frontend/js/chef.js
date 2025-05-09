@@ -1,4 +1,3 @@
-// Chef-side interactions: proposals, orders
 import {
     fetchChefProposals, createProposal, updateProposal, deleteProposal,
     fetchIncomingOrders, acceptOrder, rejectOrder,
@@ -7,11 +6,9 @@ import {
 } from './api.js';
 import { showError, redirect } from './common.js';
 
-// Initialize page based on sub-route
 export function initPage(page) {
     switch (page) {
         case 'dashboard':
-            // Dashboard sub-nav links
             document.getElementById('nav-manage-menu')?.addEventListener('click', () => redirect('#/chef/manage-menu'));
             document.getElementById('nav-incoming-orders')?.addEventListener('click', () => redirect('#/chef/incoming-orders'));
             document.getElementById('nav-deliveries')?.addEventListener('click', () => redirect('#/chef/deliveries'));
@@ -24,10 +21,9 @@ export function initPage(page) {
         case 'order-detail': initChefOrderDetail(); break;
         case 'deliveries': initDeliveries(); break;
         case 'delivery-detail': initDeliveryDetail(); break;
-        case 'profile': initChefProfile(); break;
+        case 'chef-profile': initChefProfile(); break;
         case 'edit-profile': initEditChefProfile(); break;
     }
-    // Global navigation buttons
     document.addEventListener('click', e => {
         const id = e.target.id;
         if (id === 'btn-back-chef-dashboard') redirect('#/chef/dashboard');
@@ -38,7 +34,6 @@ export function initPage(page) {
     });
 }
 
-// Manage menu proposals
 async function initManageMenu() {
     try {
         const tbody = document.getElementById('proposals-table').querySelector('tbody');
@@ -70,7 +65,6 @@ async function initManageMenu() {
     } catch (err) { showError(err.message); }
 }
 
-// Create new proposal
 async function initCreateProposal() {
     const form = document.getElementById('create-proposal-form');
     form.addEventListener('submit', async e => {
@@ -81,11 +75,9 @@ async function initCreateProposal() {
     });
 }
 
-// Edit existing proposal
 async function initEditProposal() {
     const form = document.getElementById('edit-proposal-form');
     const id = sessionStorage.getItem('currentProposalId');
-    // Optionally fetch details to prefill
     form.addEventListener('submit', async e => {
         e.preventDefault();
         const data = { date: form.date.value, dish: form.dish.value };
@@ -94,7 +86,6 @@ async function initEditProposal() {
     });
 }
 
-// Incoming orders
 async function initIncomingOrders() {
     try {
         const tbody = document.getElementById('incoming-orders-table').querySelector('tbody');
@@ -116,11 +107,10 @@ async function initIncomingOrders() {
     } catch (err) { showError(err.message); }
 }
 
-// Chef order detail
 async function initChefOrderDetail() {
     try {
         const id = sessionStorage.getItem('currentOrderId');
-        const detail = await fetchOrderDetail(id); // reuse client API or create new
+        const detail = await fetchOrderDetail(id);
         document.getElementById('chef-order-id').textContent = detail.id;
         document.getElementById('chef-order-customer').textContent = detail.customerName;
         document.getElementById('chef-order-date').textContent = new Date(detail.date).toLocaleString();
@@ -140,7 +130,6 @@ async function initChefOrderDetail() {
     } catch (err) { showError(err.message); }
 }
 
-// My deliveries
 async function initDeliveries() {
     try {
         const tbody = document.getElementById('deliveries-table').querySelector('tbody');
@@ -162,7 +151,6 @@ async function initDeliveries() {
     } catch (err) { showError(err.message); }
 }
 
-// Delivery detail
 async function initDeliveryDetail() {
     try {
         const id = sessionStorage.getItem('currentDeliveryId');
@@ -174,18 +162,20 @@ async function initDeliveryDetail() {
     } catch (err) { showError(err.message); }
 }
 
-// Chef profile
 async function initChefProfile() {
     try {
-        const prof = await fetchChefProfile();
-        document.getElementById('chef-name').textContent = prof.name;
-        document.getElementById('chef-email').textContent = prof.email;
-        document.getElementById('chef-address').textContent = prof.address;
-        document.getElementById('chef-rating').textContent = prof.rating;
-    } catch (err) { showError(err.message); }
+        const chefId = sessionStorage.getItem("chefId");
+        const profile = await fetchChefProfile(chefId);
+
+        document.getElementById('chef-name').textContent = profile.username;
+        document.getElementById('chef-email').textContent = profile.email;
+        document.getElementById('chef-address').textContent = `${profile.address.number} ${profile.address.street}`;
+        document.getElementById('chef-rating').textContent = profile.rating?.toFixed(1) ?? 'N/A';
+    } catch (err) {
+        showError(err.message);
+    }
 }
 
-// Edit chef profile
 async function initEditChefProfile() {
     try {
         const form = document.getElementById('edit-chef-profile-form');

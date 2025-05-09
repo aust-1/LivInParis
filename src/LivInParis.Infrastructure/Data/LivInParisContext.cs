@@ -19,9 +19,7 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
     /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Locate and load .env file at project root for DB credentials
         var baseDir = AppContext.BaseDirectory;
-        // Path up five levels to solution root for .env file
         var envPath = Path.Combine(baseDir, "..", "..", "..", "..", "..", ".env");
         if (File.Exists(envPath))
         {
@@ -29,7 +27,6 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
         }
         else
         {
-            // Fallback to loading from current directory
             Env.Load();
         }
 
