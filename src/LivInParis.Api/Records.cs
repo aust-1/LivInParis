@@ -1,4 +1,4 @@
-namespace LivInParisRoussilleTeynier.Services;
+namespace LivInParisRoussilleTeynier.Api;
 
 public record LoginRequest(string Name, string Password);
 

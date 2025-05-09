@@ -1,3 +1,4 @@
+using LivInParisRoussilleTeynier.Api;
 using LivInParisRoussilleTeynier.Domain.Models.Maps;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Data;
@@ -12,8 +13,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
-
-Metro.InitializeMetro();
 
 /// <summary>
 /// Configure database context with MySQL using connection string from appsettings.json.
@@ -35,16 +34,20 @@ builder.Services.AddScoped<IContainsRepository, ContainsRepository>();
 /// Register service layer implementations
 /// </summary>
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+builder.Services.AddScoped<IChefProfileService, ChefProfileService>();
+builder.Services.AddScoped<ICustomerProfileService, CustomerProfileService>();
 builder.Services.AddScoped<IDishService, DishService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IOrderLineService, OrderLineService>();
+builder.Services.AddScoped<IGraphService, GraphService>();
+builder.Services.AddScoped<IIncomingOrderService, IncomingOrderService>();
 builder.Services.AddScoped<IMenuProposalService, MenuProposalService>();
-builder.Services.AddScoped<IChefService, ChefService>();
+builder.Services.AddScoped<IOrderLineService, OrderLineService>();
 
-/// <summary>
-/// Register graph service for pathfinding and algorithms.
-/// </summary>
-// builder.Services.AddScoped<IGrapheService, GrapheService>();
+//builder.Services.AddScoped<IReviewService, ReviewService>();
+//builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 /// <summary>
 /// Allow Cross-Origin Requests from frontend during development.
@@ -80,6 +83,9 @@ builder.Services.AddSpaStaticFiles(options =>
 });
 
 var app = builder.Build();
+
+Metro.InitializeMetro();
+await DatabaseSeeder.SeedFromExcelAsync(builder.Services.BuildServiceProvider());
 
 app.UseCors("AllowAll");
 

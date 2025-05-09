@@ -318,11 +318,10 @@ public interface IGraphService
     /// <param name="fromAddress">The starting address.</param>
     /// <param name="toAddress">The destination address.</param>
     /// <returns>
-    /// A sequence of <see cref="RouteDto"/> objects representing the path
+    /// A <see cref="RouteDto"/> object representing the path
     /// from source to destination, inclusive.
     /// </returns>
-    Task<IEnumerable<RouteDto>> GetShortestPathAsync(string fromAddress, string toAddress);
+    Task<RouteDto> GetShortestPathAsync(string fromAddress, string toAddress);
 }
-
 
 #endregion Graph

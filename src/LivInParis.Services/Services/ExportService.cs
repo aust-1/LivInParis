@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Xml.Serialization;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 
-namespace LivInParisRoussilleTeynier.Services;
+namespace LivInParisRoussilleTeynier.Services.Services;
 
 public static class ExportService
 {
