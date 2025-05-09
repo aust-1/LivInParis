@@ -1,0 +1,29 @@
+<!-- pages/auth/login.html -->
+<h2>Sign In</h2>
+<form id="login-form">
+    <div class="form-group">
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name" required
+            placeholder="Your username">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required
+            placeholder="*************">
+    </div>
+    <div class="form-actions">
+        <button type="submit" id="btn-login">Sign In</button>
+    </div>
+    <p class="helper-text">
+        Don't have an account?
+        <a href="#/auth/register" id="link-register">Sign Up</a>
+    </p>
+    <p class="error-message" id="login-error"
+        style="display:none;color:red;"></p>
+    <p class="helper-text">
+        <a
+            href="https://letmegooglethat.com/?q=How+do+you+remember+a+password+when+you%27re+dumb%3F&l=1"
+            id="link-forgot-password" title="Forgot
+            Password?" target="_blank">Forgot Password?</a>
+    </p>
+</form>

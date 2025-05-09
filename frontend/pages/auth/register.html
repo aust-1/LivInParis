@@ -1,0 +1,30 @@
+<!-- pages/auth/register.html -->
+<h2>Sign Up</h2>
+<form id="register-form">
+    <div class="form-group">
+        <label for="name">User Name:</label>
+        <input type="text" id="name" name="name" required
+            placeholder="John Doe">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required
+            placeholder="*************">
+    </div>
+    <div class="form-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role" required>
+            <option value="Customer">Customer</option>
+            <option value="Chef">Chef</option>
+        </select>
+    </div>
+    <div class="form-actions">
+        <button type="submit" id="btn-register">Register</button>
+    </div>
+    <p class="helper-text">
+        Already have an account?
+        <a href="#/auth/login" id="link-login">Sign In</a>
+    </p>
+    <p class="error-message" id="register-error"
+        style="display:none;color:red;"></p>
+</form>

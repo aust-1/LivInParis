@@ -1,0 +1,26 @@
+<!-- pages/chef/order-detail.html -->
+<h2>Order Detail</h2>
+<section id="order-detail-info">
+    <p><strong>Order ID:</strong> <span id="chef-order-id"></span></p>
+    <p><strong>Customer:</strong> <span id="chef-order-customer"></span></p>
+    <p><strong>Date:</strong> <span id="chef-order-date"></span></p>
+    <p><strong>Status:</strong> <span id="chef-order-status"></span></p>
+    <h3>Items</h3>
+    <table id="chef-order-items">
+        <thead><tr><th>Dish</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody>
+            <!-- JS injecte -->
+        </tbody>
+        <tfoot>
+            <tr><td colspan="2"><strong>Total</strong></td><td
+                    id="chef-order-total"></td></tr>
+        </tfoot>
+    </table>
+</section>
+<div class="form-actions">
+    <button id="btn-accept-order">Accept</button>
+    <button id="btn-reject-order">Reject</button>
+    <button id="btn-back-incoming-orders">Back</button>
+</div>
+<p class="error-message" id="chef-order-error"
+    style="display:none;color:red;"></p>

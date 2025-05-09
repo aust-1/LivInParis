@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    hostname: ${DB_HOST}
+    env_file:
+      - .env
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - ${DB_PORT}:3306
+
+  api:
+    build:
+      context: .
+      dockerfile: src/LivInParis.Api/Dockerfile
+    ports:
+      - "53754:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+#TODO: encapsuler dans un dossier .env et init.sql
+#QUESTION: init.SQL est-il nécessaire ? car mtn on a la dbcontext

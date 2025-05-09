@@ -2,7 +2,7 @@
 
 ## Initialisation
 
-Pour initialiser le graphe du métro parisien nous pouvions utiliser le fichier `MatroParis.xlsx` fourni dans le projet en le convertisant en une structure de données adaptée. Nous avions le choix entre deux structures de données :
+Pour initialiser le graphe du métro parisien nous pouvions utiliser le fichier `MetroParis.xlsx` fourni dans le projet en le convertisant en une structure de données adaptée. Nous avions le choix entre deux structures de données :
 
 1) Une matrice d'adjacence
 2) Une liste d'adjacence

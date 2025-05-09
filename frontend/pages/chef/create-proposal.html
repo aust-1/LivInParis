@@ -1,0 +1,19 @@
+<!-- pages/chef/create-proposal.html -->
+<h2>Create Menu Proposal</h2>
+<form id="create-proposal-form">
+    <div class="form-group">
+        <label for="proposal-date">Date:</label>
+        <input type="date" id="proposal-date" name="date" required>
+    </div>
+    <div class="form-group">
+        <label for="proposal-dish">Dish:</label>
+        <input type="text" id="proposal-dish" name="dish" required
+            placeholder="Dish name">
+    </div>
+    <div class="form-actions">
+        <button type="submit" id="btn-save-proposal">Save</button>
+        <button type="button" id="btn-cancel-create">Cancel</button>
+    </div>
+    <p class="error-message" id="create-proposal-error"
+        style="display:none;color:red;"></p>
+</form>
