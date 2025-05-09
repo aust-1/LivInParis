@@ -16,12 +16,6 @@ public class Customer
     public int CustomerAccountId { get; set; }
 
     /// <summary>
-    /// The rating of the customer.
-    /// </summary>
-    [Range(1.0, 5.0)]
-    public decimal? CustomerRating { get; set; }
-
-    /// <summary>
     /// Indicates whether the customer is banned from the platform.
     /// </summary>
     [Required]
@@ -39,7 +33,5 @@ public class Customer
     public ICollection<OrderTransaction> OrderTransactions { get; set; } =
         new List<OrderTransaction>();
 }
-
-//TODO: delete rating
 
 //TODO: check if a company already exists before creating an individual

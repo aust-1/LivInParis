@@ -6,6 +6,7 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order.Enums;
 /// <remarks>
 /// Categorizes orders into five statuses:
 /// <list type="bullet">
+/// <item><description>InCart</description></item>
 /// <item><description>Pending</description></item>
 /// <item><description>Preparing</description></item>
 /// <item><description>Delivering</description></item>
@@ -15,6 +16,11 @@ namespace LivInParisRoussilleTeynier.Domain.Models.Order.Enums;
 /// </remarks>
 public enum OrderLineStatus
 {
+    /// <summary>
+    /// The order is in the cart and has not been placed yet.
+    /// </summary>
+    InCart,
+
     /// <summary>
     /// The order has been placed but not yet confirmed.
     /// </summary>

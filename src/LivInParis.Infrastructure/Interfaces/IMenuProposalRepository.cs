@@ -23,4 +23,11 @@ public interface IMenuProposalRepository : IRepository<MenuProposal>
         DateTime? from = null,
         DateTime? to = null
     );
+
+    /// <summary>
+    /// Retrieves the proposals made by a specific chef.
+    /// </summary>
+    /// <param name="chefId">The ID of the chef whose proposals to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of menu proposals.</returns>
+    Task<IEnumerable<MenuProposal>> GetProposalsByChefAsync(int chefId);
 }

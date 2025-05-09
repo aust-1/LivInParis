@@ -15,7 +15,7 @@ public class OrderTransactionRepository(LivInParisContext context)
 {
     /// <inheritdoc/>
     public async Task<IEnumerable<OrderTransaction>> ReadAsync(
-        Customer? customer = null,
+        int? customerId = null,
         decimal? minTotalPrice = null,
         decimal? maxTotalPrice = null,
         DateTime? from = null,
@@ -51,14 +51,25 @@ public class OrderTransactionRepository(LivInParisContext context)
             query = query.Where(t => t.Total <= maxTotalPrice.Value);
         }
 
-        if (customer != null)
+        if (customerId != null)
         {
-            query = query.Where(ott => ott.ot!.Customer == customer);
+            query = query.Where(ott => ott.ot!.CustomerAccountId == customerId);
         }
 
         var raw = await query.ToListAsync();
 
         return raw.Select(g => g.ot!);
+    }
+
+    public async Task<OrderTransaction?> GetCurrentTransactionAsync(int customerId)
+    {
+        var transaction = await _context
+            .OrderTransactions.Where(ot =>
+                ot.CustomerAccountId == customerId && ot.TransactionDatetime == null
+            )
+            .FirstOrDefaultAsync();
+
+        return transaction;
     }
 
     /// <inheritdoc/>

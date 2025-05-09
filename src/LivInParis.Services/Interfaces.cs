@@ -134,7 +134,7 @@ public interface IDishService
     /// <summary>
     /// Retrieves a dish by its identifier.
     /// </summary>
-    Task<DishDto> GetDishByIdAsync(int dishId);
+    Task<DishDto?> GetDishByIdAsync(int dishId);
 
     /// <summary>
     /// Searches dishes based on criteria such as cuisine or type.
@@ -155,17 +155,12 @@ public interface ICartService
     /// <summary>
     /// Adds an item to the shopping cart.
     /// </summary>
-    Task AddItemAsync(int customerId, int dishId, int quantity);
-
-    /// <summary>
-    /// Updates the quantity of an item in the shopping cart.
-    /// </summary>
-    Task UpdateItemAsync(int customerId, int dishId, int quantity);
+    Task AddItemAsync(int customerId, int chefId);
 
     /// <summary>
     /// Removes an item from the shopping cart.
     /// </summary>
-    Task RemoveItemAsync(int customerId, int dishId);
+    Task RemoveItemAsync(int customerId, int chefId);
 
     /// <summary>
     /// Clears all items from the shopping cart.
@@ -185,28 +180,50 @@ public interface ICheckoutService
     /// <summary>
     /// Places an order based on the customer's cart and checkout details.
     /// </summary>
-    Task<OrderDto> PlaceOrderAsync(int customerId, CheckoutDto checkoutDto);
+    Task<TransactionDto> PlaceOrderAsync(int customerId, CheckoutDto checkoutDto);
 }
 
 /// <summary>
 /// Defines operations for retrieving and managing customer orders.
 /// </summary>
-public interface IOrderService
+public interface ITransactionService
 {
     /// <summary>
     /// Retrieves all orders for a specific customer.
     /// </summary>
-    Task<IEnumerable<OrderDto>> GetOrdersByCustomerAsync(int customerId);
+    Task<IEnumerable<TransactionDto>> GetTransactionsByCustomerAsync(int customerId);
 
     /// <summary>
     /// Retrieves order details by order identifier.
     /// </summary>
-    Task<OrderDto> GetOrderByIdAsync(int orderId);
+    Task<TransactionDto> GetTransactionByIdAsync(int transactionId);
+}
+
+/// <summary>
+/// Defines operations for retrieving and managing customer orders.
+/// </summary>
+public interface IOrderlineService
+{
+    /// <summary>
+    /// Retrieves all order lines for a specific transaction.
+    /// </summary>
+    /// <param name="transactionId">The identifier of the transaction.</param>
+    /// <returns>A task representing the asynchronous operation, containing a list of order lines.</returns>
+    Task<IEnumerable<TransactionDto>> GetOrderLinesByTransactionAsync(int transactionId);
 
     /// <summary>
-    /// Cancels an existing order.
+    /// Retrieves order line details by orderline identifier.
     /// </summary>
-    Task CancelOrderAsync(int orderId);
+    /// <param name="orderLineId">The identifier of the order line.</param>
+    /// <returns>A task representing the asynchronous operation, containing the order line details.</returns>
+    Task<OrderLineDto> GetOrderLineByIdAsync(int orderLineId);
+
+    /// <summary>
+    /// Cancels an existing order line.
+    /// </summary>
+    /// <param name="orderLineId">The identifier of the order line to cancel.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task CancelOrderLineAsync(int orderLineId);
 }
 
 #endregion
@@ -224,19 +241,9 @@ public interface IMenuProposalService
     Task<IEnumerable<MenuProposalDto>> GetProposalsByChefAsync(int chefId);
 
     /// <summary>
-    /// Retrieves a specific menu proposal.
-    /// </summary>
-    Task<MenuProposalDto> GetProposalAsync(int chefId, DateTime proposalDate);
-
-    /// <summary>
     /// Creates a new menu proposal.
     /// </summary>
     Task CreateProposalAsync(CreateMenuProposalDto createDto);
-
-    /// <summary>
-    /// Updates an existing menu proposal.
-    /// </summary>
-    Task UpdateProposalAsync(int chefId, DateTime proposalDate, UpdateMenuProposalDto updateDto);
 
     /// <summary>
     /// Deletes a menu proposal.
@@ -252,12 +259,7 @@ public interface IIncomingOrderService
     /// <summary>
     /// Retrieves pending orders for a chef.
     /// </summary>
-    Task<IEnumerable<OrderDto>> GetIncomingOrdersAsync(int chefId);
-
-    /// <summary>
-    /// Retrieves details of a specific incoming order.
-    /// </summary>
-    Task<OrderDto> GetOrderDetailAsync(int orderId);
+    Task<IEnumerable<OrderLineDto>> GetIncomingOrdersAsync(int chefId);
 
     /// <summary>
     /// Accepts an incoming order.

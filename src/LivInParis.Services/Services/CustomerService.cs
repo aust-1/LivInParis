@@ -19,7 +19,6 @@ public class CustomerService : ICustomerService
 
     public async Task<IEnumerable<OrderTransaction>> GetOrdersForCustomerAsync(int accountId)
     {
-        var customer = await _custRepo.GetByIdAsync(accountId);
-        return await _transRepo.ReadAsync(customer: customer);
+        return await _transRepo.ReadAsync(customerId: accountId);
     }
 }

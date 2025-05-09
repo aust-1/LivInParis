@@ -35,9 +35,9 @@ public class ChefProfileService(
             Rating = await _chefRepository.GetChefRatingAsync(chef),
             Address = new AddressDto
             {
-                Id = address.Id,
-                Number = address.Number,
-                Street = address.Street,
+                Id = address!.AddressId,
+                Number = address!.AddressNumber,
+                Street = address!.Street,
             },
         };
     }

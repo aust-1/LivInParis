@@ -1,41 +1,32 @@
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
-using LivInParisRoussilleTeynier.Services.Interfaces;
 
 namespace LivInParisRoussilleTeynier.Services.Services;
 
-public class MenuProposalService(IMenuProposalRepository repo) : IMenuProposalService
+/// <inheritdoc/>
+/// <summary>
+/// Initializes a new instance of <see cref="MenuProposalService"/>.
+/// </summary>
+public class MenuProposalService(IMenuProposalRepository proposalRepository) : IMenuProposalService
 {
-    private readonly IMenuProposalRepository _repo = repo;
+    private readonly IMenuProposalRepository _proposalRepository = proposalRepository;
 
-    public async Task<IEnumerable<MenuProposal>> GetByChefAsync(int chefId)
-    {
-        return await _repo.ReadAsync(mp => mp.ChefAccountId == chefId);
-    }
+    /// <inheritdoc/>
+    public async Task<IEnumerable<MenuProposalDto>> GetProposalsByChefAsync(int chefId) =>
+        (IEnumerable<MenuProposalDto>)await _proposalRepository.GetProposalsByChefAsync(chefId);
 
-    public async Task CreateAsync(MenuProposal proposal)
-    {
-        await _repo.AddAsync(proposal);
-        await _repo.SaveChangesAsync();
-    }
+    /// <inheritdoc/>
+    public Task CreateProposalAsync(CreateMenuProposalDto createDto) =>
+        _proposalRepository.AddAsync(
+            new MenuProposal
+            {
+                ChefAccountId = createDto.ChefId,
+                ProposalDate = DateOnly.FromDateTime(createDto.ProposalDate),
+                DishId = createDto.DishId,
+            }
+        );
 
-    public async Task UpdateAsync(MenuProposal proposal)
-    {
-        _repo.Update(proposal);
-        await _repo.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(int chefId, DateTime proposalDate)
-    {
-        var existing = (
-            await _repo.ReadAsync(mp =>
-                mp.ChefAccountId == chefId && mp.ProposalDate == DateOnly.FromDateTime(proposalDate)
-            )
-        ).FirstOrDefault();
-        if (existing != null)
-        {
-            _repo.Delete(existing);
-            await _repo.SaveChangesAsync();
-        }
-    }
+    /// <inheritdoc/>
+    public Task DeleteProposalAsync(int chefId, DateTime proposalDate) =>
+        throw new NotImplementedException("DeleteProposalAsync is not implemented.");
 }

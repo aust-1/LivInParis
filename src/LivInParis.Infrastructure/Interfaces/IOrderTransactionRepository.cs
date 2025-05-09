@@ -10,7 +10,7 @@ public interface IOrderTransactionRepository : IRepository<OrderTransaction>
     /// <summary>
     /// Reads transactions from the database based on the specified criteria.
     /// </summary>
-    /// <param name="customer">The customer associated with the transaction.</param>
+    /// <param name="customerId">The customer Id associated with the transaction.</param>
     /// <param name="minTotalPrice">The minimum total price of the transaction.</param>
     /// <param name="maxTotalPrice">The maximum total price of the transaction.</param>
     /// <param name="from">
@@ -21,12 +21,20 @@ public interface IOrderTransactionRepository : IRepository<OrderTransaction>
     /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of transactions.</returns>
     Task<IEnumerable<OrderTransaction>> ReadAsync(
-        Customer? customer = null,
+        int? customerId = null,
         decimal? minTotalPrice = null,
         decimal? maxTotalPrice = null,
         DateTime? from = null,
         DateTime? to = null
     );
+
+    /// <summary>
+    /// Retrieves the current transaction for a customer.
+    /// This is the transaction that is currently being processed and has not yet been completed.
+    /// </summary>
+    /// <param name="customerId">Id of the customer whose current transaction is to be retrieved.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the current transaction.</returns>
+    Task<OrderTransaction?> GetCurrentTransactionAsync(int customerId);
 
     /// <summary>
     /// Retrieves the total price of an transaction.

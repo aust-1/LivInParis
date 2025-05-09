@@ -32,7 +32,7 @@ public class StatisticsService(
         foreach (var cust in await _customerRepo.GetAllAsync())
         {
             var count = await _transactionRepo
-                .ReadAsync(new Customer { AccountId = cust.AccountId })
+                .ReadAsync(cust.CustomerAccountId)
                 .ContinueWith(t => t.Result.Count());
             list.Add((cust, count));
         }

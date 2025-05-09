@@ -24,8 +24,8 @@ public class OrderLineRepository(LivInParisContext context)
 
     /// <inheritdoc/>
     public async Task<IEnumerable<OrderLine>> ReadAsync(
-        Chef? chef = null,
-        Customer? customer = null,
+        int? chefId = null,
+        int? customerId = null,
         OrderLineStatus? status = null,
         DateTime? from = null,
         DateTime? to = null
@@ -38,14 +38,14 @@ public class OrderLineRepository(LivInParisContext context)
             .OrderLines.Where(ol => ol.OrderLineDatetime >= start)
             .Where(ol => ol.OrderLineDatetime <= end);
 
-        if (chef != null)
+        if (chefId != null)
         {
-            query = query.Where(ol => ol.Chef == chef);
+            query = query.Where(ol => ol.ChefAccountId == chefId);
         }
 
-        if (customer != null)
+        if (customerId != null)
         {
-            query = query.Where(ol => ol.OrderTransaction!.Customer == customer);
+            query = query.Where(ol => ol.OrderTransaction!.CustomerAccountId == customerId);
         }
 
         if (status.HasValue)
@@ -54,6 +54,21 @@ public class OrderLineRepository(LivInParisContext context)
         }
 
         return await query.ToListAsync();
+    }
+
+    /// <inheritdoc/>
+    public Task<Dish> GetOrderDishAsync(OrderLine orderLine)
+    {
+        var query = _context
+            .OrderLines.Where(ol => ol == orderLine)
+            .Join(
+                _context.MenuProposals,
+                ol => new { ChefId = ol.Chef, Date = DateOnly.FromDateTime(ol.OrderLineDatetime) },
+                mp => new { ChefId = mp.Chef, Date = mp.ProposalDate },
+                (ol, mp) => new { ol, mp }
+            );
+
+        return query.Select(olmp => olmp.mp.Dish!).FirstAsync();
     }
 
     /// <inheritdoc/>

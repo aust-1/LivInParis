@@ -47,4 +47,8 @@ public class MenuProposalRepository(LivInParisContext context)
 
         return raw.Select(g => (g.Dish!, g.OrderCount));
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<MenuProposal>> GetProposalsByChefAsync(int chefId) =>
+        await _context.MenuProposals.Where(mp => mp.ChefAccountId == chefId).ToListAsync();
 }

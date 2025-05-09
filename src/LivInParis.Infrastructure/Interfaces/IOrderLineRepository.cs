@@ -18,8 +18,8 @@ public interface IOrderLineRepository : IRepository<OrderLine>
     /// <summary>
     /// Retrieves the orders placed by a specific chef within a date range and for a specific customer if provided.
     /// </summary>
-    /// <param name="chef">The chef to filter by.</param>
-    /// <param name="customer">The customer to filter by.</param>
+    /// <param name="chefId">The chef Id to filter by.</param>
+    /// <param name="customerId">The customer Id to filter by.</param>
     /// <param name="status">The status of the order line to filter by.</param>
     /// <param name="from">
     /// The start of the period to include. If null, includes all deliveries from the beginning of time.
@@ -29,12 +29,19 @@ public interface IOrderLineRepository : IRepository<OrderLine>
     /// </param>
     /// <returns>A task that represents the asynchronous operation, containing a list of order lines.</returns>
     Task<IEnumerable<OrderLine>> ReadAsync(
-        Chef? chef = null,
-        Customer? customer = null,
+        int? chefId = null,
+        int? customerId = null,
         OrderLineStatus? status = null,
         DateTime? from = null,
         DateTime? to = null
     );
+
+    /// <summary>
+    /// Retrieves the dish of a specific order line.
+    /// </summary>
+    /// <param name="orderLine">The order line to retrieve the dish for.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the dish of the order line.</returns>
+    Task<Dish> GetOrderDishAsync(OrderLine orderLine);
 
     /// <summary>
     /// Retrieves the average order price for a specific chef and customer within a date range if provided.

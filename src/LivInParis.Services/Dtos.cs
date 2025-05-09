@@ -142,19 +142,38 @@ public class UpdateAddressDto
 public class DishDto
 {
     public int Id { get; set; }
-    public string? Name { get; set; }
-    public string? Cuisine { get; set; }
-    public string? Type { get; set; }
+    public required string Name { get; set; }
+    public required string Type { get; set; }
+    public int ExpiryTime { get; set; }
+    public required string Cuisine { get; set; }
+    public int Quantity { get; set; }
     public decimal Price { get; set; }
+    public required string ProductsOrigin { get; set; }
+    public bool IsVegetarian { get; set; }
+    public bool IsVegan { get; set; }
+    public bool IsGlutenFree { get; set; }
+    public bool IsLactoseFree { get; set; }
+    public bool IsHalal { get; set; }
+    public bool IsKosher { get; set; }
     public string? PhotoUrl { get; set; }
 }
 
 public class DishSearchCriteriaDto
 {
-    public string? Cuisine { get; set; }
+    public string? Name { get; set; }
     public string? Type { get; set; }
+    public int? MinExpiryTime { get; set; }
+    public string? Cuisine { get; set; }
+    public int? Quantity { get; set; }
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
+    public bool? IsVegetarian { get; set; }
+    public bool? IsVegan { get; set; }
+    public bool? IsGlutenFree { get; set; }
+    public bool? IsLactoseFree { get; set; }
+    public bool? IsHalal { get; set; }
+    public bool? IsKosher { get; set; }
+    public string? ProductsOrigin { get; set; }
 }
 
 public class CartDto
@@ -167,7 +186,6 @@ public class CartItemDto
 {
     public int DishId { get; set; }
     public string? DishName { get; set; }
-    public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
 }
 
@@ -178,26 +196,22 @@ public class CartItemDto
 public class CheckoutDto
 {
     public int AddressId { get; set; }
-    public string? PaymentMethod { get; set; }
-    public string? Notes { get; set; }
 }
 
-public class OrderDto
+public class TransactionDto
 {
     public int Id { get; set; }
     public int CustomerId { get; set; }
-    public DateTime CreatedAt { get; set; }
     public IEnumerable<OrderLineDto>? Lines { get; set; }
     public decimal TotalPrice { get; set; }
-    public string? Status { get; set; }
 }
 
 public class OrderLineDto
 {
     public int DishId { get; set; }
     public string? DishName { get; set; }
-    public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
+    public string? Status { get; set; }
 }
 
 #endregion Checkout and Order DTOs
@@ -213,13 +227,14 @@ public class MenuProposalDto
 
 public class CreateMenuProposalDto
 {
+    public int ChefId { get; set; }
     public DateTime ProposalDate { get; set; }
-    public IList<int>? DishIds { get; set; }
+    public int DishId { get; set; }
 }
 
 public class UpdateMenuProposalDto
 {
-    public IList<int>? DishIds { get; set; }
+    public int DishId { get; set; }
 }
 
 #endregion Menu Proposal DTOs

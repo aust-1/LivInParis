@@ -23,7 +23,7 @@ public class OrderTransaction
     /// The Datetime when the transaction was created.
     /// </summary>
     [Required]
-    public required DateTime TransactionDatetime { get; set; }
+    public required DateTime? TransactionDatetime { get; set; }
 
     /// <summary>
     /// The ID of the customer account associated with the transaction.

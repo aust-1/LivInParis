@@ -1,4 +1,3 @@
-using LivInParisRoussilleTeynier.Domain.Models.Maps;
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 
 namespace LivInParisRoussilleTeynier.Infrastructure.Interfaces;

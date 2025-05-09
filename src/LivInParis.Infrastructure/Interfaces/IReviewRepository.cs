@@ -8,8 +8,6 @@ namespace LivInParisRoussilleTeynier.Infrastructure.Interfaces;
 /// </summary>
 public interface IReviewRepository : IRepository<Review>
 {
-    //FIXME: supprimer rating de customer et chef
-
     /// <summary>
     /// Retrieves the reviews given to a specific customer.
     /// </summary>

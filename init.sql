@@ -122,6 +122,7 @@ CREATE TABLE
       order_line_id INT AUTO_INCREMENT,
       order_line_datetime DATETIME NOT NULL,
       order_line_status ENUM (
+         'in_cart',
          'pending',
          'prepared',
          'delivering',
