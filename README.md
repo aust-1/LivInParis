@@ -4,7 +4,7 @@ Bienvenue dans le projet **LivInParis**, une plateforme de livraison de repas da
 
 ## 👥 Nous
 
-Captainbleu (Austin) : Eliott Roussille
+austin-1 : Eliott Roussille
 
 proxy-1 : François Teynier
 
@@ -53,7 +53,7 @@ open http://localhost:62542/
 #### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/Captainbleu/LivInParis.git
+git clone https://github.com/aust-1/LivInParis.git
 cd .\LivInParis\src\database\
 ```
 
