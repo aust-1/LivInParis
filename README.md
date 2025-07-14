@@ -4,7 +4,7 @@ Bienvenue dans le projet **LivInParis**, une plateforme de livraison de repas da
 
 ## 👥 Nous
 
-austin-1 : Eliott Roussille
+aust-1 : Eliott Roussille
 
 proxy-1 : François Teynier
 
