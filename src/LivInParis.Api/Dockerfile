@@ -17,6 +17,10 @@ RUN dotnet publish src/LivInParis.Api/LivInParis.Api.csproj -c Release -o /app
 RUN mkdir -p /app/frontend
 RUN cp -r /src/frontend/* /app/frontend/
 
+# Copy resources required by the app
+RUN mkdir -p /app/resources
+RUN cp -r /src/resources/* /app/resources/
+
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
