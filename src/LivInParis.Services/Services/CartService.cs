@@ -1,4 +1,5 @@
 using LivInParisRoussilleTeynier.Domain.Models.Order;
+using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Domain.Models.Order.Enums;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
 
@@ -21,38 +22,61 @@ public class CartService(
     /// <inheritdoc/>
     public async Task<CartDto> GetCartAsync(int customerId)
     {
-        var items = (
-            await _orderLineRepository.ReadAsync(customerId, status: OrderLineStatus.InCart)
-        ).Select(async ol => new OrderLineDto
-        {
-            DishId = (await _orderLineRepository.GetOrderDishAsync(ol)).DishId,
-            DishName = (await _orderLineRepository.GetOrderDishAsync(ol)).DishName,
-            Status = ol.OrderLineStatus.ToString(),
-            UnitPrice = (await _orderLineRepository.GetOrderDishAsync(ol)).Price,
-        });
+        var orderLines = await _orderLineRepository.ReadAsync(
+            customerId: customerId,
+            status: OrderLineStatus.InCart
+        );
 
-        return new CartDto { Items = (IList<CartItemDto>)items };
+        var items = await Task.WhenAll(
+            orderLines.Select(async orderLine =>
+            {
+                var dish = await _orderLineRepository.GetOrderDishAsync(orderLine);
+                return new CartItemDto
+                {
+                    DishId = dish.DishId,
+                    DishName = dish.DishName,
+                    UnitPrice = dish.Price,
+                };
+            })
+        );
+
+        return new CartDto { CustomerId = customerId, Items = items.ToList() };
     }
 
     /// <inheritdoc/>
     public async Task AddItemAsync(int customerId, int chefId)
     {
-        var currentTransaction =
-            await _transactionRepository.GetCurrentTransactionAsync(customerId)
-            ?? new OrderTransaction { CustomerAccountId = customerId, TransactionDatetime = null };
+        var currentTransaction = await _transactionRepository.GetCurrentTransactionAsync(
+            customerId
+        );
+        if (currentTransaction == null)
+        {
+            currentTransaction = new OrderTransaction
+            {
+                CustomerAccountId = customerId,
+                TransactionDatetime = null,
+            };
+            await _transactionRepository.AddAsync(currentTransaction);
+            await _transactionRepository.SaveChangesAsync();
+        }
 
         var individualAddress = await _individualRepository.GetByIdAsync(customerId);
+        if (individualAddress == null)
+        {
+            throw new ArgumentException("Customer address not found", nameof(customerId));
+        }
 
         var orderLine = new OrderLine
         {
             TransactionId = currentTransaction.TransactionId,
             ChefAccountId = chefId,
             OrderLineStatus = OrderLineStatus.InCart,
-            OrderLineDatetime = DateTime.Now,
-            AddressId = individualAddress!.AddressId,
+            OrderLineDatetime = DateTime.UtcNow,
+            AddressId = individualAddress.AddressId,
         };
 
         await _orderLineRepository.AddAsync(orderLine);
+        await _orderLineRepository.SaveChangesAsync();
     }
 
     /// <inheritdoc/>
@@ -63,10 +87,13 @@ public class CartService(
             chefId: chefId,
             status: OrderLineStatus.InCart
         );
+
         foreach (var ol in orderline)
         {
             _orderLineRepository.Delete(ol);
         }
+
+        await _orderLineRepository.SaveChangesAsync();
     }
 
     /// <inheritdoc/>
@@ -80,6 +107,9 @@ public class CartService(
         {
             _orderLineRepository.Delete(ol);
         }
+
+        await _orderLineRepository.SaveChangesAsync();
     }
 }
-//FIXME: la cata
+
+

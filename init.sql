@@ -1,4 +1,4 @@
-\r livinparisroussilleteynier
+USE livinparis;
 
 CREATE TABLE
    Address (
@@ -13,7 +13,7 @@ CREATE TABLE
    Account (
       account_id INT AUTO_INCREMENT,
       account_user_name VARCHAR(100) NOT NULL,
-      account_password VARCHAR(50) NOT NULL,
+      account_password VARCHAR(255) NOT NULL,
       PRIMARY KEY (account_id),
       UNIQUE (account_user_name)
    );
@@ -111,7 +111,7 @@ CREATE TABLE
 CREATE TABLE
    OrderTransaction (
       transaction_id INT AUTO_INCREMENT,
-      transaction_datetime DATETIME NOT NULL,
+      transaction_datetime DATETIME NULL,
       account_id INT NOT NULL,
       PRIMARY KEY (transaction_id),
       FOREIGN KEY (account_id) REFERENCES Customer (account_id) ON DELETE CASCADE
@@ -122,12 +122,12 @@ CREATE TABLE
       order_line_id INT AUTO_INCREMENT,
       order_line_datetime DATETIME NOT NULL,
       order_line_status ENUM (
-         'in_cart',
-         'pending',
-         'prepared',
-         'delivering',
-         'delivered',
-         'canceled'
+         'InCart',
+         'Pending',
+         'Preparing',
+         'Delivering',
+         'Delivered',
+         'Canceled'
       ) NOT NULL,
       address_id INT NOT NULL,
       transaction_id INT NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE
 CREATE TABLE
    Review (
       review_id INT AUTO_INCREMENT,
-      reviewer_type ENUM ('customer', 'chef') NOT NULL,
+      reviewer_type ENUM ('Customer', 'Chef') NOT NULL,
       review_rating DECIMAL(2, 1) CHECK (review_rating BETWEEN 1 AND 5),
       comment VARCHAR(500),
       review_date DATE NOT NULL,

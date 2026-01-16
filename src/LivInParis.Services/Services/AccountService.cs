@@ -7,13 +7,16 @@ namespace LivInParisRoussilleTeynier.Services.Services;
 /// <summary>
 /// Initializes a new instance of <see cref="AccountService"/>.
 /// </summary>
-public class AccountService(IAccountRepository accountRepository) : IAccountService
+public class AccountService(IAccountRepository accountRepository, ITokenService tokenService)
+    : IAccountService
 {
     private readonly IAccountRepository _accountRepository = accountRepository;
+    private readonly ITokenService _tokenService = tokenService;
 
     /// <inheritdoc/>
     public Task<Account?> GetAccountByIdAsync(int accountId) =>
         _accountRepository.GetByIdAsync(accountId);
+
 
     /// <inheritdoc/>
     public async Task<UpdateAccountResultDto> UpdateAccountAsync(UpdateAccountDto updateDto)
@@ -31,29 +34,18 @@ public class AccountService(IAccountRepository accountRepository) : IAccountServ
             };
         }
 
-        if (
-            _accountRepository.ValidateCredentialsAsync(
-                updateDto.UserName!,
-                updateDto.CurrentPassword!
-            ) == null
-        )
+        var account = await _accountRepository.FindByUserNameAsync(updateDto.UserName!);
+        if (account == null || !_tokenService.VerifyPassword(updateDto.CurrentPassword!, account.AccountPassword))
         {
             return new UpdateAccountResultDto { Success = false, Errors = ["Invalid credentials"] };
         }
 
-        var id =
-            (await _accountRepository.FindByUserNameAsync(updateDto.UserName!))?.AccountId!
-            ?? throw new ArgumentException("Account not found");
-        _accountRepository.Update(
-            new Account
-            {
-                AccountId = id,
-                AccountUserName = updateDto.UserName!,
-                AccountPassword = updateDto.NewPassword!,
-            }
-        );
+        account.AccountPassword = _tokenService.HashPassword(updateDto.NewPassword!);
+        _accountRepository.Update(account);
+        await _accountRepository.SaveChangesAsync();
         return new UpdateAccountResultDto { Success = true };
     }
+
 
     /// <inheritdoc/>
     public async Task DeleteAccountAsync(int accountId)
@@ -62,5 +54,7 @@ public class AccountService(IAccountRepository accountRepository) : IAccountServ
             await _accountRepository.GetByIdAsync(accountId)
             ?? throw new ArgumentException("Account not found", nameof(accountId));
         _accountRepository.Delete(account);
+        await _accountRepository.SaveChangesAsync();
     }
+
 }

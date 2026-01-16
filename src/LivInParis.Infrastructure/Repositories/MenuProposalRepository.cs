@@ -50,5 +50,11 @@ public class MenuProposalRepository(LivInParisContext context)
 
     /// <inheritdoc/>
     public async Task<IEnumerable<MenuProposal>> GetProposalsByChefAsync(int chefId) =>
-        await _context.MenuProposals.Where(mp => mp.ChefAccountId == chefId).ToListAsync();
+        await _context
+            .MenuProposals.Where(mp => mp.ChefAccountId == chefId)
+            .Include(mp => mp.Dish)
+            .ThenInclude(d => d!.Contains)
+            .ThenInclude(c => c.Ingredient)
+            .ToListAsync();
+
 }

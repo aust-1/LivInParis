@@ -13,6 +13,11 @@ COPY . .
 
 RUN dotnet publish src/LivInParis.Api/LivInParis.Api.csproj -c Release -o /app
 
+# Copy frontend assets into API output
+RUN mkdir -p /app/frontend
+RUN cp -r /src/frontend/* /app/frontend/
+
+
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app ./

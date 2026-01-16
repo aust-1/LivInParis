@@ -10,4 +10,5 @@ namespace LivInParisRoussilleTeynier.Infrastructure.Repositories;
 /// <param name="context">The database context.</param>
 public class IndividualRepository(LivInParisContext context)
     : Repository<Individual>(context),
-        IIndividualRepository { }
+        IIndividualRepository
+{ }

@@ -25,27 +25,51 @@ async function initOrdersByChef() {
     const ctx = document.getElementById('ordersByChefChart')?.getContext('2d');
     if (!ctx) return;
     const data = await fetchStatsOrdersByChef();
-    // Assign chart instance to global to avoid unused instantiation errors
-    window.ordersByChefChart = new Chart(ctx, { type: 'bar', data: { labels: data.map(d => d.chefName), datasets: [{ label: 'Orders', data: data.map(d => d.count) }] } });
+    window.ordersByChefChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => d.chefName),
+            datasets: [{ label: 'Orders', data: data.map(d => d.deliveryCount) }]
+        }
+    });
 }
 
 async function initRevenueByStreet() {
     const ctx = document.getElementById('revenueByStreetChart')?.getContext('2d');
     if (!ctx) return;
     const data = await fetchStatsRevenueByStreet();
-    window.revenueByStreetChart = new Chart(ctx, { type: 'bar', data: { labels: data.map(d => d.street), datasets: [{ label: 'Revenue (€)', data: data.map(d => d.total) }] } });
+    window.revenueByStreetChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => d.street),
+            datasets: [{ label: 'Revenue (€)', data: data.map(d => d.revenue) }]
+        }
+    });
 }
 
 async function initAverageOrderPrice() {
     const ctx = document.getElementById('averageOrderPriceChart')?.getContext('2d');
     if (!ctx) return;
-    const data = await fetchStatsAverageOrderPrice();
-    window.averageOrderPriceChart = new Chart(ctx, { type: 'line', data: { labels: data.map(d => d.date), datasets: [{ label: 'Avg Price (€)', data: data.map(d => d.average) }] } });
+    const value = await fetchStatsAverageOrderPrice();
+    window.averageOrderPriceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Average'],
+            datasets: [{ label: 'Avg Price (€)', data: [value] }]
+        }
+    });
 }
 
 async function initTopCuisines() {
     const ctx = document.getElementById('topCuisinesChart')?.getContext('2d');
     if (!ctx) return;
     const data = await fetchStatsTopCuisines();
-    window.topCuisinesChart = new Chart(ctx, { type: 'pie', data: { labels: data.map(d => d.cuisine), datasets: [{ label: 'Top Cuisines', data: data.map(d => d.count) }] } });
+    window.topCuisinesChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: data.map(d => d.cuisine),
+            datasets: [{ label: 'Top Cuisines', data: data.map(d => d.orderCount) }]
+        }
+    });
 }
+

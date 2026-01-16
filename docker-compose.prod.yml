@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - internal
+
+  api:
+    build:
+      context: .
+      dockerfile: src/LivInParis.Api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - JwtSettings__Key=${JWT_KEY}
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - db
+    networks:
+      - internal
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.livinparis.rule=Host(`${LIVINPARIS_DOMAIN}`)"
+      - "traefik.http.routers.livinparis.entrypoints=websecure"
+      - "traefik.http.routers.livinparis.tls=true"
+      - "traefik.http.services.livinparis.loadbalancer.server.port=80"
+
+volumes:
+  db_data:
+
+networks:
+  internal:
+  traefik:
+    external: true

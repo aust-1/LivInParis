@@ -32,37 +32,52 @@ public class DishService(IDishRepository dishRepository) : IDishService
         });
 
     /// <inheritdoc/>
-    public Task<DishDto?> GetDishByIdAsync(int dishId) =>
-        _dishRepository
-            .GetByIdAsync(dishId)
-            .ContinueWith(t =>
-                t.Result is null
-                    ? null
-                    : new DishDto
-                    {
-                        Id = t.Result.DishId,
-                        Name = t.Result.DishName,
-                        Type = t.Result.DishType.ToString(),
-                        ExpiryTime = t.Result.ExpiryTime,
-                        Cuisine = t.Result.CuisineNationality,
-                        Quantity = t.Result.Quantity,
-                        Price = t.Result.Price,
-                        ProductsOrigin = t.Result.ProductsOrigin.ToString(),
-                        IsVegetarian = t.Result.Contains.All(c => c.Ingredient!.IsVegetarian),
-                        IsVegan = t.Result.Contains.All(c => c.Ingredient!.IsVegan),
-                        IsGlutenFree = t.Result.Contains.All(c => c.Ingredient!.IsGlutenFree),
-                        IsLactoseFree = t.Result.Contains.All(c => c.Ingredient!.IsLactoseFree),
-                        IsHalal = t.Result.Contains.All(c => c.Ingredient!.IsHalal),
-                        IsKosher = t.Result.Contains.All(c => c.Ingredient!.IsKosher),
-                    }
-            );
+    public async Task<DishDto?> GetDishByIdAsync(int dishId)
+    {
+        var dish = await _dishRepository.GetByIdAsync(dishId);
+        if (dish == null)
+        {
+            return null;
+        }
+
+        return new DishDto
+        {
+            Id = dish.DishId,
+            Name = dish.DishName,
+            Type = dish.DishType.ToString(),
+            ExpiryTime = dish.ExpiryTime,
+            Cuisine = dish.CuisineNationality,
+            Quantity = dish.Quantity,
+            Price = dish.Price,
+            ProductsOrigin = dish.ProductsOrigin.ToString(),
+            IsVegetarian = dish.Contains.All(c => c.Ingredient!.IsVegetarian),
+            IsVegan = dish.Contains.All(c => c.Ingredient!.IsVegan),
+            IsGlutenFree = dish.Contains.All(c => c.Ingredient!.IsGlutenFree),
+            IsLactoseFree = dish.Contains.All(c => c.Ingredient!.IsLactoseFree),
+            IsHalal = dish.Contains.All(c => c.Ingredient!.IsHalal),
+            IsKosher = dish.Contains.All(c => c.Ingredient!.IsKosher),
+        };
+    }
+
 
     /// <inheritdoc/>
     public async Task<IEnumerable<DishDto>> SearchDishesAsync(DishSearchCriteriaDto criteria)
     {
+        DishType? dishType = null;
+        if (!string.IsNullOrWhiteSpace(criteria.Type))
+        {
+            dishType = Enum.Parse<DishType>(criteria.Type, true);
+        }
+
+        ProductsOrigin? origin = null;
+        if (!string.IsNullOrWhiteSpace(criteria.ProductsOrigin))
+        {
+            origin = Enum.Parse<ProductsOrigin>(criteria.ProductsOrigin, true);
+        }
+
         var dishes = await _dishRepository.ReadAsync(
             criteria.Name,
-            Enum.Parse<DishType>(criteria.Type!),
+            dishType,
             criteria.MinExpiryTime,
             criteria.Cuisine,
             criteria.Quantity,
@@ -74,7 +89,7 @@ public class DishService(IDishRepository dishRepository) : IDishService
             criteria.IsLactoseFree,
             criteria.IsHalal,
             criteria.IsKosher,
-            Enum.Parse<ProductsOrigin>(criteria.ProductsOrigin!)
+            origin
         );
 
         return dishes.Select(d => new DishDto
@@ -95,4 +110,5 @@ public class DishService(IDishRepository dishRepository) : IDishService
             IsKosher = d.Contains.All(c => c.Ingredient!.IsKosher),
         });
     }
+
 }

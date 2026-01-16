@@ -15,33 +15,38 @@ public class TransactionService(
     private readonly IOrderTransactionRepository _transactionRepository = transactionRepository;
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<TransactionDto>> GetTransactionsByCustomerAsync(int customerId) =>
-        (IEnumerable<TransactionDto>)
-            (await _transactionRepository.ReadAsync(customerId)).Select(
-                async ot => new TransactionDto
+    public async Task<IEnumerable<TransactionDto>> GetTransactionsByCustomerAsync(int customerId)
+    {
+        var transactions = await _transactionRepository.ReadAsync(customerId);
+        return await Task.WhenAll(
+            transactions.Select(async transaction =>
+            {
+                var orderLines = await _orderLineRepository.ReadAsync(transaction);
+                var lines = await Task.WhenAll(
+                    orderLines.Select(async orderLine =>
+                    {
+                        var dish = await _orderLineRepository.GetOrderDishAsync(orderLine);
+                        return new OrderLineDto
+                        {
+                            DishId = dish.DishId,
+                            DishName = dish.DishName,
+                            Status = orderLine.OrderLineStatus.ToString(),
+                            UnitPrice = dish.Price,
+                        };
+                    })
+                );
+
+                return new TransactionDto
                 {
-                    Id = ot.TransactionId,
-                    CustomerId = ot.CustomerAccountId,
-                    TotalPrice = await _transactionRepository.GetOrderTotalPriceAsync(ot),
-                    Lines =
-                        (IEnumerable<OrderLineDto>)
-                            (await _orderLineRepository.ReadAsync(ot)).Select(
-                                async ol => new OrderLineDto
-                                {
-                                    DishId = (
-                                        await _orderLineRepository.GetOrderDishAsync(ol)
-                                    ).DishId,
-                                    DishName = (
-                                        await _orderLineRepository.GetOrderDishAsync(ol)
-                                    ).DishName,
-                                    Status = ol.OrderLineStatus.ToString(),
-                                    UnitPrice = (
-                                        await _orderLineRepository.GetOrderDishAsync(ol)
-                                    ).Price,
-                                }
-                            ),
-                }
-            );
+                    Id = transaction.TransactionId,
+                    CustomerId = transaction.CustomerAccountId,
+                    TotalPrice = await _transactionRepository.GetOrderTotalPriceAsync(transaction),
+                    Lines = lines,
+                };
+            })
+        );
+    }
+
 
     /// <inheritdoc/>
     public async Task<TransactionDto> GetTransactionByIdAsync(int transactionId)

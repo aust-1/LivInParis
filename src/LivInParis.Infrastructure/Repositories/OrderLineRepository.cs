@@ -17,7 +17,9 @@ public class OrderLineRepository(LivInParisContext context)
     /// <inheritdoc/>
     public async Task<IEnumerable<OrderLine>> ReadAsync(OrderTransaction transaction)
     {
-        var query = _context.OrderLines.Where(ol => ol.OrderTransaction == transaction);
+        var query = _context
+            .OrderLines.Where(ol => ol.OrderTransaction == transaction)
+            .Include(ol => ol.Address);
 
         return await query.ToListAsync();
     }
@@ -36,7 +38,9 @@ public class OrderLineRepository(LivInParisContext context)
 
         var query = _context
             .OrderLines.Where(ol => ol.OrderLineDatetime >= start)
-            .Where(ol => ol.OrderLineDatetime <= end);
+            .Where(ol => ol.OrderLineDatetime <= end)
+            .Include(ol => ol.Address);
+
 
         if (chefId != null)
         {

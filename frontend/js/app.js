@@ -5,8 +5,12 @@ window.addEventListener('load', loadPage);
 window.addEventListener('hashchange', loadPage);
 // Logout button
 document.getElementById('logout-link')?.addEventListener('click', e => {
-    e.preventDefault(); clearAuthToken(); redirect('#/auth/login');
+    e.preventDefault();
+    clearAuthToken();
+    sessionStorage.removeItem('accountId');
+    redirect('#/auth/login');
 });
+
 
 async function loadPage() {
     const content = document.getElementById('content');

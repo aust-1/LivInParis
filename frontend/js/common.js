@@ -26,6 +26,11 @@ export function getAuthToken() {
     return sessionStorage.getItem('authToken');
 }
 
+export function getAccountId() {
+    return sessionStorage.getItem('accountId');
+}
+
+
 export function clearAuthToken() {
     sessionStorage.removeItem('authToken');
 }

@@ -22,6 +22,37 @@ var builder = WebApplication.CreateBuilder(args);
 /// </summary>
 builder.Services.AddDbContext<LivInParisContext>();
 
+builder.Services
+    .AddAuthentication("Bearer")
+    .AddJwtBearer(
+        "Bearer",
+        options =>
+        {
+            var jwtSection = builder.Configuration.GetSection("JwtSettings");
+            var key = jwtSection["Key"];
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new InvalidOperationException("JwtSettings:Key is missing");
+            }
+
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSection["Issuer"],
+                ValidAudience = jwtSection["Audience"],
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                    System.Text.Encoding.UTF8.GetBytes(key)
+                ),
+            };
+        }
+    );
+
+builder.Services.AddAuthorization();
+
+
 /// <summary>
 /// Register generic repository and concrete repositories for domain entities.
 /// </summary>
@@ -54,11 +85,11 @@ builder.Services.AddScoped<IGraphService, GraphService>();
 builder.Services.AddScoped<IIncomingOrderService, IncomingOrderService>();
 builder.Services.AddScoped<IMenuProposalService, MenuProposalService>();
 builder.Services.AddScoped<IOrderLineService, OrderLineService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-
-//builder.Services.AddScoped<IReviewService, ReviewService>();
-//builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 
 /// <summary>
 /// Allow Cross-Origin Requests from frontend during development.
@@ -98,6 +129,9 @@ var app = builder.Build();
 Metro.InitializeMetro();
 
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 /// <summary>
 /// In development, enable Swagger UI.

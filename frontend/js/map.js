@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const to = e.target.to.value;
         try {
             const route = await getRoute(from, to);
-            const latlngs = route.path.map(n => [n.lat, n.lng]);
+            const latlngs = route.stations.map(s => [s.latitudeRadians, s.longitudeRadians]);
             L.polyline(latlngs).addTo(map);
+
         } catch (err) {
             alert(err.message);
         }

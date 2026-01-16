@@ -1,5 +1,7 @@
 using LivInParisRoussilleTeynier.Domain.Models.Order;
+using LivInParisRoussilleTeynier.Domain.Models.Order;
 using LivInParisRoussilleTeynier.Infrastructure.Interfaces;
+
 
 namespace LivInParisRoussilleTeynier.Services.Services;
 
@@ -45,20 +47,26 @@ public class ChefProfileService(
     /// <inheritdoc/>
     public async Task UpdateProfileAsync(int chefId, UpdateChefProfileDto updateDto)
     {
+        if (updateDto.Address == null)
+        {
+            throw new ArgumentException("Address is required", nameof(updateDto));
+        }
+
         var address = (
             await _addressRepository.ReadAsync(a =>
-                a.Street == updateDto.Address!.Street && a.AddressNumber == updateDto.Address.Number
+                a.Street == updateDto.Address.Street && a.AddressNumber == updateDto.Address.Number
             )
-        ).Single();
+        ).SingleOrDefault();
 
         if (address == null)
         {
             address = new Address
             {
-                AddressNumber = updateDto.Address!.Number,
+                AddressNumber = updateDto.Address.Number,
                 Street = updateDto.Address.Street!,
             };
             await _addressRepository.AddAsync(address);
+            await _addressRepository.SaveChangesAsync();
         }
 
         _chefRepository.Update(
@@ -69,5 +77,7 @@ public class ChefProfileService(
                 AddressId = address.AddressId,
             }
         );
+        await _chefRepository.SaveChangesAsync();
     }
+
 }

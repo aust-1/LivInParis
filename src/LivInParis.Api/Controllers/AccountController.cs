@@ -18,8 +18,16 @@ public class AccountController(IAccountService accountService) : ControllerBase
         var account = await _accountService.GetAccountByIdAsync(id);
         if (account == null)
             return NotFound();
-        return Ok(account);
+
+        var dto = new AccountDto
+        {
+            Id = account.AccountId,
+            Username = account.AccountUserName,
+            Email = null,
+        };
+        return Ok(dto);
     }
+
 
     /// <summary>
     /// Updates account details.

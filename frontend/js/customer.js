@@ -1,6 +1,15 @@
 // Customer-side interactions: browsing, cart, checkout
-import { fetchDishes, placeOrder, fetchMyOrders, fetchOrderDetail, fetchProfile, updateProfile, fetchDishDetail } from './api.js';
+import {
+    fetchDishes,
+    placeOrder,
+    fetchCustomerTransactions,
+    fetchOrderDetail,
+    fetchCustomerProfile,
+    updateCustomerProfile,
+    fetchDishDetail
+} from './api.js';
 import { showError, redirect, getCart, saveCart } from './common.js';
+
 
 // Initialize a page based on its name
 export function initPage(page) {
@@ -137,15 +146,17 @@ async function initCheckout() {
     const form = document.getElementById('checkout-form');
     form.addEventListener('submit', async e => {
         e.preventDefault();
-        const order = {
-            items: getCart(),
-            address: form.address.value,
-            paymentMethod: form.payment.value
+        const customerId = sessionStorage.getItem('accountId');
+        if (!customerId) {
+            showError('Missing customer id');
+            return;
+        }
+        const payload = {
+            addressId: parseInt(form.addressId?.value || form.address?.value || '0', 10)
         };
         try {
-            const res = await placeOrder(order);
+            const res = await placeOrder(customerId, payload);
             sessionStorage.setItem('confirmOrderId', res.id);
-            sessionStorage.setItem('confirmDeliveryTime', res.estimatedDelivery);
             saveCart([]);
             redirect('#/customer/order-confirmation');
         } catch (err) {
@@ -154,18 +165,25 @@ async function initCheckout() {
     });
 }
 
+
 async function initMyOrders() {
     try {
         const table = document.getElementById('orders-table').querySelector('tbody');
-        const orders = await fetchMyOrders();
+        const customerId = sessionStorage.getItem('accountId');
+        if (!customerId) {
+            showError('Missing customer id');
+            return;
+        }
+        const orders = await fetchCustomerTransactions(customerId);
+        table.innerHTML = '';
         orders.forEach(o => {
             const tr = document.createElement('tr');
             tr.dataset.id = o.id;
             tr.innerHTML = `
                 <td>${o.id}</td>
-                <td>${new Date(o.date).toLocaleString()}</td>
-                <td>€${o.total.toFixed(2)}</td>
-                <td>${o.status}</td>
+                <td>${new Date().toLocaleString()}</td>
+                <td>€${o.totalPrice.toFixed(2)}</td>
+                <td>${o.lines?.[0]?.status || 'Pending'}</td>
                 <td><button class="btn-view-order" data-id="${o.id}">View</button></td>`;
             table.append(tr);
         });
@@ -181,20 +199,22 @@ async function initMyOrders() {
     }
 }
 
+
 async function initOrderDetail() {
     try {
         const id = sessionStorage.getItem('currentOrderId');
         const detail = await fetchOrderDetail(id);
         document.getElementById('order-detail-id').textContent = detail.id;
-        document.getElementById('order-detail-date').textContent = new Date(detail.date).toLocaleString();
-        document.getElementById('order-detail-status').textContent = detail.status;
+        document.getElementById('order-detail-date').textContent = new Date().toLocaleString();
+        document.getElementById('order-detail-status').textContent = detail.lines?.[0]?.status || 'Pending';
         const tbody = document.getElementById('order-detail-items').querySelector('tbody');
-        detail.items.forEach(item => {
+        tbody.innerHTML = '';
+        detail.lines?.forEach(item => {
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${item.dishName}</td><td>${item.quantity}</td><td>€${(item.subtotal).toFixed(2)}</td>`;
+            row.innerHTML = `<td>${item.dishName}</td><td>1</td><td>€${item.unitPrice.toFixed(2)}</td>`;
             tbody.append(row);
         });
-        document.getElementById('order-detail-total').textContent = `€${detail.total.toFixed(2)}`;
+        document.getElementById('order-detail-total').textContent = `€${detail.totalPrice.toFixed(2)}`;
     } catch (err) {
         showError(err.message);
     }
@@ -202,11 +222,16 @@ async function initOrderDetail() {
 
 async function initProfile() {
     try {
-        const profile = await fetchProfile();
-        document.getElementById('profile-name').textContent = profile.name;
-        document.getElementById('profile-username').textContent = profile.userName;
-        document.getElementById('profile-email').textContent = profile.email;
-        document.getElementById('profile-address').textContent = profile.address;
+        const customerId = sessionStorage.getItem('accountId');
+        if (!customerId) {
+            showError('Missing customer id');
+            return;
+        }
+        const prof = await fetchCustomerProfile(customerId);
+        document.getElementById('profile-username').textContent = prof.username;
+        document.getElementById('profile-email').textContent = prof.email;
+        document.getElementById('profile-phone').textContent = prof.phoneNumber;
+        document.getElementById('profile-address').textContent = `${prof.address?.number ?? ''} ${prof.address?.street ?? ''}`.trim();
     } catch (err) {
         showError(err.message);
     }
@@ -214,31 +239,38 @@ async function initProfile() {
 
 async function initEditProfile() {
     try {
-        const profile = await fetchProfile();
-        const nameEl = document.getElementById('edit-name');
-        const emailEl = document.getElementById('edit-email');
-        const addressEl = document.getElementById('edit-address');
-        nameEl.value = profile.username || profile.name || '';
-        emailEl.value = profile.email || '';
-        addressEl.value = profile.address || '';
-        document.getElementById('edit-profile-form').addEventListener('submit', async e => {
+        const form = document.getElementById('edit-profile-form');
+        const customerId = sessionStorage.getItem('accountId');
+        if (!customerId) {
+            showError('Missing customer id');
+            return;
+        }
+        const prof = await fetchCustomerProfile(customerId);
+        form.firstName.value = prof.firstName || '';
+        form.lastName.value = prof.lastName || '';
+        form.email.value = prof.email || '';
+        form.phone.value = prof.phoneNumber || '';
+        form.addressNumber.value = prof.address?.number || '';
+        form.street.value = prof.address?.street || '';
+        form.addEventListener('submit', async e => {
             e.preventDefault();
-            try {
-                const data = {
-                    name: nameEl.value,
-                    email: emailEl.value,
-                    address: addressEl.value
-                };
-                await updateProfile(data);
-                redirect('#/customer/profile');
-            } catch (err) {
-                showError(err.message);
-            }
+            const data = {
+                isCompany: prof.isCompany,
+                firstName: form.firstName.value,
+                lastName: form.lastName.value,
+                email: form.email.value,
+                phoneNumber: form.phone.value,
+                address: {
+                    number: parseInt(form.addressNumber.value, 10),
+                    street: form.street.value
+                }
+            };
+            try { await updateCustomerProfile(customerId, data); redirect('#/customer/profile'); }
+            catch (err) { showError(err.message); }
         });
-    } catch (err) {
-        showError(err.message);
-    }
+    } catch (err) { showError(err.message); }
 }
+
 
 async function initDishDetail() {
     try {
@@ -248,9 +280,10 @@ async function initDishDetail() {
         document.getElementById('dish-name').textContent = d.name;
         document.getElementById('dish-type').textContent = `Type: ${d.type}`;
         document.getElementById('dish-price').textContent = `Price: €${d.price.toFixed(2)}`;
-        document.getElementById('dish-expiry').textContent = d.expiry;
+        document.getElementById('dish-expiry').textContent = d.expiryTime ?? '';
         document.getElementById('dish-nationality').textContent = `Cuisine: ${d.cuisine}`;
-        document.getElementById('dish-ingredients').textContent = d.ingredients.join(', ');
+        document.getElementById('dish-ingredients').textContent = '';
+
         document.getElementById('btn-add-cart').addEventListener('click', () => {
             const cart = getCart();
             const existing = cart.find(i => i.id.toString() === id);

@@ -13,6 +13,22 @@ namespace LivInParisRoussilleTeynier.Infrastructure.Repositories;
 public class DishRepository(LivInParisContext context) : Repository<Dish>(context), IDishRepository
 {
     /// <inheritdoc/>
+    public new async Task<IEnumerable<Dish>> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(d => d.Contains)
+            .ThenInclude(c => c.Ingredient)
+            .ToListAsync();
+    }
+
+    public new async Task<Dish?> GetByIdAsync(int id)
+    {
+        return await _dbSet
+            .Include(d => d.Contains)
+            .ThenInclude(c => c.Ingredient)
+            .FirstOrDefaultAsync(d => d.DishId == id);
+    }
+
     public async Task<IEnumerable<Dish>> ReadAsync(
         string? dishName = null,
         DishType? dishType = null,
@@ -30,7 +46,10 @@ public class DishRepository(LivInParisContext context) : Repository<Dish>(contex
         ProductsOrigin? productsOrigin = null
     )
     {
-        IQueryable<Dish> query = _dbSet.AsQueryable();
+        IQueryable<Dish> query = _dbSet
+            .Include(d => d.Contains)
+            .ThenInclude(c => c.Ingredient);
+
 
         if (!string.IsNullOrEmpty(dishName))
         {

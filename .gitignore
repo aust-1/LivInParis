@@ -8,3 +8,4 @@ obj
 */database/db
 db
 frontend/node_modules
+.env

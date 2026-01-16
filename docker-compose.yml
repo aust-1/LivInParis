@@ -22,8 +22,13 @@ services:
       dockerfile: src/LivInParis.Api/Dockerfile
     ports:
       - "53754:80"
+    env_file:
+      - .env
+    environment:
+      - JwtSettings__Key=${JWT_KEY}
     depends_on:
       - db
+
 
 volumes:
   db_data:

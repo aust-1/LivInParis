@@ -46,9 +46,15 @@ public interface ITokenService
     string HashPassword(string password);
 
     /// <summary>
+    /// Verifies a plain-text password against a stored hash.
+    /// </summary>
+    bool VerifyPassword(string password, string hashedPassword);
+
+    /// <summary>
     /// Revokes the specified refresh token, preventing its future use.
     /// </summary>
     Task RevokeTokenAsync(string refreshToken);
+
 }
 
 #endregion
@@ -305,7 +311,32 @@ public interface IStatisticsService
 
 #endregion Statistics
 
+#region Reviews
+
+/// <summary>
+/// Defines operations for managing reviews.
+/// </summary>
+public interface IReviewService
+{
+    /// <summary>
+    /// Retrieves reviews for an account.
+    /// </summary>
+    Task<IEnumerable<ReviewDto>> GetReviewsAsync(
+        int accountId,
+        string reviewerType,
+        decimal? rating = null
+    );
+
+    /// <summary>
+    /// Creates a new review for an order line.
+    /// </summary>
+    Task<ReviewDto> CreateReviewAsync(CreateReviewDto dto);
+}
+
+#endregion Reviews
+
 #region Graph
+
 
 /// <summary>
 /// Defines operations for graph‐based station routing.

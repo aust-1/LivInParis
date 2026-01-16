@@ -132,7 +132,8 @@ public class LivInParisContext(DbContextOptions<LivInParisContext> options) : Db
             e.ToTable("Account");
             e.HasKey(a => a.AccountId);
             e.Property(a => a.AccountUserName).IsRequired().HasMaxLength(100);
-            e.Property(a => a.AccountPassword).IsRequired().HasMaxLength(50);
+            e.Property(a => a.AccountPassword).IsRequired().HasMaxLength(255);
+
 
             e.HasIndex(x => x.AccountUserName).IsUnique().HasDatabaseName("IX_Account_User_Name");
         });

@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+
 using LivInParisRoussilleTeynier.Domain.Models.Order;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +11,10 @@ namespace LivInParisRoussilleTeynier.Services.Services
 {
     public class TokenService : ITokenService
     {
+        private const int SaltSize = 16;
+        private const int HashSize = 32;
+        private const int HashIterations = 100_000;
+
         private readonly IConfiguration _config;
         private readonly string _key;
         private readonly string _issuer;
@@ -23,6 +29,7 @@ namespace LivInParisRoussilleTeynier.Services.Services
             _audience = _config["JwtSettings:Audience"];
             _expiryMinutes = int.Parse(_config["JwtSettings:ExpiryMinutes"]);
         }
+
 
         public string GenerateToken(Account user)
         {
@@ -56,9 +63,39 @@ namespace LivInParisRoussilleTeynier.Services.Services
 
         public string HashPassword(string password)
         {
-            // Ex : BCrypt, ici simplifié
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
+            var salt = new byte[SaltSize];
+            RandomNumberGenerator.Fill(salt);
+            var hash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                HashIterations,
+                HashAlgorithmName.SHA256,
+                HashSize
+            );
+            return $"{HashIterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
         }
+
+        public bool VerifyPassword(string password, string hashedPassword)
+        {
+            var parts = hashedPassword.Split('.');
+            if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations))
+            {
+                return false;
+            }
+
+            var salt = Convert.FromBase64String(parts[1]);
+            var expectedHash = Convert.FromBase64String(parts[2]);
+            var actualHash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                iterations,
+                HashAlgorithmName.SHA256,
+                expectedHash.Length
+            );
+
+            return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
+        }
+
 
         public Task RevokeTokenAsync(string refreshToken)
         {

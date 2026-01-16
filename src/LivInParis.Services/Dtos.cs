@@ -21,7 +21,15 @@ public class RegisterDto
     public string? Email { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+    public bool IsCompany { get; set; }
+    public string? CompanyName { get; set; }
+    public string? ContactFirstName { get; set; }
+    public string? ContactLastName { get; set; }
+    public string? PhoneNumber { get; set; }
+    public int? AddressNumber { get; set; }
+    public string? Street { get; set; }
 }
+
 
 /// <summary>
 /// Result of an authentication operation.
@@ -32,8 +40,10 @@ public class AuthResultDto
     public string? Token { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime ExpiresAt { get; set; }
+    public int? AccountId { get; set; }
     public IEnumerable<string>? Errors { get; set; }
 }
+
 
 #endregion Authentication DTOs
 
@@ -271,7 +281,32 @@ public class CuisinePreferenceDto
 
 #endregion Statistics DTOs
 
+#region Review DTOs
+
+
+public class ReviewDto
+{
+    public int Id { get; set; }
+    public int OrderLineId { get; set; }
+    public string? ReviewerType { get; set; }
+    public decimal? Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime ReviewDate { get; set; }
+}
+
+public class CreateReviewDto
+{
+    public int OrderLineId { get; set; }
+    public string? ReviewerType { get; set; }
+    public decimal? Rating { get; set; }
+    public string? Comment { get; set; }
+}
+
+#endregion Review DTOs
+
 #region Routing DTOs
+
+
 
 public class RouteDto
 {

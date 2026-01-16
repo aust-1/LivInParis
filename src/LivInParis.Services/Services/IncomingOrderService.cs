@@ -12,45 +12,69 @@ public class IncomingOrderService(IOrderLineRepository orderLineRepository) : II
     private readonly IOrderLineRepository _orderLineRepository = orderLineRepository;
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<OrderLineDto>> GetIncomingOrdersAsync(int chefId) =>
-        (IEnumerable<OrderLineDto>)
-            (
-                await _orderLineRepository.ReadAsync(
-                    chefId: chefId,
-                    status: OrderLineStatus.Pending
-                )
-            ).Select(async ol => new OrderLineDto
+    public async Task<IEnumerable<OrderLineDto>> GetIncomingOrdersAsync(int chefId)
+    {
+        var orders = await _orderLineRepository.ReadAsync(
+            chefId: chefId,
+            status: OrderLineStatus.Pending
+        );
+
+        return await Task.WhenAll(
+            orders.Select(async orderLine =>
             {
-                DishId = (await _orderLineRepository.GetOrderDishAsync(ol)).DishId,
-                DishName = (await _orderLineRepository.GetOrderDishAsync(ol)).DishName,
-                Status = ol.OrderLineStatus.ToString(),
-                UnitPrice = (await _orderLineRepository.GetOrderDishAsync(ol)).Price,
-            });
-
-    /// <inheritdoc/>
-    public Task AcceptOrderAsync(int orderId)
-    {
-        var orderLine = _orderLineRepository.GetByIdAsync(orderId).Result;
-        orderLine!.OrderLineStatus = OrderLineStatus.Preparing;
-        _orderLineRepository.Update(orderLine);
-        return Task.CompletedTask;
+                var dish = await _orderLineRepository.GetOrderDishAsync(orderLine);
+                return new OrderLineDto
+                {
+                    DishId = dish.DishId,
+                    DishName = dish.DishName,
+                    Status = orderLine.OrderLineStatus.ToString(),
+                    UnitPrice = dish.Price,
+                };
+            })
+        );
     }
 
     /// <inheritdoc/>
-    public Task RejectOrderAsync(int orderId)
+    public async Task AcceptOrderAsync(int orderId)
     {
-        var orderLine = _orderLineRepository.GetByIdAsync(orderId).Result;
-        orderLine!.OrderLineStatus = OrderLineStatus.Canceled;
+        var orderLine =
+            await _orderLineRepository.GetByIdAsync(orderId)
+            ?? throw new ArgumentException("Order line not found", nameof(orderId));
+        orderLine.OrderLineStatus = OrderLineStatus.Preparing;
         _orderLineRepository.Update(orderLine);
-        return Task.CompletedTask;
+        await _orderLineRepository.SaveChangesAsync();
     }
 
     /// <inheritdoc/>
-    public Task UpdateOrderStatusAsync(int orderId, OrderStatusDto statusDto)
+    public async Task RejectOrderAsync(int orderId)
     {
-        var orderLine = _orderLineRepository.GetByIdAsync(orderId).Result;
-        orderLine!.OrderLineStatus = Enum.Parse<OrderLineStatus>(statusDto.Status!);
+        var orderLine =
+            await _orderLineRepository.GetByIdAsync(orderId)
+            ?? throw new ArgumentException("Order line not found", nameof(orderId));
+        orderLine.OrderLineStatus = OrderLineStatus.Canceled;
         _orderLineRepository.Update(orderLine);
-        return Task.CompletedTask;
+        await _orderLineRepository.SaveChangesAsync();
     }
+
+    /// <inheritdoc/>
+    public async Task UpdateOrderStatusAsync(int orderId, OrderStatusDto statusDto)
+    {
+        if (string.IsNullOrWhiteSpace(statusDto.Status))
+        {
+            throw new ArgumentException("Status is required", nameof(statusDto));
+        }
+
+        if (!Enum.TryParse<OrderLineStatus>(statusDto.Status, true, out var status))
+        {
+            throw new ArgumentException("Invalid status", nameof(statusDto));
+        }
+
+        var orderLine =
+            await _orderLineRepository.GetByIdAsync(orderId)
+            ?? throw new ArgumentException("Order line not found", nameof(orderId));
+        orderLine.OrderLineStatus = status;
+        _orderLineRepository.Update(orderLine);
+        await _orderLineRepository.SaveChangesAsync();
+    }
+
 }

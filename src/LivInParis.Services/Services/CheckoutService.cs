@@ -21,7 +21,7 @@ public class CheckoutService(
         var cart =
             await _transactionRepository.GetCurrentTransactionAsync(customerId)
             ?? throw new ArgumentException("No cart found for the customer.");
-        cart.TransactionDatetime = DateTime.Now;
+        cart.TransactionDatetime = DateTime.UtcNow;
         _transactionRepository.Update(cart);
 
         var orderLines = await _orderLineRepository.ReadAsync(cart);
@@ -29,25 +29,34 @@ public class CheckoutService(
         {
             orderLine.OrderLineStatus = OrderLineStatus.Pending;
             orderLine.AddressId = checkoutDto.AddressId;
-            orderLine.OrderLineDatetime = DateTime.Now;
+            orderLine.OrderLineDatetime = DateTime.UtcNow;
             _orderLineRepository.Update(orderLine);
         }
+
+        await _transactionRepository.SaveChangesAsync();
+        await _orderLineRepository.SaveChangesAsync();
+
+        var lines = await Task.WhenAll(
+            orderLines.Select(async orderLine =>
+            {
+                var dish = await _orderLineRepository.GetOrderDishAsync(orderLine);
+                return new OrderLineDto
+                {
+                    DishId = dish.DishId,
+                    DishName = dish.DishName,
+                    Status = orderLine.OrderLineStatus.ToString(),
+                    UnitPrice = dish.Price,
+                };
+            })
+        );
 
         return new TransactionDto
         {
             Id = cart.TransactionId,
             CustomerId = customerId,
-            Lines =
-            [
-                .. orderLines.Select(ol => new OrderLineDto
-                {
-                    DishId = _orderLineRepository.GetOrderDishAsync(ol).Result.DishId,
-                    DishName = _orderLineRepository.GetOrderDishAsync(ol).Result.DishName,
-                    Status = ol.OrderLineStatus.ToString(),
-                    UnitPrice = _orderLineRepository.GetOrderDishAsync(ol).Result.Price,
-                }),
-            ],
+            Lines = lines,
             TotalPrice = await _transactionRepository.GetOrderTotalPriceAsync(cart),
         };
+
     }
 }

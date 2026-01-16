@@ -1,181 +1,146 @@
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:53754/api`;
+const API_BASE = `${window.location.protocol}//${window.location.host}/api`;
+
+const API_BASE = `${window.location.protocol}//${window.location.host}/api`;
+
+async function request(path, options = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options
+    });
+    if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message || `Request failed: ${res.status}`);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+}
+
 
 export async function login(username, password) {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    return request('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
-    if (!res.ok) throw new Error('Login failed');
-    return res.json();
 }
 
 export async function register(data) {
-    const res = await fetch(`${API_BASE}/auth/register`, {
+    return request('/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Register failed');
-    return res.json();
-}
-
-export async function getClients() {
-    const res = await fetch(`${API_BASE}/clients`);
-    if (!res.ok) throw new Error('Failed to fetch clients');
-    return res.json();
 }
 
 export async function fetchDishes() {
-    const res = await fetch(`${API_BASE}/dishes`);
-    if (!res.ok) throw new Error('Failed to fetch dishes');
-    return res.json();
+    return request('/dishes');
 }
 
 export async function fetchDishDetail(id) {
-    const dishes = await fetchDishes();
-    const dish = dishes.find(d => d.id.toString() === id.toString());
-    if (!dish) throw new Error('Dish not found');
-    return dish;
+    return request(`/dishes/${id}`);
 }
 
-export async function placeOrder(order) {
-    const res = await fetch(`${API_BASE}/orders`, {
+export async function placeOrder(customerId, payload) {
+    return request(`/checkout/customers/${customerId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(order)
+        body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Order failed');
-    return res.json();
 }
 
-export async function fetchProposals() {
-    const res = await fetch(`${API_BASE}/chefs/proposals`);
-    if (!res.ok) throw new Error('Failed to fetch proposals');
-    return res.json();
+export async function fetchChefProposals(chefId) {
+    return request(`/chefs/${chefId}/proposals`);
 }
 
-export async function getRoute(fromId, toId) {
-    const res = await fetch(`${API_BASE}/map/route?from=${fromId}&to=${toId}`);
-    if (!res.ok) throw new Error('Failed to fetch route');
-    return res.json();
+export async function createProposal(chefId, data) {
+    return request(`/chefs/${chefId}/proposals`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
 }
 
-export async function fetchMyOrders() {
-    const res = await fetch(`${API_BASE}/orders/my`);
-    if (!res.ok) throw new Error('Failed to fetch your orders');
-    return res.json();
+export async function deleteProposal(chefId, proposalDate) {
+    return request(`/chefs/${chefId}/proposals/${proposalDate}`, {
+        method: 'DELETE'
+    });
+}
+
+export async function fetchIncomingOrders(chefId) {
+    return request(`/chefs/${chefId}/orders`);
+}
+
+export async function acceptOrder(chefId, orderId) {
+    return request(`/chefs/${chefId}/orders/${orderId}/accept`, { method: 'POST' });
+}
+
+export async function rejectOrder(chefId, orderId) {
+    return request(`/chefs/${chefId}/orders/${orderId}/reject`, { method: 'POST' });
+}
+
+export async function updateOrderStatus(chefId, orderId, status) {
+    return request(`/chefs/${chefId}/orders/${orderId}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+    });
+}
+
+export async function fetchCustomerTransactions(customerId) {
+    return request(`/transaction/customers/${customerId}`);
 }
 
 export async function fetchOrderDetail(orderId) {
-    const res = await fetch(`${API_BASE}/orders/${orderId}`);
-    if (!res.ok) throw new Error('Failed to fetch order details');
-    return res.json();
+    return request(`/transaction/${orderId}`);
 }
 
-export async function fetchProfile() {
-    const res = await fetch(`${API_BASE}/auth/profile`);
-    if (!res.ok) throw new Error('Failed to fetch profile');
-    return res.json();
+export async function fetchCustomerProfile(customerId) {
+    return request(`/customers/${customerId}/profile`);
 }
 
-export async function updateProfile(data) {
-    const res = await fetch(`${API_BASE}/auth/profile`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+export async function updateCustomerProfile(customerId, data) {
+    return request(`/customers/${customerId}/profile`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to update profile');
-    return res.json();
 }
 
-export async function fetchChefProposals() {
-    const res = await fetch(`${API_BASE}/chefs/proposals`);
-    if (!res.ok) throw new Error('Failed to fetch menu proposals');
-    return res.json();
+export async function fetchChefProfile(chefId) {
+    return request(`/chefs/${chefId}/profile`);
 }
 
-export async function createProposal(data) {
-    const res = await fetch(`${API_BASE}/chefs/proposals`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+export async function updateChefProfile(chefId, data) {
+    return request(`/chefs/${chefId}/profile`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to create proposal');
-    return res.json();
-}
-
-export async function updateProposal(id, data) {
-    const res = await fetch(`${API_BASE}/chefs/proposals/${id}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to update proposal');
-    return res.json();
-}
-
-export async function deleteProposal(id) {
-    const res = await fetch(`${API_BASE}/chefs/proposals/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('Failed to delete proposal');
-}
-
-export async function fetchIncomingOrders() {
-    const res = await fetch(`${API_BASE}/chefs/orders/incoming`);
-    if (!res.ok) throw new Error('Failed to fetch incoming orders');
-    return res.json();
-}
-
-export async function acceptOrder(id) {
-    const res = await fetch(`${API_BASE}/chefs/orders/${id}/accept`, { method: 'POST' });
-    if (!res.ok) throw new Error('Failed to accept order');
-}
-
-export async function rejectOrder(id) {
-    const res = await fetch(`${API_BASE}/chefs/orders/${id}/reject`, { method: 'POST' });
-    if (!res.ok) throw new Error('Failed to reject order');
-}
-
-export async function fetchDeliveries() {
-    const res = await fetch(`${API_BASE}/chefs/deliveries`);
-    if (!res.ok) throw new Error('Failed to fetch deliveries');
-    return res.json();
-}
-
-export async function fetchDeliveryDetail(id) {
-    const res = await fetch(`${API_BASE}/chefs/deliveries/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch delivery detail');
-    return res.json();
-}
-
-export async function fetchChefProfile() {
-    const res = await fetch(`${API_BASE}/auth/profile`); // reuse auth/profile
-    if (!res.ok) throw new Error('Failed to fetch chef profile');
-    return res.json();
-}
-
-export async function updateChefProfile(data) {
-    const res = await fetch(`${API_BASE}/auth/profile`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('Failed to update chef profile');
-    return res.json();
 }
 
 export async function fetchStatsOrdersByChef() {
-    const res = await fetch(`${API_BASE}/stats/orders-by-chef`);
-    if (!res.ok) throw new Error('Failed to fetch stats orders by chef');
-    return res.json();
+    return request('/statistics/chef-deliveries');
 }
 
 export async function fetchStatsRevenueByStreet() {
-    const res = await fetch(`${API_BASE}/stats/revenue-by-street`);
-    if (!res.ok) throw new Error('Failed to fetch stats revenue by street');
-    return res.json();
+    return request('/statistics/revenue-by-street');
 }
 
 export async function fetchStatsAverageOrderPrice() {
-    const res = await fetch(`${API_BASE}/stats/average-order-price`);
-    if (!res.ok) throw new Error('Failed to fetch stats average order price');
-    return res.json();
+    return request('/statistics/average-order-price');
 }
 
 export async function fetchStatsTopCuisines() {
-    const res = await fetch(`${API_BASE}/stats/top-cuisines`);
-    if (!res.ok) throw new Error('Failed to fetch stats top cuisines');
-    return res.json();
+    return request('/statistics/top-cuisines');
 }
+
+export async function getRoute(fromAddress, toAddress) {
+    return request(`/graph/route?fromAddress=${encodeURIComponent(fromAddress)}&toAddress=${encodeURIComponent(toAddress)}`);
+}
+
+export async function fetchReviews(accountId, reviewerType, rating) {
+    const params = new URLSearchParams({ accountId, reviewerType });
+    if (rating !== undefined && rating !== null) params.append('rating', rating);
+    return request(`/review?${params.toString()}`);
+}
+
+export async function createReview(data) {
+    return request('/review', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+}
+
