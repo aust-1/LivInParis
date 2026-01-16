@@ -44,3 +44,4 @@ networks:
   internal:
   traefik:
     external: true
+    name: traefik-network
