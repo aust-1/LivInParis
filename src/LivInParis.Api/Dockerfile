@@ -24,5 +24,18 @@ RUN cp -r /src/resources/* /app/resources/
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libfontconfig1 \
+        libfreetype6 \
+        libpng16-16 \
+        libjpeg62-turbo \
+        libgif7 \
+        libglib2.0-0 \
+        libharfbuzz0b \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "LivInParis.Api.dll"]
+
