@@ -35,6 +35,7 @@ services:
       - "traefik.http.routers.livinparis.rule=Host(`${LIVINPARIS_DOMAIN}`)"
       - "traefik.http.routers.livinparis.entrypoints=websecure"
       - "traefik.http.routers.livinparis.tls=true"
+      - "traefik.http.routers.livinparis.tls.certresolver=myresolver"
       - "traefik.http.services.livinparis.loadbalancer.server.port=80"
 
 volumes:
