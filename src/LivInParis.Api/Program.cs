@@ -155,13 +155,13 @@ else
     /// <summary>
     /// Serve static files for production.
     /// </summary>
-    app.UseStaticFiles();
-    app.UseSpaStaticFiles();
-
-    app.UseSpa(spa =>
-    {
-        spa.Options.SourcePath = "frontend";
-    });
+    var frontendRoot = Path.Combine(builder.Environment.ContentRootPath, "frontend");
+    app.UseDefaultFiles(
+        new DefaultFilesOptions { FileProvider = new PhysicalFileProvider(frontendRoot) }
+    );
+    app.UseStaticFiles(
+        new StaticFileOptions { FileProvider = new PhysicalFileProvider(frontendRoot) }
+    );
 }
 
 /// <summary>
@@ -174,7 +174,15 @@ if (!app.Environment.IsDevelopment())
     /// <summary>
     /// Fallback to index.html for client-side routing in production.
     /// </summary>
-    app.MapFallbackToFile("index.html");
+    app.MapFallbackToFile(
+        "index.html",
+        new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "frontend")
+            ),
+        }
+    );
 }
 
 await app.RunAsync();
