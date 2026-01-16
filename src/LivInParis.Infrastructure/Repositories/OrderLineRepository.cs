@@ -36,11 +36,10 @@ public class OrderLineRepository(LivInParisContext context)
         var start = from ?? DateTime.MinValue;
         var end = to ?? DateTime.MaxValue;
 
-        var query = _context
+        IQueryable<OrderLine> query = _context
             .OrderLines.Where(ol => ol.OrderLineDatetime >= start)
             .Where(ol => ol.OrderLineDatetime <= end)
             .Include(ol => ol.Address);
-
 
         if (chefId != null)
         {
